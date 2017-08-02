@@ -17,7 +17,8 @@ enum UIMode {
     UI_MODE_AUTO,
     UI_MODE_RC,
     UI_MODE_DEV,
-    UI_MODE_CONFIG
+    UI_MODE_CONFIG,
+    UI_MODE_ABOUT
 };
 
 struct UIState {

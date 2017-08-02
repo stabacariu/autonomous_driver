@@ -21,6 +21,7 @@ void *cameraCapture (void *v)
         cerr << "ERROR: Could not open camera!" << endl;
     }
     
+    // Initalize image data
     inputDataInit();
     outputDataInit();
     

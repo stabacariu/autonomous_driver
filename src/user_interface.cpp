@@ -74,6 +74,10 @@ void processUiInput (Mat& image, char key)
             sysState = SYS_MODE_CONFIG;
             //drawConfigMode(image);
         }
+        else if (key == 'S') {
+            state = UI_MODE_ABOUT;
+            sysState = SYS_MODE_STANDBY;
+        }
         else if ((key == 'Q') || (key == 'q')) {
             sysState = SYS_MODE_CLOSING;
         }
@@ -136,6 +140,17 @@ void processUiInput (Mat& image, char key)
         }
         else if (key == 'S') {
             cout << "Saving config..." << endl;
+        }
+        else if ((key == 'Q') || (key == 'q')) {
+            sysState = SYS_MODE_CLOSING;
+        }
+    }
+    else if (state == UI_MODE_ABOUT) {
+        drawAboutMode(image);
+        if (key == 'B') {
+            state = UI_MODE_STANDBY;
+            sysState = SYS_MODE_STANDBY;
+            //drawMainMenu(image);
         }
         else if ((key == 'Q') || (key == 'q')) {
             sysState = SYS_MODE_CLOSING;

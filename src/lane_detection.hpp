@@ -13,6 +13,7 @@
 #include "autonomous_driver.hpp"
 #include "image_data.hpp"
 #include "image_filter.hpp"
+#include "camera_calibration.hpp"
 
 void *laneDetection (void *arg);
 

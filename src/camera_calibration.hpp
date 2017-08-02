@@ -7,6 +7,11 @@
 #ifndef CAMERA_CALIBRATION_HPP
 #define CAMERA_CALIBRATION_HPP
 
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
+void calibrateIntrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize);
+void calibrateExtrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize);
+void inversePerspectiveTransform(cv::Mat image, cv::Mat& warpedImage, cv::Mat homography);
 
 #endif // CAMERA_CALIBRATION_HPP

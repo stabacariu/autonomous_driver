@@ -17,6 +17,7 @@ void getMainMenuList (vector<string>& menuList)
     menuList.push_back("(R)emote Control");
     menuList.push_back("(D)evelop");
     menuList.push_back("(C)onfigure");
+    menuList.push_back("(S)About");
     menuList.push_back("(Q)uit");
 }
 
@@ -76,6 +77,26 @@ void getConfigMenuList (vector<string>& menuList)
     menuList.push_back("(B)ack");
     menuList.push_back("(S)ave");
     menuList.push_back("(Q)uit");
+}
+
+void getAboutMenuList (vector<string>& menuList)
+{
+    menuList.clear();
+    
+    menuList.push_back("(B)ack");
+    menuList.push_back("(Q)uit");
+}
+
+void getAboutTextList (vector<string>& textList)
+{
+    textList.clear();
+    
+    textList.push_back("FH Campus Wien");
+    textList.push_back("Auhtor: Sergiu-Petru Tabacariu");
+    textList.push_back("<sergiu.tabacariu@fh-campuswien.ac.at>");
+    textList.push_back("Date 7.7.2017");
+    textList.push_back("Version 0.0.1");
+    
 }
 
 void drawMainMenu (Mat& image)
@@ -310,4 +331,54 @@ void drawConfigMode (Mat& image)
     pt1 = Point(0, textOrg.y);
     pt2 = Point(200, pt1.y);
     line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+}
+
+void drawAboutMode (Mat& image)
+{
+    Point pt1(0, 0);
+    Point pt2(200, (image.size().height-1)/2);
+    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    
+    string titleText = "About";
+    int fontFace = CV_FONT_HERSHEY_DUPLEX;
+    double fontScale = 0.7;
+    int thickness = 1;
+    int baseline = 0;
+    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
+    
+    // Get center of the text
+    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    
+    vector<string> menuList;
+    getAboutMenuList(menuList);
+    fontFace = CV_FONT_HERSHEY_SIMPLEX;
+    fontScale = 0.5;
+    textOrg.x = 10;
+    for (size_t i = 0; i < menuList.size(); i++) {
+        string text = menuList[i];
+        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 20 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    }
+    
+    textOrg.y += 20;
+    pt1 = Point(0, textOrg.y);
+    pt2 = Point(200, pt1.y);
+    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    
+    pt1.y += 25;
+    pt1.x = 200/2 - 120/2;
+    
+    vector<string> textList;
+    getAboutTextList(textList);
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
+    textOrg.x = 10;
+    for (size_t i = 0; i < textList.size(); i++) {
+        string text = textList[i];
+        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 10 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    }
 }

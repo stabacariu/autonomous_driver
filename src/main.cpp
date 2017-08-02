@@ -18,8 +18,12 @@ int main (int argc, char *argv[])
     systemStateInit();
     uiStateInit();
     // Load config
+    
+    // Start image acquisition
+    //~ imageAcquisition();
     // Start image aquisition
     imageProcessing();
     // Start UI
+    
     return 0;
 }

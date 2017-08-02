@@ -17,5 +17,6 @@ void drawRcCom (cv::Mat& image, cv::Point position);
 void drawRcMode (cv::Mat& image);
 void drawDevMode (cv::Mat& image);
 void drawConfigMode (cv::Mat& image);
+void drawAboutMode (cv::Mat& image);
 
 #endif // USER_INTERFACE_MENUS_HPP

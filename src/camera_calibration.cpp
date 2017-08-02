@@ -9,25 +9,65 @@
 using namespace std;
 using namespace cv;
 
-void calibrateIntrinsic (Mat& image, Mat& homography, Size chessBoardSize)
+void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>& corners)
+{
+    corners.clear();
+    // Calculate corner position of chessboard squares or circles
+    
+    for (int i = 0; i < boardSize.height; i++) {
+        for (int j = 0; j < boardSize.width; j++) {
+            corners.push_back(Point3f(j*squareSize, i*squareSize, 0));
+        }
+    }
+}
+
+void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize)
 {
     int sampleCnt = 50;
     int cornersHorizontal = 7;
     int cornersVertical = 5;
-    Mat grayImage;
-    cvtColor(image, grayImage, CV_BGR2GRAY);
+    double squareSize = 30; //!< Chessboard square size is 30 mm
+    //Size boardSize = Size(cornersHorizontal, cornersVertical);
+    double aspRatio = 1;
     
-    vector<Point2f> corners;
-    bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    vector<vector<Point2f> >imagePoints;
     
-    if (found) {
-        cornerSubPix(grayImage, corners, Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
+    while (imagePoints.size() < sampleCnt) {
+        Mat grayImage;
+        cvtColor(image, grayImage, CV_BGR2GRAY);
+        
+        vector<Point2f> corners;
+        
+        bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        
+        if (found) {
+            cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+            // Save corners
+            imagePoints.push_back(corners);
+        }
     }
     
+    Mat intrinsics = Mat::eye(3, 3, CV_64F); //!< Intrinsic camera matrix
+    Mat distCoeffs = Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
+    vector<Mat> rvecs; //!< Rotation vectors
+    vector<Mat> tvecs; //!< Translation vectors
     
+    // Set aspect ratio
+    intrinsics.at<double>(1, 1) = aspRatio;
+    // Calculate cornerpoints
+    vector<vector<Point3f> > objectPoints(1);
+    calcBoardCornerPosition(boardSize, squareSize, objectPoints[0]);
+    objectPoints.resize(imagePoints.size(), objectPoints[0]);
+    
+    // Calibrate camera and get reprojection error rms
+    double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), intrinsics, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
+    vector<double> reprojErrs;
+    //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, intrinsics, distCoeffs, reprojErrs, 1);
+    
+    // TODO: Save calibration to XML file
 }
 
-void calibrateExtrinsic (Mat& image, Mat& homography, Size chessBoardSize)
+void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize)
 {
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);

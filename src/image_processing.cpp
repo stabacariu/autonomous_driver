@@ -11,15 +11,17 @@ using namespace cv;
 
 void imageProcessing (void)
 {
+    
     pthread_t cameraCaptureThread;
     pthread_t detectLaneThread;
     pthread_t detectTrafficSignThread;
     pthread_t showImageThread;
     
-    // Create image processing threads
+    // Create image capturing thread
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
+    // Create image processing threads
     // Detect lane
     if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
         cerr << "ERROR: Couldn't create lane detection thread!" << endl;
@@ -33,10 +35,11 @@ void imageProcessing (void)
         cerr << "ERROR: Couldn't create image show thread!" << endl;
     }
     
-    // Join image processing threads
+    // Join image capturing thread
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
+    // Join image processing threads
     if (pthread_join(detectLaneThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
