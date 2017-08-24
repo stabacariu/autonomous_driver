@@ -9,53 +9,6 @@
 using namespace std;
 using namespace cv;
 
-// TODO: Move to camera extrinsic calibration
-//~ int laneCalibration(Mat& image, Mat& homography, Size boardSize)
-//~ {
-   //~ Mat grayImage;
-   //~ cvtColor(image, grayImage, CV_BGR2GRAY);
-//~ 
-   //~ vector<Point2f> corners;
-   //~ bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-   //~ if (!found) {
-      //~ cerr << "ERROR: Could not aquire checkerboard!" << endl;
-      //~ return -1;
-   //~ }
-   //~ cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-//~ 
-   //~ Point2f objectPoints[4], imagePoints[4];
-   //~ objectPoints[0] = Point2f(0, 0);
-   //~ objectPoints[1] = Point2f(boardSize.width-1, 0);
-   //~ objectPoints[2] = Point2f(0, boardSize.height-1);
-   //~ objectPoints[3] = Point2f(boardSize.width-1, boardSize.height-1);
-   //~ imagePoints[0] = corners[0];
-   //~ imagePoints[1] = corners[boardSize.width-1];
-   //~ imagePoints[2] = corners[(boardSize.height-1)*boardSize.width];
-   //~ imagePoints[3] = corners[(boardSize.height-1)*boardSize.width + boardSize.width-1];
-//~ 
-   //~ homography = getPerspectiveTransform(objectPoints, imagePoints);
-   //~ 
-   //~ //drawChessboardCorners(image, boardSize, corners, found);
-//~ 
-   //~ return 0;
-//~ }
-// TODO: Move to camera extrinsic calibration
-//~ void inversePerspectiveTransform(Mat image, Mat& warpedImage, Mat homography)
-//~ {
-   //~ double xOffset = image.size().width/2 * (-1) + 30;
-   //~ double yOffset = image.size().height/2 * (-1) + 30;
-   //~ double zOffset = 15;
-//~ 
-   //~ Mat transform = Mat::eye(3, 3, CV_64F);
-   //~ transform.at<double>(0, 2) = xOffset;
-   //~ transform.at<double>(1, 2) = yOffset;
-   //~ transform.at<double>(2, 2) = zOffset;
-   //~ transform = homography * transform;
-//~ 
-   //~ Size warpedImageSize(image.size().width, image.size().height);
-   //~ warpPerspective(image, warpedImage, transform, warpedImageSize, WARP_INVERSE_MAP + INTER_LINEAR);
-//~ }
-
 void sortLineDirections (vector<Vec4i>& lines)
 {
    for (size_t i = 0; i <  lines.size(); i++) {
@@ -92,11 +45,85 @@ void detectLines (Mat grayImage, vector<Vec4i>& lines)
    sortLineDirections(lines);
 }
 
+void drawLines (Mat& image, vector<Vec4i> lines, Scalar color)
+{
+    for (size_t i = 0; i < lines.size(); i++) {
+        Vec4i l = lines[i];
+        line(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+    }
+}
+
+void drawArrowedLines (Mat& image, vector<Vec4i> lines, Scalar color)
+{
+    for (size_t i = 0; i < lines.size(); i++) {
+        Vec4i l = lines[i];
+        arrowedLine(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+    }
+}
+
+void drawCenterLine (Mat& image, Scalar color)
+{
+    Point pt1((image.cols/2)-1, 0);
+    Point pt2(pt1.x, image.rows-1);
+    line(image, pt1, pt2, color, 1);
+}
+
+/**
+ * @brief This function filters left and right lines. It also filters 
+ *          the most left line in right image half and the most right line
+ *          in the left image half.
+ */
+ 
+void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines, vector<Vec4i>& rightLines, vector<Vec4i>& lane)
+{
+    lane.clear();
+    Vec4i leftLine = Vec4i(imageSize.width-1, 0, imageSize.width-1, imageSize.height-1);
+    Vec4i rightLine = Vec4i(0, 0, 0, imageSize.height-1);
+    
+    for (size_t i = 0; i < lines.size(); i++) {
+        if (lines[i][2] <= ((imageSize.width/2)-1)) {
+            leftLines.push_back(lines[i]);
+            if (lines[i][2] < leftLine[2]) {
+                leftLine = lines[i];
+            }
+        }
+        else {
+            rightLines.push_back(lines[i]);
+            if (lines[i][2] > rightLine[2]) {
+                rightLine = lines[i];
+            }
+        }
+    }
+    
+    lane.push_back(leftLine);
+    lane.push_back(rightLine);
+}
+
+/**
+ * @brief Thread for lane detection
+ */
+
 void *laneDetection (void *arg)
 {
-    cout << "Thread lane detection started." << endl;
+    cout << "THREAD: Lane detection started." << endl;
     
-    while (getSystemState() != SYS_MODE_CLOSING) {
+    // Initialize line prediction
+    //~ KalmanFilter kf(4, 4, 0);
+    KalmanFilter kfL(4, 4, 0);
+    KalmanFilter kfR(4, 4, 0);
+    //~ initLinePrediction(kf, 4);
+    initLinePrediction(kfL, 4);
+    initLinePrediction(kfR, 4);
+    //~ KalmanFilter kf(8, 8, 0);
+    //~ initLinePrediction(kf, 8);
+    vector<Vec4i> measuredLines;
+    vector<Vec4i> predictedLines;
+    vector<Vec4i> measuredLeftLines;
+    vector<Vec4i> measuredRightLines;
+    vector<Vec4i> predictedLeftLines;
+    vector<Vec4i> predictedRightLines;
+    
+    while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
         
@@ -122,14 +149,83 @@ void *laneDetection (void *arg)
             // Blur image
             GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
             
+            // Detect lines
             vector<Vec4i> lines;
             detectLines(grayImage, lines);
+            // Show lines
+            //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+            vector<Vec4i> leftLines;
+            vector<Vec4i> rightLines;
+            vector<Vec4i> lane;
+            filterLines(lines, grayImage.size(), leftLines, rightLines, lane);
+            //~ drawArrowedLines(warpedImage, leftLines, Scalar(100,0,0));
+            //~ drawArrowedLines(warpedImage, rightLines, Scalar(0,0,100));
+            //~ drawArrowedLines(warpedImage, lane, Scalar(0,255,0));
             
-            setOutputImageData(grayImage);
+            // Predict lane
+            if (leftLines.size() != 0) {
+                predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
+                //drawLines(warpedImage, measuredLines, Scalar(255, 200, 0));
+                drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
+            }
+            if (rightLines.size() != 0) {
+                predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
+                //drawLines(warpedImage, measuredLines, Scalar(0, 200, 255));
+                drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
+            }
+            
+            drawCenterLine(warpedImage, Scalar(0,255,0));
+            
+            setOutputImageData(warpedImage);
         }
     }
     
-    cout << "Thread lane detection ended." << endl;
+    cout << "THREAD: Lane detection ended." << endl;
     
     return NULL;
+}
+
+/**
+ * @brief This function initializes the line prediction with a Kalman filter.
+ */
+
+void initLinePrediction (KalmanFilter& kf, int valueCnt)
+{
+    kf.statePre = Mat::zeros(valueCnt, 1, CV_32F);
+    setIdentity(kf.transitionMatrix);
+    setIdentity(kf.measurementMatrix);
+    setIdentity(kf.processNoiseCov);
+    setIdentity(kf.measurementNoiseCov, Scalar::all(200));
+    setIdentity(kf.errorCovPost, Scalar::all(100));
+}
+
+/**
+ * @brief This function predicts the line points.
+ */
+
+void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& measuredLines, vector<Vec4i>& predictedLines)
+{
+    measuredLines.clear();
+    predictedLines.clear();
+    
+    for (size_t i = 0; i < lines.size(); i++) {
+        Mat prediction = kf.predict();
+        Vec4i predictedPts(prediction.at<float>(0), prediction.at<float>(1), prediction.at<float>(2), prediction.at<float>(3));
+        
+        Mat measurement = Mat::zeros(valueCnt, 1, CV_32F);
+        for (size_t j = 0; j < valueCnt; j++) {
+            measurement.at<float>(j) = lines[i][j];
+        }
+        
+        Mat estimated = kf.correct(measurement);
+        
+        Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
+        Vec4i measuredPts(measurement.at<float>(0), measurement.at<float>(1), measurement.at<float>(2), measurement.at<float>(3));
+        
+        measuredLines.clear();
+        predictedLines.clear();
+        
+        measuredLines.push_back(measuredPts);
+        predictedLines.push_back(statePts);
+    }
 }

@@ -9,14 +9,19 @@
 using namespace std;
 using namespace cv;
 
+/**
+ * @ Thread for capturing camera input image
+ */
+ 
 void *cameraCapture (void *v)
 {
-    cout << "Thread camera capture started." << endl;
+    cout << "THREAD: Camera capture started." << endl;
     // Initalize camera
     VideoCapture camera(CV_CAP_ANY);
     camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    camera.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
-    camera.set(CV_CAP_PROP_FPS, 15);
+    camera.set(CV_CAP_PROP_FRAME_HEIGHT, 360); //480
+    camera.set(CV_CAP_PROP_FPS, 20);
+    
     if (!camera.isOpened()) {
         cerr << "ERROR: Could not open camera!" << endl;
     }
@@ -26,7 +31,7 @@ void *cameraCapture (void *v)
     outputDataInit();
     
     // Caputre image
-    while (getSystemState() != SYS_MODE_CLOSING) {
+    while ((getModuleState() & MODULE_CAP_CAM_IMAGE) == MODULE_CAP_CAM_IMAGE) {
         Mat image;
         camera >> image;
         if (image.empty()) {
@@ -37,7 +42,7 @@ void *cameraCapture (void *v)
         }
     }
     
-    cout << "Thread camera capture ended." << endl;
+    cout << "THREAD: Camera capture ended." << endl;
     
     return NULL;
 }

@@ -9,21 +9,17 @@
 #include <iostream>
 #include "autonomous_driver.hpp"
 #include "user_interface.hpp"
-#include "image_processing.hpp"
 
 int main (int argc, char *argv[])
 {
-    // TODO: Write code:
+    // Startup
     // Init system state
     systemStateInit();
     uiStateInit();
-    // Load config
+    // TODO: load config
     
-    // Start image acquisition
-    //~ imageAcquisition();
-    // Start image aquisition
-    imageProcessing();
-    // Start UI
+    // Start system
+    autonomousDriver();
     
     return 0;
 }

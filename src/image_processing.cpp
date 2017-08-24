@@ -9,65 +9,53 @@
 using namespace std;
 using namespace cv;
 
-void imageProcessing (void)
+/**
+ * @brief Thread to copy input image to output image.
+ */
+void *showInputImage (void *arg)
 {
+    cout << "THREAD: Show input image started." << endl;
     
-    pthread_t cameraCaptureThread;
-    pthread_t detectLaneThread;
-    pthread_t detectTrafficSignThread;
-    pthread_t showImageThread;
-    
-    // Create image capturing thread
-    if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
-        cerr << "ERROR: Couldn't create camera capture thread!" << endl;
-    }
-    // Create image processing threads
-    // Detect lane
-    if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
-        cerr << "ERROR: Couldn't create lane detection thread!" << endl;
-    }
-    // Detect traffic signs
-    if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
-        cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
-    }
-    // Show result
-    if (pthread_create(&showImageThread, NULL, imageShow, NULL)) {
-        cerr << "ERROR: Couldn't create image show thread!" << endl;
+    while ((getModuleState() & MODULE_SHOW_IN_IMAGE) == MODULE_SHOW_IN_IMAGE) {
+        Mat image;
+        getInputImageData(image);
+        setOutputImageData(image);
     }
     
-    // Join image capturing thread
-    if (pthread_join(cameraCaptureThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
-    // Join image processing threads
-    if (pthread_join(detectLaneThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
-    if (pthread_join(detectTrafficSignThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
-    if (pthread_join(showImageThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
+    cout << "THREAD: Show input image ended." << endl;
+    return NULL;
 }
 
-void *imageShow (void *arg)
+/**
+ * @brief Thread for showing output image on GUI.
+ */
+void *showOutputImage (void *arg)
 {
-    cout << "Thread image show started." << endl;
-    char key = 'n';
+    cout << "THREAD: Show output image started." << endl;
+    namedWindow("Output Image", CV_WINDOW_AUTOSIZE);
+    char key = getUiInputKey();
     
-    while (getSystemState() != SYS_MODE_CLOSING) {
+    while ((getModuleState() & MODULE_SHOW_OUT_IMAGE) == MODULE_SHOW_OUT_IMAGE) {
         Mat image;
         getOutputImageData(image);
         
-        processUiInput(image, key);
+        // Create output image composition
+        Mat outputImage = Mat(image.rows, image.cols+200, CV_8UC3, Scalar(0));
+        
+        // Process input and insert menu to output image
+        processUiInput(outputImage, key);
         
         if (!image.empty()) {
-            imshow("Image", image);
-            key = waitKey(40);
+            // Insert processed image to output image
+            Rect insert = Rect(200,0, image.cols, image.rows);
+            image.copyTo(outputImage(insert));
+            
+            imshow("Output Image", outputImage);
+            key = waitKey(20);
+            setUiInputKey(key);
         }
     }
     
-    cout << "Thread image show ended." << endl;
+    cout << "THREAD: Show output image ended." << endl;
     return NULL;
 }

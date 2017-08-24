@@ -18,17 +18,22 @@ enum UIMode {
     UI_MODE_RC,
     UI_MODE_DEV,
     UI_MODE_CONFIG,
-    UI_MODE_ABOUT
+    UI_MODE_ABOUT,
+    UI_MODE_CLOSING
 };
 
 struct UIState {
     UIMode mode;
+    char key;
     pthread_mutex_t lock;
 };
+
 
 void uiStateInit (void);
 void setUiStatus (UIMode state);
 UIMode getUiStatus (void);
+void setUiInputKey (char key);
+char getUiInputKey (void);
 void processUiInput (cv::Mat& image, char key);
 
 #endif // USER_INTERFACE_HPP

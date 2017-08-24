@@ -16,6 +16,7 @@ void uiStateInit (void)
 {
     pthread_mutex_init(&uiState.lock, NULL);
     setUiStatus(UI_MODE_STANDBY);
+    setUiInputKey('n');
 }
 
 void setUiStatus (UIMode state)
@@ -47,38 +48,66 @@ UIMode getUiStatus (void)
     return state;
 }
 
+void setUiInputKey (char key)
+{
+    if (pthread_mutex_lock(&uiState.lock)) {
+        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+    }
+    
+    uiState.key = key;
+    
+    if (pthread_mutex_unlock(&uiState.lock)) {
+        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+    }
+}
+
+char getUiInputKey (void)
+{
+    char key;
+    if (pthread_mutex_lock(&uiState.lock)) {
+        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+    }
+    
+    key = uiState.key;
+    
+    if (pthread_mutex_unlock(&uiState.lock)) {
+        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+    }
+    
+    return key;
+}
+
 void processUiInput (Mat& image, char key)
 {
     UIMode state = getUiStatus();
+    UIMode prevState = state;
     SystemMode sysState = getSystemState();
+    SystemMode prevSysState = sysState;
     
     if (state == UI_MODE_STANDBY) {
         drawMainMenu(image);
         if (key == 'A') {
             state = UI_MODE_AUTO;
             sysState = SYS_MODE_AUTO;
-            //drawAutoMode(image);
         }
         else if (key == 'R') {
             state = UI_MODE_RC;
             sysState = SYS_MODE_RC;
-            //drawRcMode(image);
         }
         else if (key == 'D') {
             state = UI_MODE_DEV;
             sysState = SYS_MODE_DEV;
-            //drawDevMode(image);
         }
         else if (key == 'C') {
             state = UI_MODE_CONFIG;
             sysState = SYS_MODE_CONFIG;
-            //drawConfigMode(image);
         }
         else if (key == 'S') {
             state = UI_MODE_ABOUT;
             sysState = SYS_MODE_STANDBY;
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
@@ -87,9 +116,9 @@ void processUiInput (Mat& image, char key)
         if (key == 'B') {
             state = UI_MODE_STANDBY;
             sysState = SYS_MODE_STANDBY;
-            //drawMainMenu(image);
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
@@ -103,9 +132,9 @@ void processUiInput (Mat& image, char key)
         else if (key == 'A') {
             state = UI_MODE_AUTO;
             sysState = SYS_MODE_AUTO;
-            //drawAutoMode(image);
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
@@ -114,12 +143,10 @@ void processUiInput (Mat& image, char key)
         if (key == 'B') {
             state = UI_MODE_STANDBY;
             sysState = SYS_MODE_STANDBY;
-            //drawMainMenu(image);
         }
         else if (key == 'A') {
             state = UI_MODE_AUTO;
             sysState = SYS_MODE_AUTO;
-            //(image);
         }
         else if (key == 'S') {
             cout << "Screenshot..." << endl;
@@ -128,6 +155,7 @@ void processUiInput (Mat& image, char key)
             cout << "Calibrating..." << endl;
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
@@ -136,12 +164,12 @@ void processUiInput (Mat& image, char key)
         if (key == 'B') {
             state = UI_MODE_STANDBY;
             sysState = SYS_MODE_STANDBY;
-            //drawMainMenu(image);
         }
         else if (key == 'S') {
             cout << "Saving config..." << endl;
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
@@ -150,13 +178,25 @@ void processUiInput (Mat& image, char key)
         if (key == 'B') {
             state = UI_MODE_STANDBY;
             sysState = SYS_MODE_STANDBY;
-            //drawMainMenu(image);
         }
         else if ((key == 'Q') || (key == 'q')) {
+            state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
+    else if (state == UI_MODE_CLOSING) {
+        setUiInputKey('Q');
+        setModuleState(MODULE_NONE);
+        setSystemState(SYS_MODE_CLOSING);
+    }
     
-    setUiStatus(state);
-    setSystemState(sysState);
+    if (prevState != state) {
+        setUiStatus(state);
+        cout << "Changing UI state to " << (int) state << endl;
+    }
+    if (prevSysState != sysState) {
+        setModuleState(MODULE_NONE);
+        setSystemState(sysState);
+        cout << "Changing system state to " << (int) sysState << endl;
+    }
 }

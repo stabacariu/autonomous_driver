@@ -61,7 +61,7 @@ void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize)
     
     // Calibrate camera and get reprojection error rms
     double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), intrinsics, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
-    vector<double> reprojErrs;
+    //vector<double> reprojErrs;
     //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, intrinsics, distCoeffs, reprojErrs, 1);
     
     // TODO: Save calibration to XML file
@@ -96,6 +96,7 @@ void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize)
         cerr << "ERROR: Could not aquire checkerboard!" << endl;
     }
     
+    // TODO: Save calibration to XML file
 }
 
 void inversePerspectiveTransform(Mat image, Mat& warpedImage, Mat homography)

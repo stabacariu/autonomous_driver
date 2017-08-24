@@ -19,6 +19,7 @@
 #include "user_interface.hpp"
 
 void imageProcessing (void);
-void *imageShow (void *arg);
+void *showInputImage (void *arg);
+void *showOutputImage (void *arg);
 
 #endif // IMAGE_PROCESSING_HPP
