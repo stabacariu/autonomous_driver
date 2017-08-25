@@ -1,11 +1,14 @@
 /**
- * @file lane_marking.hpp
+ * @file lane.hpp
  * @author Sergiu-Petru Tabacariu
- * @date 26.5.2017
+ * @date 25.8.2017
  */
  
-#ifndef LANE_MARKING_HPP
-#define LANE_MARKING_HPP
+#ifndef LANE_HPP
+#define LANE_HPP
+
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 enum LaneMarking {
     LANE_MARKING_NONE,
@@ -26,4 +29,13 @@ enum LaneMarkingPosition {
     LANE_MARKING_POSITION_EDGE
 };
 
-#endif // LANE_MAKRING_HPP
+struct LaneData {
+    std::vector<cv::Vec4i> lane;
+    pthread_mutex_t lock;
+};
+
+void initLaneData (void);
+void setActualLane (std::vector<cv::Vec4i> lane);
+void getActualLane (std::vector<cv::Vec4i>& lane);
+
+#endif // LANE_HPP

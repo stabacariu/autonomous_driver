@@ -35,7 +35,6 @@ void whiteColorFilter (Mat image, Mat& filteredImage)
 {
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
-    //autoAdjustImage(grayImage);
     threshold(grayImage, filteredImage, 240, 255, CV_THRESH_BINARY);
 }
 

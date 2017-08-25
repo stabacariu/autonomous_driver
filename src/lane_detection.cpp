@@ -9,6 +9,49 @@
 using namespace std;
 using namespace cv;
 
+float getEuclidDistance(Point pt1, Point pt2)
+{
+   Point diff = pt1 - pt2;
+   return sqrt(pow(diff.x, 2) + pow(diff.y, 2));
+   // or
+   //~ return norm(pt1-pt2);
+}
+
+/**
+ * @brief This function calculates the distance rho for the polar line form.
+ *  (rho, theta)
+ * @param pt point on the line
+ * @param rho slope of the line
+ * @return r the distance of the line to the origin for the polar form 
+ */
+float getRho (Point pt1, Point pt2)
+{
+   return (pt1.y * pt2.x - pt2.y * pt1.x)/getEuclidDistance(pt1, pt2);
+}
+
+/**
+ * @brief This function calculates the angle theta for the polar line form.
+ *  (rho, theta)
+ * @param pt1 starting point of the line
+ * @param pt2 ending point of the line
+ * @return theta the angle for the polar form
+ */
+ float getTheta (Point pt1, Point pt2)
+{
+   return atan2((pt2.y - pt1.y), (pt2.x - pt1.x));
+}
+
+void cvtLinesToLinesPolar (vector<Vec4i> lines, vector<Vec2f>& linesPolar)
+{
+    linesPolar.clear();
+    for (size_t i = 0; i < lines.size(); i++) {
+        float theta = getTheta(Point(lines[i][0], lines[i][1]), Point(lines[i][2], lines[i][3]));
+        float rho = getRho(Point(lines[i][0], lines[i][1]), Point(lines[i][2], lines[i][3]));
+        
+        linesPolar.push_back(Vec2f(rho, theta));
+    }
+}
+
 void sortLineDirections (vector<Vec4i>& lines)
 {
    for (size_t i = 0; i <  lines.size(); i++) {
@@ -26,6 +69,10 @@ void sortLineDirections (vector<Vec4i>& lines)
       lines[i][3] = pt2.y;
    }
 }
+
+/**
+ * @brief This function detects lines in an grayscale input image
+ */
 
 void detectLines (Mat grayImage, vector<Vec4i>& lines)
 {
@@ -45,12 +92,22 @@ void detectLines (Mat grayImage, vector<Vec4i>& lines)
    sortLineDirections(lines);
 }
 
+void drawLine (Mat& image, Vec4i l, Scalar color)
+{
+    line(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+}
+
 void drawLines (Mat& image, vector<Vec4i> lines, Scalar color)
 {
     for (size_t i = 0; i < lines.size(); i++) {
         Vec4i l = lines[i];
         line(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
     }
+}
+
+void drawArrowedLine (Mat& image, Vec4i l, Scalar color)
+{
+    arrowedLine(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
 }
 
 void drawArrowedLines (Mat& image, vector<Vec4i> lines, Scalar color)
@@ -100,6 +157,36 @@ void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines,
 }
 
 /**
+ * @brief This function checks if 2 lines are parallel.
+ */
+
+int checkParallelLine (vector<Vec4i> lines)
+{
+    float thetaLeft = getTheta(Point(lines[0][0], lines[0][1]), Point(lines[0][2],lines[0][3]));
+    float thetaRight = getTheta(Point(lines[1][0], lines[1][1]), Point(lines[1][2], lines[1][3]));
+    cout << "Left line theta: " << thetaLeft << ", Right line theta " << thetaRight << endl;
+    if (thetaLeft == thetaRight) {
+        cout << "Lines are parallel!" << endl;
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+
+void getLaneMid (vector<Vec4i> lane, Vec4i& laneMid)
+{
+   Point ptl1 = Point(lane[0][0], lane[0][1]);
+   Point ptl2 = Point(lane[0][2], lane[0][3]);
+   Point ptr1 = Point(lane[1][0], lane[1][1]);
+   Point ptr2 = Point(lane[1][2], lane[1][3]);
+   
+   Point ptmid1 = Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
+   Point ptmid2 = Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
+   laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+}
+
+/**
  * @brief Thread for lane detection
  */
 
@@ -137,6 +224,8 @@ void *laneDetection (void *arg)
                 image.copyTo(warpedImage);
             }
             
+            autoAdjustImage(warpedImage);
+            
             Mat grayImage;
             whiteColorFilter(warpedImage, grayImage);
             
@@ -144,7 +233,7 @@ void *laneDetection (void *arg)
             yellowColorFilter(warpedImage, yellowImage);
             
             // Merge images
-            bitwise_or(grayImage, yellowImage, grayImage);
+            //~ bitwise_or(grayImage, yellowImage, grayImage);
             
             // Blur image
             GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
@@ -158,21 +247,32 @@ void *laneDetection (void *arg)
             vector<Vec4i> rightLines;
             vector<Vec4i> lane;
             filterLines(lines, grayImage.size(), leftLines, rightLines, lane);
-            //~ drawArrowedLines(warpedImage, leftLines, Scalar(100,0,0));
-            //~ drawArrowedLines(warpedImage, rightLines, Scalar(0,0,100));
-            //~ drawArrowedLines(warpedImage, lane, Scalar(0,255,0));
             
             // Predict lane
-            if (leftLines.size() != 0) {
+            vector<Vec4i> predictedLane;
+            if (leftLines.size() > 0) {
                 predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
-                //drawLines(warpedImage, measuredLines, Scalar(255, 200, 0));
                 drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
+                
+                predictedLane.push_back(predictedLeftLines[0]);
             }
-            if (rightLines.size() != 0) {
+            if (rightLines.size() > 0) {
                 predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
-                //drawLines(warpedImage, measuredLines, Scalar(0, 200, 255));
                 drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
+                
+                predictedLane.push_back(predictedRightLines[0]);
             }
+            
+            // Check if lines are parallel
+            if (predictedLane.size() == 2) {
+                checkParallelLine(predictedLane);
+                Vec4i laneMid;
+                getLaneMid(predictedLane, laneMid);
+                drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
+                
+                setActualLane(predictedLane);
+            }
+            predictedLane.clear();
             
             drawCenterLine(warpedImage, Scalar(0,255,0));
             

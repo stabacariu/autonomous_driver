@@ -14,6 +14,7 @@
 #include "image_data.hpp"
 #include "image_filter.hpp"
 #include "camera_calibration.hpp"
+#include "lane.hpp"
 
 void *laneDetection (void *arg);
 
