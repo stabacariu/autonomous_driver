@@ -21,4 +21,7 @@ void *laneDetection (void *arg);
 void initLinePrediction (cv::KalmanFilter& kf, int valueCnt);
 void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueCnt, std::vector<cv::Vec4i>& measuredLines, std::vector<cv::Vec4i>& predictedLines);
 
+float getTheta (cv::Point pt1, cv::Point pt2);
+cv::Vec4i getLaneMid(std::vector<cv::Vec4i> lane);
+
 #endif // LANE_DETECTION_HPP

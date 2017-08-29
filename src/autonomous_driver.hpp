@@ -12,6 +12,7 @@
 #include <iostream>
 #include <pthread.h>
 #include "image_processing.hpp"
+#include "planning.hpp"
 
 enum SystemMode {
     SYS_MODE_STANDBY,

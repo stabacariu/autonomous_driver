@@ -36,7 +36,7 @@ float getRho (Point pt1, Point pt2)
  * @param pt2 ending point of the line
  * @return theta the angle for the polar form
  */
- float getTheta (Point pt1, Point pt2)
+float getTheta (Point pt1, Point pt2)
 {
    return atan2((pt2.y - pt1.y), (pt2.x - pt1.x));
 }
@@ -164,7 +164,7 @@ int checkParallelLine (vector<Vec4i> lines)
 {
     float thetaLeft = getTheta(Point(lines[0][0], lines[0][1]), Point(lines[0][2],lines[0][3]));
     float thetaRight = getTheta(Point(lines[1][0], lines[1][1]), Point(lines[1][2], lines[1][3]));
-    cout << "Left line theta: " << thetaLeft << ", Right line theta " << thetaRight << endl;
+    //~ cout << "Left line theta: " << thetaLeft << ", Right line theta " << thetaRight << endl;
     if (thetaLeft == thetaRight) {
         cout << "Lines are parallel!" << endl;
         return 1;
@@ -174,7 +174,7 @@ int checkParallelLine (vector<Vec4i> lines)
     }
 }
 
-void getLaneMid (vector<Vec4i> lane, Vec4i& laneMid)
+Vec4i getLaneMid (vector<Vec4i> lane)
 {
    Point ptl1 = Point(lane[0][0], lane[0][1]);
    Point ptl2 = Point(lane[0][2], lane[0][3]);
@@ -183,7 +183,9 @@ void getLaneMid (vector<Vec4i> lane, Vec4i& laneMid)
    
    Point ptmid1 = Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
    Point ptmid2 = Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
-   laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+   Vec4i laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+   
+   return laneMid;
 }
 
 /**
@@ -266,10 +268,8 @@ void *laneDetection (void *arg)
             // Check if lines are parallel
             if (predictedLane.size() == 2) {
                 checkParallelLine(predictedLane);
-                Vec4i laneMid;
-                getLaneMid(predictedLane, laneMid);
-                drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
-                
+                drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
+                // Save detected lane
                 setActualLane(predictedLane);
             }
             predictedLane.clear();

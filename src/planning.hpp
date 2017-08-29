@@ -11,6 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include <pthread.h>
 #include "autonomous_driver.hpp"
+#include "lane_detection.hpp"
 
 void *pathPlanning (void *arg);
 

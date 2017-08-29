@@ -34,8 +34,17 @@ struct LaneData {
     pthread_mutex_t lock;
 };
 
+struct PositionData {
+    cv::Point position;
+    pthread_mutex_t lock;
+};
+
 void initLaneData (void);
 void setActualLane (std::vector<cv::Vec4i> lane);
 void getActualLane (std::vector<cv::Vec4i>& lane);
+void setActualPosition (cv::Point position);
+cv::Point getActualPosition (void);
+void setTargetPosition (cv::Point position);
+cv::Point getTargetPosition (void);
 
 #endif // LANE_HPP
