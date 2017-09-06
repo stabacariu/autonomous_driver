@@ -14,11 +14,8 @@
 #include "autonomous_driver.hpp"
 #include "image_data.hpp"
 #include "camera_capture.hpp"
-#include "lane_detection.hpp"
-#include "traffic_sign_detection.hpp"
 #include "user_interface.hpp"
 
-void imageProcessing (void);
 void *showInputImage (void *arg);
 void *showOutputImage (void *arg);
 

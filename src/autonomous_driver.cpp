@@ -130,7 +130,7 @@ void systemAutoMode (void)
 {
     cout << "SYSTEM: Autonomous Driving Mode" << endl;
     
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_PLAN_PATH);
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
     
     pthread_t cameraCaptureThread;
     pthread_t detectLaneThread;
@@ -138,6 +138,7 @@ void systemAutoMode (void)
     //~ pthread_t detectObstacleThread;
     pthread_t showOutputImageThread;
     pthread_t pathPlanningThread;
+    pthread_t vehicleControlThread;
     
     // Create image capturing thread
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
@@ -158,6 +159,9 @@ void systemAutoMode (void)
     if (pthread_create(&pathPlanningThread, NULL, pathPlanning, NULL)) {
         cerr << "ERROR: Couldn't create path planning thread!" << endl;
     }
+    if (pthread_create(&vehicleControlThread, NULL, vehicleControl, NULL)) {
+        cerr << "ERROR: Couldn't create vehicle control thread!" << endl;
+    }
     
     // Join image capturing thread
     if (pthread_join(cameraCaptureThread, NULL)) {
@@ -175,6 +179,9 @@ void systemAutoMode (void)
     }
     if (pthread_join(pathPlanningThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(vehicleControlThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread" << endl;
     }
 }
 

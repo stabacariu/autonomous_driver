@@ -8,7 +8,24 @@
 #define MOTOR_DRIVER_HPP
 
 #include <iostream>
-#include <pthread.h>
+#include "../lib/I2C.h"
+#include "../lib/PCA9685.h"
+
+#define STEERING 0
+
+#define STEERING_MIN 204
+#define STEERING_MAX 409
+#define STEERING_MID 307
+#define STEERING_LEFT STEERING_MIN
+#define STEERING_RIGHT STEERING_MAX
+#define STEERING_STRAIGHT (STEERING_MIN+(STEERING_MAX-STEERING_MIN)/2)
+
+#define ESC 1
+#define ESC_MAX 409
+#define ESC_MIN 204
+#define ESC_D 358
+#define ESC_R 250
+#define ESC_N (ESC_MIN+(ESC_MAX-ESC_MIN)/2)
 
 enum MotorDriverDirection {
     MOTOR_DRIVER_DIRECTION_NONE,
@@ -23,17 +40,15 @@ enum MotorDriverSteering {
     MOTOR_DRIVER_STEERING_RIGHT
 };
 
-enum MotorDriverCom {
-    MOTOR_DRIVER_I2C,
-    MOTOR_DRIVER_SERIAL,
-    MOTOR_DRIVER_CAN
-};
-
 struct MotorDriver {
-    int com;
     int direction;
-    int steering;
+    int acceleration;
     pthread_mutex_t lock;
 };
+
+void initMotorDriver (void);
+void setSteeringValue (int direction);
+void setAccelerationValue (int acceleration);
+void resetMotorDriver (void);
 
 #endif // MOTOR_DRIVER_HPP

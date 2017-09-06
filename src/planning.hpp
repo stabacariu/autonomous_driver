@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include "autonomous_driver.hpp"
 #include "lane_detection.hpp"
+#include "vehicle_control.hpp"
 
 void *pathPlanning (void *arg);
 

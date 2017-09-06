@@ -6,4 +6,26 @@
 
 #include "vehicle_control.hpp"
 
-// TODO: Write code
+using namespace std;
+
+void *vehicleControl (void* arg)
+{
+    cout << "Thread: Vehicle control started." << endl;
+    
+    initVehicle();
+    initMotorDriver();
+    
+    while ((getModuleState() & MODULE_CONTROL_VEHICLE) == MODULE_CONTROL_VEHICLE) {
+        // TODO: Check vehicle state and manipulate steering and speed
+        double steering = getSteering();
+        int value = (int) round(STEERING_MIN + steering / (CV_PI/(STEERING_MAX-STEERING_MIN)));
+        cout << "Steering angle: " << steering << " PWM value: " << value << endl;
+        
+        setSteeringValue(value);
+    }
+    
+    resetMotorDriver();
+    
+    cout << "Thread: Vehicle control ended." << endl;
+    return NULL;
+}

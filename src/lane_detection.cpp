@@ -253,15 +253,19 @@ void *laneDetection (void *arg)
             // Predict lane
             vector<Vec4i> predictedLane;
             if (leftLines.size() > 0) {
+                
                 predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
                 drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
-                
+            }
+            if (predictedLeftLines.size() > 0) {
                 predictedLane.push_back(predictedLeftLines[0]);
             }
+            
             if (rightLines.size() > 0) {
                 predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
                 drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
-                
+            }
+            if (predictedRightLines.size() > 0) {
                 predictedLane.push_back(predictedRightLines[0]);
             }
             

@@ -18,15 +18,8 @@ Point calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
     
     float theta = getTheta(Point(laneMid[0], laneMid[1]), Point(laneMid[2], laneMid[3]));
     
-    if (theta > (CV_PI/2)) {
-        cout << "Car not alligned with lane. Turn right. Theta is " << theta << endl;
-    }
-    else if (theta < (CV_PI/2)) {
-        cout << "Car not alligned with lane. Turn left. Theta is " << theta << endl;
-    }
-    else {
-        cout << "Car alligned with lane. Theta is " << theta << endl;
-    }
+    //~ setSteering((double) theta - (CV_PI/2));
+    setSteering(theta);
 }
 
 void *pathPlanning (void *arg)

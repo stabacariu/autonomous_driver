@@ -12,7 +12,11 @@
 #include <iostream>
 #include <pthread.h>
 #include "image_processing.hpp"
+#include "lane_detection.hpp"
+#include "traffic_sign_detection.hpp"
+#include "user_interface.hpp"
 #include "planning.hpp"
+#include "vehicle_control.hpp"
 
 enum SystemMode {
     SYS_MODE_STANDBY,
@@ -45,7 +49,8 @@ enum ModuleType {
     
     MODULE_PLAN_PATH = 0x1000,
     MODULE_CONTROL_STEERING = 0x10000,
-    MODULE_CONTROL_SPEED = 0x20000
+    MODULE_CONTROL_SPEED = 0x20000,
+    MODULE_CONTROL_VEHICLE = 0x40000
 };
 
 struct ModuleState {

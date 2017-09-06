@@ -8,5 +8,11 @@
 #define VEHICLE_CONTROL_HPP
 
 #include <iostream>
+#include <opencv2/opencv.hpp>
+#include "autonomous_driver.hpp"
+#include "vehicle.hpp"
+#include "motor_driver.hpp"
+
+void *vehicleControl (void* arg);
 
 #endif // VEHICLE_CONTROL_HPP
