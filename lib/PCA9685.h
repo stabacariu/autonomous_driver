@@ -13,11 +13,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Name        : PCA9685.h
- * Original Author      : Georgi Todorov
- * Edited by	: Tord Wessman
- * Version     :
- * Created on  : Nov 22, 2013
+ * Name             : PCA9685.h
+ * Original Author  : Georgi Todorov
+ * Edited by        : Tord Wessman
+ * Version          :
+ * Created on       : Nov 22, 2013
  *
  * Copyright © 2012 Georgi Todorov  <terahz@geodar.com>
  */
