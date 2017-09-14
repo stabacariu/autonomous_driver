@@ -15,7 +15,7 @@ void initVehicle (void)
     pthread_mutex_init(&vehicle.lock, NULL);
 }
 
-void setAcceleration (int value)
+void setAcceleration (double value)
 {
     if (pthread_mutex_lock(&vehicle.lock)) {
         cerr << "ERROR: Couldn't lock vehicle mutex!" << endl;
@@ -28,9 +28,9 @@ void setAcceleration (int value)
     }
 }
 
-int getAcceleration (void)
+double getAcceleration (void)
 {
-    int value;
+    double value;
     
     if (pthread_mutex_lock(&vehicle.lock)) {
         cerr << "ERROR: Couldn't lock vehicle mutex!" << endl;

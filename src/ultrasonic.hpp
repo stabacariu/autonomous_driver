@@ -7,8 +7,6 @@
 #ifndef ULTRASONIC_HPP
 #define ULTRASONIC_HPP
 
-#include <iostream>
-
 double minDistance = 0; //!< Minimum measurable distance in mm
 double maxDistance = 0; //!< Maximum measurable distance in mm
 double resolution = 0; //!< Resolution of measurement in mm

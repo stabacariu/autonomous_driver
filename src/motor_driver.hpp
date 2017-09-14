@@ -8,11 +8,11 @@
 #define MOTOR_DRIVER_HPP
 
 #include <iostream>
-#include "../lib/I2C.h"
+#include <ctime>
+#include "timer_tools.hpp"
 #include "../lib/PCA9685.h"
 
 #define STEERING 0
-
 #define STEERING_MIN 204
 #define STEERING_MAX 409
 #define STEERING_MID 307
@@ -21,8 +21,8 @@
 #define STEERING_STRAIGHT (STEERING_MIN+(STEERING_MAX-STEERING_MIN)/2)
 
 #define ESC 1
-#define ESC_MAX 409
 #define ESC_MIN 204
+#define ESC_MAX 409
 #define ESC_D 358
 #define ESC_R 250
 #define ESC_N (ESC_MIN+(ESC_MAX-ESC_MIN)/2)

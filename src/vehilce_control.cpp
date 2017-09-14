@@ -16,12 +16,18 @@ void *vehicleControl (void* arg)
     initMotorDriver();
     
     while ((getModuleState() & MODULE_CONTROL_VEHICLE) == MODULE_CONTROL_VEHICLE) {
-        // TODO: Check vehicle state and manipulate steering and speed
+        // Get steering angle and set steering motor direction
         double steering = getSteering();
-        int value = (int) round(STEERING_MIN + steering / (CV_PI/(STEERING_MAX-STEERING_MIN)));
-        cout << "Steering angle: " << steering << " PWM value: " << value << endl;
+        int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
+        cout << "Steering angle: " << steering << " PWM value: " << steeringValue << endl;
+        setSteeringValue(steeringValue);
         
-        setSteeringValue(value);
+        // Get acceleration 
+        double acceleration = getAcceleration();
+        int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
+        cout << "Acceleration: " << acceleration << "% PWM value: " << accelerationValue << endl;
+        setAccelerationValue(accelerationValue);
+        
     }
     
     resetMotorDriver();

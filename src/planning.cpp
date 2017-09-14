@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cv;
 
-Point calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
+void calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
 {
     Vec4i laneMid = getLaneMid(actualLane);
     Vec4i viewMid(imageSize.width/2-1, 0, imageSize.width/2-1, imageSize.height-1);
@@ -18,9 +18,38 @@ Point calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
     
     float theta = getTheta(Point(laneMid[0], laneMid[1]), Point(laneMid[2], laneMid[3]));
     
-    //~ setSteering((double) theta - (CV_PI/2));
-    setSteering(theta);
+    if ((theta < (CV_PI*0.05)) && (theta > (CV_PI*0.95))) {
+        setAcceleration(0);
+    }
+    else if (theta == (CV_PI/2)) {
+        setAcceleration(65);
+    }
+    else {
+        //~ setSteering((double) theta - (CV_PI/2));
+        setSteering(theta);
+        
+        // Car is too much to the left
+        if (diffX2 > 0) {
+            setAcceleration(60);
+        }
+        else if (diffX2 == 0) {
+            if (diffX1 > 0) {
+                setAcceleration(60);
+            }
+            else if (diffX1 < 0) {
+                setAcceleration(60);
+            }
+            else {
+                setAcceleration(0);
+            }
+        }
+        else {
+            setAcceleration(60);
+        }
+    }
 }
+
+
 
 void *pathPlanning (void *arg)
 {

@@ -11,7 +11,7 @@
 #include <pthread.h>
 
 struct Vehicle {
-    int acceleration; //!< Accerelration from 0 to 4095
+    double acceleration; //!< Accerelration from 0 to 4095
     int direction; //!< Direction from 0 to 4095
     double speed; //!< Speed in m/s
     double steering; //!< Steering angle in radian
@@ -25,8 +25,8 @@ struct Vehicle {
 };
 
 void initVehicle (void);
-void setAcceleration (int value);
-int getAcceleration (void);
+void setAcceleration (double value);
+double getAcceleration (void);
 void setDirection (int value);
 int getDirection (void);
 void setSpeed (double value);
