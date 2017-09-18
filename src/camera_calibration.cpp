@@ -12,8 +12,7 @@ using namespace cv;
 void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>& corners)
 {
     corners.clear();
-    // Calculate corner position of chessboard squares or circles
-    
+    // Calculate corner position of chessboard squares
     for (int i = 0; i < boardSize.height; i++) {
         for (int j = 0; j < boardSize.width; j++) {
             corners.push_back(Point3f(j*squareSize, i*squareSize, 0));
