@@ -20,14 +20,11 @@ void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>&
     }
 }
 
-void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize)
+void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize, double squareSize, int sampleCnt)
 {
-    int sampleCnt = 50;
-    int cornersHorizontal = 7;
-    int cornersVertical = 5;
-    double squareSize = 30; //!< Chessboard square size is 30 mm
-    //Size boardSize = Size(cornersHorizontal, cornersVertical);
-    double aspRatio = 1;
+    //~ int sampleCnt = 50;
+    //~ double squareSize = 30.0; //!< Chessboard square size is 30 mm
+    double aspRatio = 1.0;
     
     vector<vector<Point2f> >imagePoints;
     
@@ -66,7 +63,7 @@ void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize)
     // TODO: Save calibration to XML file
 }
 
-void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize)
+void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize, double squareSize)
 {
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
@@ -88,14 +85,30 @@ void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize)
         imagePoints[3] = corners[(boardSize.height-1)*boardSize.width + boardSize.width-1];
         
         homography = getPerspectiveTransform(objectPoints, imagePoints);
-        
-        drawChessboardCorners(image, boardSize, corners, found);
     }
     else {
         cerr << "ERROR: Could not aquire checkerboard!" << endl;
     }
     
     // TODO: Save calibration to XML file
+}
+
+void showChessBoardCorners (Mat inputImage, Mat& outputImage, Size boardSize)
+{
+    inputImage.copyTo(outputImage);
+    Mat grayImage;
+    cvtColor(inputImage, grayImage, CV_BGR2GRAY);
+    
+    vector<Point2f> corners;
+    bool found = findChessboardCorners(inputImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    
+    if (found) {
+        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+        drawChessboardCorners(outputImage, boardSize, corners, found);
+    }
+    else {
+        cerr << "ERROR: Could not aquire checkerboard!" << endl;
+    }
 }
 
 void inversePerspectiveTransform(Mat image, Mat& warpedImage, Mat homography)

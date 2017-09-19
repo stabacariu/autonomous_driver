@@ -13,7 +13,7 @@ using namespace cv;
  * @ Thread for capturing camera input image
  */
  
-void *cameraCapture (void *v)
+void *cameraCapture (void *arg)
 {
     cout << "THREAD: Camera capture started." << endl;
     // Initalize camera

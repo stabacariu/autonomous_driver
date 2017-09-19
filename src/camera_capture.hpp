@@ -13,6 +13,6 @@
 #include "image_data.hpp"
 
 //void cameraCaptureInit (void);
-void *cameraCapture (void *v);
+void *cameraCapture (void *arg);
 
 #endif // CAMERA_CAPTURE_HPP

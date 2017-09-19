@@ -189,7 +189,7 @@ void systemRCMode (void)
 {
     cout << "SYSTEM: Remote Control Mode" << endl;
     
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE);
     
     // TODO: RC mode
     pthread_t cameraCaptureThread;
@@ -263,6 +263,43 @@ void systemConfigMode (void)
 {
     cout << "SYSTEM: Config Mode" << endl;
     // TODO: Config mode
+    setModuleState(MODULE_CAP_CAM_IMAGE +
+                    MODULE_SHOW_OUT_IMAGE +
+                    MODULE_SHOW_CHESSBOARD +
+                    MODULE_CONFIG_CALIB_EXTRINSICS);
+    
+    pthread_t cameraCaptureThread;
+    pthread_t configThread;
+    pthread_t showChessBoardThread;
+    pthread_t showOutputImageThread;
+    
+    if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
+        cerr << "ERROR: Couldn't create camera capture thread!" << endl;
+    }
+    if (pthread_create(&configThread, NULL, configuration, NULL)) {
+        cerr << "ERROR: Couldn't create config thread!" << endl;
+    }
+    if (pthread_create(&showChessBoardThread, NULL, showChessBoard, NULL)) {
+        cerr << "ERROR: Couldm't create show chessboard thread!" << endl;
+    }
+    // Create image show tread
+    if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
+        cerr << "ERROR: Couldn't create show output image thread!" << endl;
+    }
+    
+    // Join thread
+    if (pthread_join(cameraCaptureThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(configThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(showChessBoardThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(showOutputImageThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
 }
 
 void systemAboutMode (void)

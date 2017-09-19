@@ -17,6 +17,7 @@
 #include "user_interface.hpp"
 #include "planning.hpp"
 #include "vehicle_control.hpp"
+#include "configuration.hpp"
 
 enum SystemMode {
     SYS_MODE_STANDBY,
@@ -48,9 +49,15 @@ enum ModuleType {
     MODULE_DETECT_OBSTACLE = 0x400,
     
     MODULE_PLAN_PATH = 0x1000,
-    MODULE_CONTROL_STEERING = 0x10000,
-    MODULE_CONTROL_SPEED = 0x20000,
-    MODULE_CONTROL_VEHICLE = 0x40000
+    
+    MODULE_CONTROL_VEHICLE = 0x10000,
+    MODULE_CONTROL_STEERING = 0x20000,
+    MODULE_CONTROL_SPEED = 0x30000,
+    
+    MODULE_CONFIG_CALIB_INTRINSICS = 0x100000,
+    MODULE_CONFIG_CALIB_EXTRINSICS = 0x200000,
+    MODULE_CONFIG_DATA = 0x400000,
+    MODULE_SHOW_CHESSBOARD = 0x800000
 };
 
 struct ModuleState {
