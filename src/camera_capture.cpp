@@ -20,7 +20,7 @@ void *cameraCapture (void *arg)
     VideoCapture camera(CV_CAP_ANY);
     camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
     camera.set(CV_CAP_PROP_FRAME_HEIGHT, 360); //480
-    camera.set(CV_CAP_PROP_FPS, 20);
+    camera.set(CV_CAP_PROP_FPS, 10);
     
     if (!camera.isOpened()) {
         cerr << "ERROR: Could not open camera!" << endl;

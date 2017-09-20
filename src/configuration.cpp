@@ -46,21 +46,26 @@ void *configuration (void *arg)
 {
     configDataInit();
     
-    Mat inputImage;
+    Mat inputImage, warpedImage;
     Mat homography;
     Size boardSize = Size(7, 5); // @todo Load size from config file
     
-    while (inputImage.empty()) {
+    
+    while ((getModuleState() & MODULE_CONFIG_CALIB_EXTRINSICS) == MODULE_CONFIG_CALIB_EXTRINSICS) {
         getInputImageData(inputImage);
-    }
-    
-    calibrateExtrinsics(inputImage, homography, boardSize, 30.0);
-    
-    if (!homography.empty()) {
-        setHomography(homography);
-    }
-    else {
-        cout << "Homography couldn't be aqureid!" << endl;
+        if (!inputImage.empty()) {
+            calibrateExtrinsics(inputImage, homography, boardSize, 30.0);
+            if (!homography.empty()) {
+                setHomography(homography);
+            }
+            else {
+                cout << "Homography couldn't be aqureid!" << endl;
+            }
+        }
+        if (!homography.empty()) {
+            inversePerspectiveTransform(inputImage, warpedImage, homography);
+            setOutputImageData(warpedImage);
+        }
     }
 }
 
@@ -69,11 +74,11 @@ void *showChessBoard (void *arg)
     Size boardSize = Size(7, 5);
     
     while ((getModuleState() & MODULE_SHOW_CHESSBOARD) == MODULE_SHOW_CHESSBOARD) {
-        Mat inputImage, outputImage;
-        getInputImageData(inputImage);
-        if (!inputImage.empty()) {
-            showChessBoardCorners(inputImage, outputImage, boardSize);
-            setOutputImageData(outputImage);
+        Mat image;
+        getInputImageData(image);
+        if (!image.empty()) {
+            showChessBoardCorners(image, boardSize);
+            setOutputImageData(image);
         }
     }
 }

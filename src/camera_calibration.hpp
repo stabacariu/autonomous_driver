@@ -12,7 +12,7 @@
 
 void calibrateIntrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize, double squareSize, int sampleCnt);
 void calibrateExtrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize, double squareSize);
-void showChessBoardCorners (cv::Mat inputImage, cv::Mat& outputImage, cv::Size boardSize);
+void showChessBoardCorners (cv::Mat& image, cv::Size boardSize);
 void inversePerspectiveTransform(cv::Mat image, cv::Mat& warpedImage, cv::Mat homography);
 
 #endif // CAMERA_CALIBRATION_HPP

@@ -93,21 +93,17 @@ void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize, double sq
     // TODO: Save calibration to XML file
 }
 
-void showChessBoardCorners (Mat inputImage, Mat& outputImage, Size boardSize)
+void showChessBoardCorners (Mat& image, Size boardSize)
 {
-    inputImage.copyTo(outputImage);
     Mat grayImage;
-    cvtColor(inputImage, grayImage, CV_BGR2GRAY);
+    cvtColor(image, grayImage, CV_BGR2GRAY);
     
     vector<Point2f> corners;
-    bool found = findChessboardCorners(inputImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(grayImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
     
     if (found) {
         cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-        drawChessboardCorners(outputImage, boardSize, corners, found);
-    }
-    else {
-        cerr << "ERROR: Could not aquire checkerboard!" << endl;
+        drawChessboardCorners(image, boardSize, corners, found);
     }
 }
 

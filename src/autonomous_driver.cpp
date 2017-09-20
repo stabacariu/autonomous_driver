@@ -93,6 +93,7 @@ int getModuleState (void)
 
 void systemStandbyMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Standby Mode" << endl;
     
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
@@ -128,6 +129,7 @@ void systemStandbyMode (void)
 
 void systemAutoMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Autonomous Driving Mode" << endl;
     
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
@@ -187,6 +189,7 @@ void systemAutoMode (void)
 
 void systemRCMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Remote Control Mode" << endl;
     
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE);
@@ -225,6 +228,7 @@ void systemRCMode (void)
 
 void systemDevMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Development Mode" << endl;
     
     // TODO: Dev mode
@@ -261,11 +265,13 @@ void systemDevMode (void)
 
 void systemConfigMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Config Mode" << endl;
     // TODO: Config mode
+    
+    
     setModuleState(MODULE_CAP_CAM_IMAGE +
                     MODULE_SHOW_OUT_IMAGE +
-                    MODULE_SHOW_CHESSBOARD +
                     MODULE_CONFIG_CALIB_EXTRINSICS);
     
     pthread_t cameraCaptureThread;
@@ -279,9 +285,6 @@ void systemConfigMode (void)
     if (pthread_create(&configThread, NULL, configuration, NULL)) {
         cerr << "ERROR: Couldn't create config thread!" << endl;
     }
-    if (pthread_create(&showChessBoardThread, NULL, showChessBoard, NULL)) {
-        cerr << "ERROR: Couldm't create show chessboard thread!" << endl;
-    }
     // Create image show tread
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
@@ -294,9 +297,6 @@ void systemConfigMode (void)
     if (pthread_join(configThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
-    if (pthread_join(showChessBoardThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
@@ -304,18 +304,21 @@ void systemConfigMode (void)
 
 void systemAboutMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: About Mode" << endl;
     // TODO: About mode
 }
 
 void systemErrorMode (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Error Mode" << endl;
     // TODO: ERROR mode
 }
 
 void systemClosing (void)
 {
+    cout << "---------------------------------" << endl;
     cout << "SYSTEM: Closing Mode" << endl;
     
     // TODO: Closing mode
