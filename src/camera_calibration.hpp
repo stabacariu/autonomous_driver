@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "configuration.hpp"
 
 void calibrateIntrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize, double squareSize, int sampleCnt);
 void calibrateExtrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize, double squareSize);

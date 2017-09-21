@@ -14,6 +14,12 @@
 #include "image_data.hpp"
 #include "camera_calibration.hpp"
 
+enum ConfigMode {
+    CONFIG_MODE_CALIB_INTRINSICS,
+    CONFIG_MODE_CALIB_EXTRINSICS,
+    CONFIG_MODE_IMAGE_SETUP
+};
+
 struct ConfigData {
     cv::Size boardSize; //!< Number of chessboard squares
     double squareSize; //! Size of a chessboard square in mm
@@ -48,6 +54,8 @@ struct ConfigData {
     pthread_mutex_t lock;
 };
 
+void setHomography (cv::Mat homography);
+void getHomography (cv::Mat& homography);
 void configDataInit (void);
 void *configuration (void *arg);
 void *showChessBoard (void *arg);

@@ -64,6 +64,8 @@ void *configuration (void *arg)
         }
         if (!homography.empty()) {
             inversePerspectiveTransform(inputImage, warpedImage, homography);
+            line(warpedImage, Point(warpedImage.cols/2, 0), Point(warpedImage.cols/2, warpedImage.rows), Scalar(0, 0, 255), 2);
+            line(warpedImage, Point(0, warpedImage.rows/2), Point(warpedImage.cols, warpedImage.rows/2), Scalar(0, 0, 255), 2);
             setOutputImageData(warpedImage);
         }
     }

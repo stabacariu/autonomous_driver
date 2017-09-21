@@ -38,6 +38,12 @@ void *cameraCapture (void *arg)
             cerr << "ERROR: Couldn't aquire image data!" << endl;
         }
         else {
+            // Undistort captured image
+            Mat homography;
+            getHomography(homography);
+            if (!homography.empty()) {
+                inversePerspectiveTransform(image, image, homography);
+            }
             setInputImageData(image);
         }
     }

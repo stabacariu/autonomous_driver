@@ -167,6 +167,7 @@ void processUiInput (Mat& image, char key)
         }
         else if (key == 'S') {
             cout << "Saving config..." << endl;
+            setUiInputKey('S');
         }
         else if ((key == 'Q') || (key == 'q')) {
             state = UI_MODE_CLOSING;
