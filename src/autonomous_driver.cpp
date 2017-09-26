@@ -267,25 +267,42 @@ void systemConfigMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Config Mode" << endl;
-    // TODO: Config mode
+    // @TODO Config mode
     
-    
-    setModuleState(MODULE_CAP_CAM_IMAGE +
-                    MODULE_SHOW_OUT_IMAGE +
-                    MODULE_CONFIG_CALIB_EXTRINSICS);
-    
+    ConfigMode mode = getConfigState();
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE);
+        
     pthread_t cameraCaptureThread;
     pthread_t configThread;
-    pthread_t showChessBoardThread;
+    //~ pthread_t showChessBoardThread;
     pthread_t showOutputImageThread;
     
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    if (pthread_create(&configThread, NULL, configuration, NULL)) {
-        cerr << "ERROR: Couldn't create config thread!" << endl;
+    if (mode == CONFIG_MODE_NONE) {
+        // @TODO Show menu
+        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_SHOW_IN_IMAGE);
+        if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
+            cerr << "ERROR: Couldn't create config thread!" << endl;
+        }
     }
-    // Create image show tread
+    else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
+        if (pthread_create(&configThread, NULL, configCalibIntrinsics, NULL)) {
+            cerr << "ERROR: Couldn't create config thread!" << endl;
+        }
+    }
+    else if (mode == CONFIG_MODE_CALIB_EXTRINSICS) {
+        if (pthread_create(&configThread, NULL, configCalibExtrinsics, NULL)) {
+            cerr << "ERROR: Couldn't create config thread!" << endl;
+        }
+    }
+    else if (mode == CONFIG_MODE_IMAGE_POSITION) {
+        if (pthread_create(&configThread, NULL, configImagePosition, NULL)) {
+            cerr << "ERROR: Couldn't create config thread!" << endl;
+        }
+    }
+    
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -300,6 +317,8 @@ void systemConfigMode (void)
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
+    
+    setConfigState(CONFIG_MODE_NONE);
 }
 
 void systemAboutMode (void)

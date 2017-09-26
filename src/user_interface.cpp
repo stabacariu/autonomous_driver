@@ -169,7 +169,17 @@ void processUiInput (Mat& image, char key)
             cout << "Saving config..." << endl;
             setUiInputKey('S');
         }
+        else if (key == 'I') {
+            setConfigState(CONFIG_MODE_CALIB_INTRINSICS);
+        }
+        else if (key == 'E') {
+            setConfigState(CONFIG_MODE_CALIB_EXTRINSICS);
+        }
+        else if (key == 'P') {
+            setConfigState(CONFIG_MODE_IMAGE_POSITION);
+        }
         else if ((key == 'Q') || (key == 'q')) {
+            setConfigState(CONFIG_MODE_NONE);
             state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
@@ -193,11 +203,9 @@ void processUiInput (Mat& image, char key)
     
     if (prevState != state) {
         setUiStatus(state);
-        cout << "Changing UI state to " << (int) state << endl;
     }
     if (prevSysState != sysState) {
         setModuleState(MODULE_NONE);
         setSystemState(sysState);
-        cout << "Changing system state to " << (int) sysState << endl;
     }
 }

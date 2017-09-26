@@ -79,6 +79,16 @@ void getConfigMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
+void getConfigModeList (vector<string>& menuList)
+{
+    menuList.clear();
+    
+    menuList.push_back("(I)ntrinsics");
+    menuList.push_back("(E)xtrinsics");
+    menuList.push_back("(P)osition of image");
+}
+
+
 void getAboutMenuList (vector<string>& menuList)
 {
     menuList.clear();
@@ -229,7 +239,7 @@ void drawRcCom (Mat& image, Point position)
 void drawRcMode (Mat& image)
 {
     Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1)/2);
+    Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
     string titleText = "RC mode";
@@ -300,7 +310,7 @@ void drawDevMode (Mat& image)
 void drawConfigMode (Mat& image)
 {
     Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1)/2);
+    Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
     string titleText = "Config mode";
@@ -331,6 +341,18 @@ void drawConfigMode (Mat& image)
     pt1 = Point(0, textOrg.y);
     pt2 = Point(200, pt1.y);
     line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    
+    menuList;
+    getConfigModeList(menuList);
+    fontFace = CV_FONT_HERSHEY_SIMPLEX;
+    fontScale = 0.5;
+    textOrg.x = 10;
+    for (size_t i = 0; i < menuList.size(); i++) {
+        string text = menuList[i];
+        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 20 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    }
 }
 
 void drawAboutMode (Mat& image)

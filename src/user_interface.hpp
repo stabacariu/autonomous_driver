@@ -10,6 +10,7 @@
 #include <iostream>
 #include <pthread.h>
 #include "autonomous_driver.hpp"
+#include "configuration.hpp"
 #include "user_interface_menus.hpp"
 
 enum UIMode {

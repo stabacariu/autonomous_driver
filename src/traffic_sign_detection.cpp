@@ -16,7 +16,7 @@ using namespace cv;
 void *trafficSignDetection (void *arg)
 {
     cout << "THREAD: Traffic sign detection started." << endl;
-    // TODO: Write code!
+    // TODO: Write code
     //~ while ((getModuleState() & MODULE_DETECT_TRAFFIC_SIGNS) == MODULE_DETECT_TRAFFIC_SIGNS) {
     //~ }
     

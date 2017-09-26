@@ -16,7 +16,6 @@ int main (int argc, char *argv[])
     // Init system state
     systemStateInit();
     uiStateInit();
-    // TODO: load config
     
     // Start system
     autonomousDriver();

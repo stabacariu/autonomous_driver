@@ -20,7 +20,7 @@ void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>&
     }
 }
 
-void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize, double squareSize, int sampleCnt)
+void calibrateIntrinsics (Mat& image, Mat& intrinsics, Mat& distCoeffs, Size boardSize, double squareSize, int sampleCnt)
 {
     //~ int sampleCnt = 50;
     //~ double squareSize = 30.0; //!< Chessboard square size is 30 mm
@@ -43,8 +43,8 @@ void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize, double sq
         }
     }
     
-    Mat intrinsics = Mat::eye(3, 3, CV_64F); //!< Intrinsic camera matrix
-    Mat distCoeffs = Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
+    intrinsics = Mat::eye(3, 3, CV_64F); //!< Intrinsic camera matrix
+    distCoeffs = Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
     vector<Mat> rvecs; //!< Rotation vectors
     vector<Mat> tvecs; //!< Translation vectors
     
@@ -57,10 +57,12 @@ void calibrateIntrinsics (Mat& image, Mat& homography, Size boardSize, double sq
     
     // Calibrate camera and get reprojection error rms
     double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), intrinsics, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
+    
+    
     //vector<double> reprojErrs;
     //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, intrinsics, distCoeffs, reprojErrs, 1);
     
-    // TODO: Save calibration to XML file
+    // @TODO Save intrinsic calibration to XML file
 }
 
 void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize, double squareSize)
@@ -90,7 +92,7 @@ void calibrateExtrinsics (Mat& image, Mat& homography, Size boardSize, double sq
         cerr << "ERROR: Could not aquire checkerboard!" << endl;
     }
     
-    // TODO: Save calibration to XML file
+    // @TODO Save calibration to XML file
 }
 
 void showChessBoardCorners (Mat& image, Size boardSize)

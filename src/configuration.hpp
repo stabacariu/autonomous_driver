@@ -15,9 +15,17 @@
 #include "camera_calibration.hpp"
 
 enum ConfigMode {
+    CONFIG_MODE_NONE,
+    CONFIG_MODE_MENU,
     CONFIG_MODE_CALIB_INTRINSICS,
     CONFIG_MODE_CALIB_EXTRINSICS,
-    CONFIG_MODE_IMAGE_SETUP
+    CONFIG_MODE_IMAGE_POSITION,
+    CONFIG_MODE_VEHICLE_DATA
+};
+
+struct ConfigState {
+     ConfigMode mode;
+     pthread_mutex_t lock;
 };
 
 struct ConfigData {
@@ -50,14 +58,22 @@ struct ConfigData {
     bool fixK5; //!< Fix K5 distortion coefficient
     
     cv::Mat homography; //!< Homography for inverse perspective transform
+    cv::Mat intrinsics; //!< Intrinsic camera matrix
+    cv::Mat diffCoeffs; //!< Differential coeffitiens
     
     pthread_mutex_t lock;
 };
 
+void configDataInit (void);
 void setHomography (cv::Mat homography);
 void getHomography (cv::Mat& homography);
-void configDataInit (void);
-void *configuration (void *arg);
+void setIntrinsics (cv::Mat intrinsics, cv::Mat diffCoeffs);
+void getIntrinsics (cv::Mat& intrinsics, cv::Mat& diffCoeffs);
+void setConfigState (ConfigMode mode);
+ConfigMode getConfigState (void);
+void *configCalibExtrinsics (void *arg);
+void *configCalibIntrinsics(void *arg);
+void *configImagePosition (void *arg);
 void *showChessBoard (void *arg);
 
 #endif
