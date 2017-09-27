@@ -19,14 +19,15 @@ void *vehicleControl (void* arg)
         // Get steering angle and set steering motor direction
         double steering = getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
-        cout << "Steering angle: " << steering << "° PWM value: " << steeringValue << endl;
         setSteeringValue(steeringValue);
         
         // Get acceleration 
         double acceleration = getAcceleration();
         int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
-        cout << "Acceleration: " << acceleration << "% PWM value: " << accelerationValue << endl;
         setAccelerationValue(accelerationValue);
+        
+        cout << "Steering angle: " << steering << "° PWM value: " << steeringValue << endl;
+        cout << "Acceleration: " << acceleration << "% PWM value: " << accelerationValue << endl;
     }
     
     resetMotorDriver();

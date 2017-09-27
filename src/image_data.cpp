@@ -12,12 +12,12 @@ ImageData outputImage; //!< Holds output image
 using namespace std;
 using namespace cv;
 
-void inputDataInit (void)
+void initInputData (void)
 {
     pthread_mutex_init(&inputImage.lock, NULL);
 }
 
-void outputDataInit (void)
+void initOutputData (void)
 {
     pthread_mutex_init(&outputImage.lock, NULL);
 }

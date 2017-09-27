@@ -12,11 +12,11 @@ UIState uiState;
 using namespace std;
 using namespace cv;
 
-void uiStateInit (void)
+void initUiState (void)
 {
     pthread_mutex_init(&uiState.lock, NULL);
     setUiStatus(UI_MODE_STANDBY);
-    setUiInputKey('n');
+    setUiInputKey(-1);
 }
 
 void setUiStatus (UIMode state)

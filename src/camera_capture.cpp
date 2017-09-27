@@ -9,10 +9,6 @@
 using namespace std;
 using namespace cv;
 
-/**
- * @ Thread for capturing camera input image
- */
- 
 void *cameraCapture (void *arg)
 {
     cout << "THREAD: Camera capture started." << endl;
@@ -27,8 +23,8 @@ void *cameraCapture (void *arg)
     }
     
     // Initalize image data
-    inputDataInit();
-    outputDataInit();
+    initInputData();
+    initOutputData();
     
     // Caputre image
     while ((getModuleState() & MODULE_CAP_CAM_IMAGE) == MODULE_CAP_CAM_IMAGE) {
@@ -39,6 +35,12 @@ void *cameraCapture (void *arg)
         }
         else {
             // Undistort captured image
+            Mat intrinsics, diffCoeffs;
+            getIntrinsics(intrinsics, diffCoeffs);
+            if (!intrinsics.empty() && !diffCoeffs.empty()) {
+                undistort(image, image, intrinsics, diffCoeffs);
+            }
+            // Apply perspective transform
             Mat homography;
             getHomography(homography);
             if (!homography.empty()) {
@@ -52,4 +54,3 @@ void *cameraCapture (void *arg)
     
     return NULL;
 }
-

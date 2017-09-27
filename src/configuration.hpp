@@ -61,18 +61,18 @@ struct ConfigData {
     cv::Mat intrinsics; //!< Intrinsic camera matrix
     cv::Mat diffCoeffs; //!< Differential coeffitiens
     
-    pthread_mutex_t lock;
+    pthread_mutex_t lock; //!< Lock exlusiv access
 };
 
-void configDataInit (void);
+void initConfig (void);
+void setConfigState (ConfigMode mode);
+ConfigMode getConfigState (void);
 void setHomography (cv::Mat homography);
 void getHomography (cv::Mat& homography);
 void setIntrinsics (cv::Mat intrinsics, cv::Mat diffCoeffs);
 void getIntrinsics (cv::Mat& intrinsics, cv::Mat& diffCoeffs);
-void setConfigState (ConfigMode mode);
-ConfigMode getConfigState (void);
-void *configCalibExtrinsics (void *arg);
 void *configCalibIntrinsics(void *arg);
+void *configCalibExtrinsics (void *arg);
 void *configImagePosition (void *arg);
 void *showChessBoard (void *arg);
 

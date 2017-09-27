@@ -12,7 +12,7 @@ ConfigState configState;
 using namespace std;
 using namespace cv;
 
-void configDataInit (void)
+void initConfig (void)
 {
     // TODO: Load config from file 
     pthread_mutex_init(&config.lock, NULL);
@@ -108,7 +108,7 @@ void *configCalibExtrinsics (void *arg)
 {
     Mat inputImage, warpedImage;
     Mat homography;
-    Size boardSize = Size(7, 5); // @todo Load size from config file
+    Size boardSize = Size(7, 5); /// @todo Load size from config file
     
     
     while (getConfigState() == CONFIG_MODE_CALIB_EXTRINSICS) {

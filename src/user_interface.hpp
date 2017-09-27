@@ -30,11 +30,12 @@ struct UIState {
 };
 
 
-void uiStateInit (void);
+void initUiState (void);
 void setUiStatus (UIMode state);
 UIMode getUiStatus (void);
 void setUiInputKey (char key);
 char getUiInputKey (void);
 void processUiInput (cv::Mat& image, char key);
+void *userInput (void *arg);
 
 #endif // USER_INTERFACE_HPP

@@ -13,6 +13,15 @@
 #include "image_data.hpp"
 
 //void cameraCaptureInit (void);
+
+/**
+ * @brief Thread for capturing a camera image
+ * 
+ * This function implements a thread that captures an image from a webcam.
+ * 
+ * @param void
+ * @return void
+ */
 void *cameraCapture (void *arg);
 
 #endif // CAMERA_CAPTURE_HPP

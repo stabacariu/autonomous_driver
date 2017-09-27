@@ -16,8 +16,8 @@ struct ImageData {
     pthread_mutex_t lock;
 };
 
-void inputDataInit (void);
-void outputDataInit (void);
+void initInputData (void);
+void initOutputData (void);
 
 void setInputImageData (cv::Mat image);
 void getInputImageData (cv::Mat& image);

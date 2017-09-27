@@ -15,12 +15,11 @@ ModuleState moduleState;
 using namespace std;
 using namespace cv;
  
-void systemStateInit (void)
+void initSystemState (void)
 {
-    // Init system state
     pthread_mutex_init(&systemState.lock, NULL);
     setSystemState(SYS_MODE_STANDBY);
-    // Init module state
+    
     pthread_mutex_init(&moduleState.lock, NULL);
     initModuleState();
 }
@@ -40,19 +39,19 @@ void setSystemState (SystemMode state)
 
 SystemMode getSystemState (void)
 {
-    SystemMode state;
+    SystemMode mode;
     
     if (pthread_mutex_lock(&systemState.lock)) {
         cerr << "ERROR: Couldn't lock status mutex!" << endl;
     }
     
-    state = systemState.mode;
+    mode = systemState.mode;
     
     if (pthread_mutex_unlock(&systemState.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
     }
     
-    return state;
+    return mode;
 }
 
 void initModuleState (void)
@@ -270,6 +269,7 @@ void systemConfigMode (void)
     // @TODO Config mode
     
     ConfigMode mode = getConfigState();
+    cout << "CONFIG STATE: " << (int) mode << endl;
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE);
         
     pthread_t cameraCaptureThread;
@@ -280,29 +280,32 @@ void systemConfigMode (void)
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
+    // Start modules and threads for configuration
     if (mode == CONFIG_MODE_NONE) {
-        // @TODO Show menu
+        /// @todo Show menu
         setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_SHOW_IN_IMAGE);
         if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
             cerr << "ERROR: Couldn't create config thread!" << endl;
         }
     }
     else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
+        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTRINSICS);
         if (pthread_create(&configThread, NULL, configCalibIntrinsics, NULL)) {
             cerr << "ERROR: Couldn't create config thread!" << endl;
         }
     }
     else if (mode == CONFIG_MODE_CALIB_EXTRINSICS) {
+        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_EXTRINSICS);
         if (pthread_create(&configThread, NULL, configCalibExtrinsics, NULL)) {
             cerr << "ERROR: Couldn't create config thread!" << endl;
         }
     }
     else if (mode == CONFIG_MODE_IMAGE_POSITION) {
+        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_IMAGE_POSITION);
         if (pthread_create(&configThread, NULL, configImagePosition, NULL)) {
             cerr << "ERROR: Couldn't create config thread!" << endl;
         }
     }
-    
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -317,22 +320,20 @@ void systemConfigMode (void)
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
-    
-    setConfigState(CONFIG_MODE_NONE);
 }
 
 void systemAboutMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: About Mode" << endl;
-    // TODO: About mode
+    //! @todo About mode
 }
 
 void systemErrorMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Error Mode" << endl;
-    // TODO: ERROR mode
+    //! @todo ERROR mode
 }
 
 void systemClosing (void)
@@ -340,7 +341,7 @@ void systemClosing (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Closing Mode" << endl;
     
-    // TODO: Closing mode
+    //! @todo Closing mode
     setModuleState(MODULE_NONE);
     setSystemState(SYS_MODE_CLOSING);
 }

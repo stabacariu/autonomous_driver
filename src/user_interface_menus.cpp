@@ -387,7 +387,8 @@ void drawAboutMode (Mat& image)
     textOrg.y += 20;
     pt1 = Point(0, textOrg.y);
     pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    
+    rectangle(image, Point(0, 0), Point(image.cols-1, image.rows-1), Scalar(218, 218, 218), -1);
     
     pt1.y += 25;
     pt1.x = 200/2 - 120/2;
