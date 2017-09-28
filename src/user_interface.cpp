@@ -16,7 +16,7 @@ void initUiState (void)
 {
     pthread_mutex_init(&uiState.lock, NULL);
     setUiStatus(UI_MODE_STANDBY);
-    setUiInputKey(-1);
+    setUiInputKey(-1); // No key was pushed
 }
 
 void setUiStatus (UIMode state)

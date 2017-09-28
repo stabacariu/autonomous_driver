@@ -28,6 +28,11 @@ struct ConfigState {
      pthread_mutex_t lock;
 };
 
+/**
+ * @brief Configuration data structure
+ * 
+ * This structure holds all configuration data with a mutex lock.
+ */
 struct ConfigData {
     cv::Size boardSize; //!< Number of chessboard squares
     double squareSize; //! Size of a chessboard square in mm
@@ -64,13 +69,23 @@ struct ConfigData {
     pthread_mutex_t lock; //!< Lock exlusiv access
 };
 
+/**
+ * @brief Function to initialize configuration.
+ * 
+ * This function initializes the configuration of the autonomous driver platform.
+ * 
+ * @param void
+ * @return void
+ */
 void initConfig (void);
+
 void setConfigState (ConfigMode mode);
 ConfigMode getConfigState (void);
 void setHomography (cv::Mat homography);
 void getHomography (cv::Mat& homography);
 void setIntrinsics (cv::Mat intrinsics, cv::Mat diffCoeffs);
 void getIntrinsics (cv::Mat& intrinsics, cv::Mat& diffCoeffs);
+
 void *configCalibIntrinsics(void *arg);
 void *configCalibExtrinsics (void *arg);
 void *configImagePosition (void *arg);

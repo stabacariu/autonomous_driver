@@ -9,7 +9,8 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
+#include "vehicle.hpp"
+#include "lane_detection.hpp"
 
 void drawMainMenu (cv::Mat& image);
 void drawAutoMode (cv::Mat& image);

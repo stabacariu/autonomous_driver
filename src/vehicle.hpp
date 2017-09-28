@@ -30,7 +30,7 @@ double getAcceleration (void);
 void setDirection (int value);
 int getDirection (void);
 void setSpeed (double value);
-double getSpeed (double value);
+double getSpeed (void);
 void setSteering (double value);
 double getSteering (void);
 void setWidth (double value);

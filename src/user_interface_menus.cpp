@@ -34,18 +34,41 @@ void getAutoMenuList (vector<string>& menuList)
 void getAutoStateList (vector<string>& stateList)
 {
     stateList.clear();
+    ostringstream text;
     
-    stateList.push_back("Direction: ");
-    stateList.push_back("Speed: ");
-    stateList.push_back("Steering: ");
+    text << "Direction: " << getDirection();
+    stateList.push_back(text.str());
+    text.str("");
+    text.clear();
+    text << "Steering: " << getSteering() << "°";
+    stateList.push_back(text.str());
+    text.str("");
+    text.clear();
+    text << "Speed: " << getSpeed() << "m/s";
+    stateList.push_back(text.str());
+    text.str("");
+    text.clear();
+    text << "Acceleration: " << getAcceleration() << "%";
+    stateList.push_back(text.str());
+    text.str("");
+    text.clear();
 }
 
 void getAutoDetectList (vector<string>& detectList)
 {
     detectList.clear();
+    ostringstream text;
+    //! @todo Get lane
+    //~ vector<Vec4i> lane;
+    //~ getLaneMid(lane);
     
-    detectList.push_back("Lines: ");
-    detectList.push_back("Lane: ");
+    text << "Lane: ";
+    //~ if (lane.size() > 0) {
+        //~ text << lane[0][0] << lane[0][1] << lane[0][2] << lane[0][3];
+    //~ }
+    detectList.push_back(text.str());
+    text.str("");
+    text.clear();
     detectList.push_back("Objects: ");
     detectList.push_back("Signs: ");
 }

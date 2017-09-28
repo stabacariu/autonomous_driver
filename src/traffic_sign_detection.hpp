@@ -11,6 +11,11 @@
 #include <pthread.h>
 #include <opencv2/opencv.hpp>
 
+/**
+ * @brief Thread for traffic sign detection.
+ * 
+ * This thread detects traffic signs with Haar cascade.
+ */
 void *trafficSignDetection (void *arg);
 
 #endif // TRAFFIC_SIGN_DETECTION_HPP

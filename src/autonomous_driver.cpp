@@ -269,7 +269,6 @@ void systemConfigMode (void)
     // @TODO Config mode
     
     ConfigMode mode = getConfigState();
-    cout << "CONFIG STATE: " << (int) mode << endl;
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE);
         
     pthread_t cameraCaptureThread;

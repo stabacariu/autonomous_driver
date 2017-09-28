@@ -9,14 +9,10 @@
 using namespace std;
 using namespace cv;
 
-/**
- * @brief Thread for traffic sign detection.
- */
-
 void *trafficSignDetection (void *arg)
 {
     cout << "THREAD: Traffic sign detection started." << endl;
-    // TODO: Write code
+    //! @todo Write code
     //~ while ((getModuleState() & MODULE_DETECT_TRAFFIC_SIGNS) == MODULE_DETECT_TRAFFIC_SIGNS) {
     //~ }
     
