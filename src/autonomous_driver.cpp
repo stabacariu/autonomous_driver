@@ -20,7 +20,6 @@ void initSystemState (void)
     pthread_mutex_init(&systemState.lock, NULL);
     setSystemState(SYS_MODE_STANDBY);
     
-    pthread_mutex_init(&moduleState.lock, NULL);
     initModuleState();
 }
 
@@ -95,26 +94,25 @@ void systemStandbyMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Standby Mode" << endl;
     
+    // Start modules for standby mode
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
         
     pthread_t cameraCaptureThread;
     pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
     
-    // Create image capturing thread
+    // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    // Create image standby thread
     if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
         cerr << "ERROR: Couldn't create show input image thread!" << endl;
     }
-    // Create image show tread
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
     
-    // Join thread
+    // Join threads
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
@@ -141,19 +139,16 @@ void systemAutoMode (void)
     pthread_t pathPlanningThread;
     pthread_t vehicleControlThread;
     
-    // Create image capturing thread
+    // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    // Create detect lane thread
     if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
         cerr << "ERROR: Couldn't create lane detection thread!" << endl;
     }
-    // Create detect traffic signs thread
     //~ if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
         //~ cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
     //~ }
-    // Create show output image thread
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -164,11 +159,10 @@ void systemAutoMode (void)
         cerr << "ERROR: Couldn't create vehicle control thread!" << endl;
     }
     
-    // Join image capturing thread
+    // Join threads
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
-    // Join image processing threads
     if (pthread_join(detectLaneThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
@@ -193,22 +187,20 @@ void systemRCMode (void)
     
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE);
     
-    // TODO: RC mode
+    //! @todo RC mode
     pthread_t cameraCaptureThread;
     pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
     //~ pthread_t remoteControlThread;
     //~ pthread_t vehicleControlThread;
     
-    // Create image capturing thread
+    // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    // Create image standby thread
     if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
         cerr << "ERROR: Couldn't create show input image thread!" << endl;
     }
-    // Create image show tread
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -230,22 +222,20 @@ void systemDevMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Development Mode" << endl;
     
-    // TODO: Dev mode
+    //! @todo Dev mode
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
     
     pthread_t cameraCaptureThread;
     pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
     
-    // Create image capturing thread
+    // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    // Create image standby thread
     if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
         cerr << "ERROR: Couldn't create show input image thread!" << endl;
     }
-    // Create image show tread
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -266,7 +256,7 @@ void systemConfigMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Config Mode" << endl;
-    // @TODO Config mode
+    //! @todo Config mode
     
     ConfigMode mode = getConfigState();
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE);
@@ -276,48 +266,51 @@ void systemConfigMode (void)
     //~ pthread_t showChessBoardThread;
     pthread_t showOutputImageThread;
     
-    if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
-        cerr << "ERROR: Couldn't create camera capture thread!" << endl;
-    }
-    // Start modules and threads for configuration
-    if (mode == CONFIG_MODE_NONE) {
-        /// @todo Show menu
-        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_SHOW_IN_IMAGE);
-        if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
-            cerr << "ERROR: Couldn't create config thread!" << endl;
+    while (getSystemState() == SYS_MODE_CONFIG) {
+        mode = getConfigState();
+        
+        if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
+            cerr << "ERROR: Couldn't create camera capture thread!" << endl;
         }
-    }
-    else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
-        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTRINSICS);
-        if (pthread_create(&configThread, NULL, configCalibIntrinsics, NULL)) {
-            cerr << "ERROR: Couldn't create config thread!" << endl;
+        // Start modules and threads for configuration
+        if (mode == CONFIG_MODE_NONE) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_SHOW_IN_IMAGE);
+            if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
+                cerr << "ERROR: Couldn't create config thread!" << endl;
+            }
         }
-    }
-    else if (mode == CONFIG_MODE_CALIB_EXTRINSICS) {
-        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_EXTRINSICS);
-        if (pthread_create(&configThread, NULL, configCalibExtrinsics, NULL)) {
-            cerr << "ERROR: Couldn't create config thread!" << endl;
+        else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTRINSICS);
+            if (pthread_create(&configThread, NULL, configCalibIntrinsics, NULL)) {
+                cerr << "ERROR: Couldn't create config thread!" << endl;
+            }
         }
-    }
-    else if (mode == CONFIG_MODE_IMAGE_POSITION) {
-        setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_IMAGE_POSITION);
-        if (pthread_create(&configThread, NULL, configImagePosition, NULL)) {
-            cerr << "ERROR: Couldn't create config thread!" << endl;
+        else if (mode == CONFIG_MODE_CALIB_EXTRINSICS) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_EXTRINSICS);
+            if (pthread_create(&configThread, NULL, configCalibExtrinsics, NULL)) {
+                cerr << "ERROR: Couldn't create config thread!" << endl;
+            }
         }
-    }
-    if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
-        cerr << "ERROR: Couldn't create show output image thread!" << endl;
-    }
-    
-    // Join thread
-    if (pthread_join(cameraCaptureThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
-    if (pthread_join(configThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
-    }
-    if (pthread_join(showOutputImageThread, NULL)) {
-        cerr << "ERROR: Couldn't join thread!" << endl;
+        else if (mode == CONFIG_MODE_IMAGE_POSITION) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_IMAGE_POSITION);
+            if (pthread_create(&configThread, NULL, configImagePosition, NULL)) {
+                cerr << "ERROR: Couldn't create config thread!" << endl;
+            }
+        }
+        if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
+            cerr << "ERROR: Couldn't create show output image thread!" << endl;
+        }
+        
+        // Join threads
+        if (pthread_join(cameraCaptureThread, NULL)) {
+            cerr << "ERROR: Couldn't join thread!" << endl;
+        }
+        if (pthread_join(configThread, NULL)) {
+            cerr << "ERROR: Couldn't join thread!" << endl;
+        }
+        if (pthread_join(showOutputImageThread, NULL)) {
+            cerr << "ERROR: Couldn't join thread!" << endl;
+        }
     }
 }
 
@@ -326,6 +319,17 @@ void systemAboutMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: About Mode" << endl;
     //! @todo About mode
+    setModuleState(MODULE_SHOW_OUT_IMAGE);
+    
+    pthread_t showOutputImageThread;
+    
+    if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
+        cerr << "ERROR: Couldn't create show output image thread!" << endl;
+    }
+    
+    if (pthread_join(showOutputImageThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
 }
 
 void systemErrorMode (void)
@@ -333,6 +337,8 @@ void systemErrorMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Error Mode" << endl;
     //! @todo ERROR mode
+    
+    setModuleState(MODULE_SHOW_OUT_IMAGE);
 }
 
 void systemClosing (void)
@@ -341,7 +347,6 @@ void systemClosing (void)
     cout << "SYSTEM: Closing Mode" << endl;
     
     //! @todo Closing mode
-    setModuleState(MODULE_NONE);
     setSystemState(SYS_MODE_CLOSING);
 }
 

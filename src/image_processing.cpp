@@ -39,8 +39,12 @@ void *showOutputImage (void *arg)
         Mat image;
         getOutputImageData(image);
         
+        if (image.empty()) {
+            image = Mat(640, 360, CV_8UC3, Scalar(0));
+        }
+        
         // Create output image composition from UI menu and output image
-        Mat outputImage = Mat(image.rows, image.cols+200, CV_8UC3, Scalar(0));
+        Mat outputImage = Mat(image.rows, image.cols + 200, CV_8UC3, Scalar(0));
         
         // Process input and insert menu to output image
         processUiInput(outputImage, key);

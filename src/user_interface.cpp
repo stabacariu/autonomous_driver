@@ -83,7 +83,10 @@ void processUiInput (Mat& image, char key)
     UIMode prevState = state;
     SystemMode sysState = getSystemState();
     SystemMode prevSysState = sysState;
+    ConfigMode configState = getConfigState();
+    ConfigMode preConfigState = configState;
     
+    // Key handling for standby mode
     if (state == UI_MODE_STANDBY) {
         drawMainMenu(image);
         if (key == 'A') {
@@ -104,13 +107,14 @@ void processUiInput (Mat& image, char key)
         }
         else if (key == 'S') {
             state = UI_MODE_ABOUT;
-            sysState = SYS_MODE_STANDBY;
+            sysState = SYS_MODE_ABOUT;
         }
         else if ((key == 'Q') || (key == 'q')) {
             state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
+    // Key handling for autonomous mode
     else if (state == UI_MODE_AUTO) {
         drawAutoMode(image);
         if (key == 'B') {
@@ -122,12 +126,12 @@ void processUiInput (Mat& image, char key)
             sysState = SYS_MODE_CLOSING;
         }
     }
+    // Key handling for remote control mode
     else if (state == UI_MODE_RC) {
         drawRcMode(image);
         if (key == 'B') {
             state = UI_MODE_STANDBY;
             sysState = SYS_MODE_STANDBY;
-            //drawMainMenu(image);
         }
         else if (key == 'A') {
             state = UI_MODE_AUTO;
@@ -138,6 +142,7 @@ void processUiInput (Mat& image, char key)
             sysState = SYS_MODE_CLOSING;
         }
     }
+    // Key handling for development mode
     else if (state == UI_MODE_DEV) {
         drawDevMode(image);
         if (key == 'B') {
@@ -152,13 +157,15 @@ void processUiInput (Mat& image, char key)
             cout << "Screenshot..." << endl;
         }
         else if (key == 'C') {
-            cout << "Calibrating..." << endl;
+            state = UI_MODE_CONFIG;
+            sysState = SYS_MODE_CONFIG;
         }
         else if ((key == 'Q') || (key == 'q')) {
             state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
+    // Key handling for configuration mode
     else if (state == UI_MODE_CONFIG) {
         drawConfigMode(image);
         if (key == 'B') {
@@ -170,20 +177,23 @@ void processUiInput (Mat& image, char key)
             setUiInputKey('S');
         }
         else if (key == 'I') {
-            setConfigState(CONFIG_MODE_CALIB_INTRINSICS);
+            configState = CONFIG_MODE_CALIB_INTRINSICS;
         }
         else if (key == 'E') {
-            setConfigState(CONFIG_MODE_CALIB_EXTRINSICS);
+            configState = CONFIG_MODE_CALIB_EXTRINSICS;
+            Mat homography;
+            setHomography(homography);
         }
         else if (key == 'P') {
-            setConfigState(CONFIG_MODE_IMAGE_POSITION);
+            configState =CONFIG_MODE_IMAGE_POSITION;
         }
         else if ((key == 'Q') || (key == 'q')) {
-            setConfigState(CONFIG_MODE_NONE);
+            configState = CONFIG_MODE_NONE;
             state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
         }
     }
+    // Key handling for about mode
     else if (state == UI_MODE_ABOUT) {
         drawAboutMode(image);
         if (key == 'B') {
@@ -208,4 +218,23 @@ void processUiInput (Mat& image, char key)
         setModuleState(MODULE_NONE);
         setSystemState(sysState);
     }
+    if (sysState == SYS_MODE_CONFIG) {
+        if (preConfigState != configState) {
+            setModuleState(MODULE_NONE);
+            setConfigState(configState);
+        }
+    }
+}
+
+void *showAboutImage (void *arg)
+{
+    cout << "THREAD: About started." << endl;
+    
+    while (getUiStatus() == UI_MODE_ABOUT) {
+        
+    }
+    
+    cout << "THREAD: About ended." << endl;
+    
+    return NULL;
 }

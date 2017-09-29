@@ -124,11 +124,12 @@ void getAboutTextList (vector<string>& textList)
 {
     textList.clear();
     
-    textList.push_back("FH Campus Wien");
-    textList.push_back("Auhtor: Sergiu-Petru Tabacariu");
+    textList.push_back("Master Thesis Project");
+    textList.push_back("Autonomous Driving Development Platform");
+    textList.push_back("by Sergiu-Petru Tabacariu");
     textList.push_back("<sergiu.tabacariu@fh-campuswien.ac.at>");
-    textList.push_back("Date 7.7.2017");
-    textList.push_back("Version 0.0.1");
+    textList.push_back("Date 29.9.2017");
+    textList.push_back("Version 0.1.0");
     
 }
 
@@ -302,7 +303,7 @@ void drawRcMode (Mat& image)
 void drawDevMode (Mat& image)
 {
     Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1)/2);
+    Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
     string titleText = "Dev mode";
@@ -310,8 +311,7 @@ void drawDevMode (Mat& image)
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
-    thickness, &baseline);
+    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
     
     // Get center of the text
     Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
@@ -378,10 +378,44 @@ void drawConfigMode (Mat& image)
     }
 }
 
+void drawAboutText (void)
+{
+    Mat image;
+    getOutputImageData(image);
+    
+    rectangle(image, Point(0, 0), Point(image.cols-1, image.rows-1), Scalar(218, 218, 218), -1);
+    
+    Point pt1(0, 0);
+    Point pt2(200, (image.size().height-1));
+    
+    pt1.y += 25;
+    pt1.x = 200/2 - 120/2;
+    
+    int fontFace = CV_FONT_HERSHEY_DUPLEX;
+    double fontScale = 0.7;
+    int thickness = 1;
+    int baseline = 0;
+    
+    vector<string> textList;
+    getAboutTextList(textList);
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
+    Point textOrg;
+    Size textSize;
+    textOrg.x = 10;
+    for (size_t i = 0; i < textList.size(); i++) {
+        string text = textList[i];
+        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 10 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    }
+    setOutputImageData(image);
+}
+
 void drawAboutMode (Mat& image)
 {
     Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1)/2);
+    Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
     string titleText = "About";
@@ -406,25 +440,5 @@ void drawAboutMode (Mat& image)
         textOrg.y = textOrg.y + 20 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
     }
-    
-    textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    
-    rectangle(image, Point(0, 0), Point(image.cols-1, image.rows-1), Scalar(218, 218, 218), -1);
-    
-    pt1.y += 25;
-    pt1.x = 200/2 - 120/2;
-    
-    vector<string> textList;
-    getAboutTextList(textList);
-    fontFace = CV_FONT_HERSHEY_PLAIN;
-    fontScale = 1;
-    textOrg.x = 10;
-    for (size_t i = 0; i < textList.size(); i++) {
-        string text = textList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 10 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
-    }
+    drawAboutText();
 }

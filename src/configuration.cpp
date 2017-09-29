@@ -104,41 +104,16 @@ ConfigMode getConfigState (void)
     return mode;
 }
 
-void *configCalibExtrinsics (void *arg)
-{
-    Mat inputImage, warpedImage;
-    Mat homography;
-    Size boardSize = Size(7, 5); /// @todo Load size from config file
-    
-    
-    while (getConfigState() == CONFIG_MODE_CALIB_EXTRINSICS) {
-        getInputImageData(inputImage);
-        if (!inputImage.empty()) {
-            calibrateExtrinsics(inputImage, homography, boardSize, 30.0);
-            if (!homography.empty()) {
-                setHomography(homography);
-            }
-            else {
-                cout << "Homography couldn't be aqureid!" << endl;
-            }
-        }
-        if (!homography.empty()) {
-            inversePerspectiveTransform(inputImage, warpedImage, homography);
-            line(warpedImage, Point(warpedImage.cols/2, 0), Point(warpedImage.cols/2, warpedImage.rows), Scalar(0, 0, 255), 1);
-            line(warpedImage, Point(0, warpedImage.rows/2), Point(warpedImage.cols, warpedImage.rows/2), Scalar(0, 0, 255), 1);
-            setOutputImageData(warpedImage);
-        }
-    }
-}
-
 void *configCalibIntrinsics(void *arg)
 {
+    cout << "THREAD: Intrinsics calibarion started." << endl;
+    
     Mat inputImage, undistorted;
     Mat intrinsics, diffCoeffs;
-    Size boardSize = Size(7, 5); // @todo Load size from config file
+    Size boardSize = Size(7, 5); //!< @todo Load size from config file
     
     
-    while (getConfigState() == CONFIG_MODE_CALIB_INTRINSICS) {
+    while ((getModuleState() & MODULE_CONFIG_CALIB_INTRINSICS) == MODULE_CONFIG_CALIB_INTRINSICS) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
             calibrateIntrinsics(inputImage, intrinsics, diffCoeffs, boardSize, 30.0, 50);
@@ -156,21 +131,66 @@ void *configCalibIntrinsics(void *arg)
             setOutputImageData(undistorted);
         }
     }
+    
+    setConfigState(CONFIG_MODE_NONE);
+    
+    cout << "THREAD: Intrinsics calibarion ended." << endl;
+}
+
+void *configCalibExtrinsics (void *arg)
+{
+    cout << "THREAD: Extrinsics calibarion started." << endl;
+    
+    Mat inputImage, warpedImage;
+    Mat homography;
+    Size boardSize = Size(7, 5); //!< @todo Load size from config file
+    
+    
+    while ((getModuleState() & MODULE_CONFIG_CALIB_EXTRINSICS) == MODULE_CONFIG_CALIB_EXTRINSICS) {
+        getInputImageData(inputImage);
+        if (!inputImage.empty()) {
+            calibrateExtrinsics(inputImage, homography, boardSize, 30.0);
+            if (!homography.empty()) {
+                setHomography(homography);
+            }
+            else {
+                cout << "Homography couldn't be aquired!" << endl;
+            }
+        }
+        if (!homography.empty()) {
+            inversePerspectiveTransform(inputImage, warpedImage, homography);
+            line(warpedImage, Point(warpedImage.cols/2, 0), Point(warpedImage.cols/2, warpedImage.rows), Scalar(0, 0, 255), 1);
+            line(warpedImage, Point(0, warpedImage.rows/2), Point(warpedImage.cols, warpedImage.rows/2), Scalar(0, 0, 255), 1);
+            setOutputImageData(warpedImage);
+        }
+    }
+    
+    setConfigState(CONFIG_MODE_NONE);
+    
+    cout << "THREAD: Extrinsics calibarion ended." << endl;
 }
 
 void *configImagePosition (void *arg)
 {
+    cout << "THREAD: Image position configuration started." << endl;
+    
     Mat inputImage;
-    while (getConfigState() == CONFIG_MODE_IMAGE_POSITION) {
+    while ((getModuleState() & MODULE_CONFIG_IMAGE_POSITION) == MODULE_CONFIG_IMAGE_POSITION) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
             setOutputImageData(inputImage);
         }
     }
+    
+    setConfigState(CONFIG_MODE_NONE);
+    
+    cout << "THREAD: Image position configuration ended." << endl;
 }
 
 void *showChessBoard (void *arg)
 {
+    cout << "THREAD: Show chessboard started." << endl;
+    
     Size boardSize = Size(7, 5);
     
     while ((getModuleState() & MODULE_SHOW_CHESSBOARD) == MODULE_SHOW_CHESSBOARD) {
@@ -181,4 +201,6 @@ void *showChessBoard (void *arg)
             setOutputImageData(image);
         }
     }
+    
+    cout << "THREAD: Show chessboard ended." << endl;
 }
