@@ -150,12 +150,6 @@ void *configCalibExtrinsics (void *arg)
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
             calibrateExtrinsics(inputImage, homography, boardSize, 30.0);
-            if (!homography.empty()) {
-                setHomography(homography);
-            }
-            else {
-                cout << "Homography couldn't be aquired!" << endl;
-            }
         }
         if (!homography.empty()) {
             inversePerspectiveTransform(inputImage, warpedImage, homography);
@@ -163,8 +157,20 @@ void *configCalibExtrinsics (void *arg)
             line(warpedImage, Point(0, warpedImage.rows/2), Point(warpedImage.cols, warpedImage.rows/2), Scalar(0, 0, 255), 1);
             setOutputImageData(warpedImage);
         }
+        else {
+            line(inputImage, Point(inputImage.cols/2, 0), Point(inputImage.cols/2, inputImage.rows), Scalar(0, 0, 255), 1);
+            line(inputImage, Point(0, inputImage.rows/2), Point(inputImage.cols, inputImage.rows/2), Scalar(0, 0, 255), 1);
+            setOutputImageData(inputImage);
+        }
     }
     
+    if (!homography.empty()) {
+        setHomography(homography);
+    }
+    else {
+        cout << "Homography couldn't be aquired!" << endl;
+    }
+
     setConfigState(CONFIG_MODE_NONE);
     
     cout << "THREAD: Extrinsics calibarion ended." << endl;
@@ -174,11 +180,16 @@ void *configImagePosition (void *arg)
 {
     cout << "THREAD: Image position configuration started." << endl;
     
-    Mat inputImage;
+    Mat inputImage, adjustedImage;
+    Mat homography;
+    
     while ((getModuleState() & MODULE_CONFIG_IMAGE_POSITION) == MODULE_CONFIG_IMAGE_POSITION) {
         getInputImageData(inputImage);
+        getHomography(homography);
+        
         if (!inputImage.empty()) {
-            setOutputImageData(inputImage);
+            adjustImagePosition(inputImage, adjustedImage, homography);
+            setOutputImageData(adjustedImage);
         }
     }
     

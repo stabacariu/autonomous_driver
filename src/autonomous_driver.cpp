@@ -338,7 +338,10 @@ void systemErrorMode (void)
     cout << "SYSTEM: Error Mode" << endl;
     //! @todo ERROR mode
     
-    setModuleState(MODULE_SHOW_OUT_IMAGE);
+    setModuleState(MODULE_NONE);
+    
+    while (getSystemState() == SYS_MODE_ERROR) {
+    }
 }
 
 void systemClosing (void)

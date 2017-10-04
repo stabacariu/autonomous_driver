@@ -26,7 +26,7 @@ void *vehicleControl (void* arg)
         int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
         setAccelerationValue(accelerationValue);
         
-        cout << "\rSTRG: " << steering << "° PWM: " << steeringValue << " ACL: " << acceleration << "% PWM: " << accelerationValue<< flush;
+        cout << "STRG: " << steering << "° PWM: " << steeringValue << " ACL: " << acceleration << "% PWM: " << accelerationValue << endl;
     }
     cout  << endl;
     resetMotorDriver();

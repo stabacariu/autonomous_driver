@@ -442,3 +442,19 @@ void drawAboutMode (Mat& image)
     }
     drawAboutText();
 }
+
+void drawErrorMode (Mat& image)
+{
+    Point pt1(0, 0);
+    Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, Scalar(0, 0, 218), -1);
+    
+    string titleText = "Error";
+    int fontFace = CV_FONT_HERSHEY_DUPLEX;
+    double fontScale = 0.7;
+    int thickness = 1;
+    int baseline = 0;
+    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
+    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+}

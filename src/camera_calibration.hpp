@@ -11,9 +11,10 @@
 #include <opencv2/opencv.hpp>
 #include "configuration.hpp"
 
-void calibrateIntrinsics (cv::Mat& image, cv::Mat& intrinsics, cv::Mat& distCoeffs, cv::Size boardSize, double squareSize, int sampleCnt);
-void calibrateExtrinsics (cv::Mat& image, cv::Mat& homography, cv::Size boardSize, double squareSize);
+void calibrateIntrinsics (cv::Mat image, cv::Mat& intrinsics, cv::Mat& distCoeffs, cv::Size boardSize, double squareSize, int sampleCnt);
+void calibrateExtrinsics (cv::Mat image, cv::Mat& homography, cv::Size boardSize, double squareSize);
 void showChessBoardCorners (cv::Mat& image, cv::Size boardSize);
 void inversePerspectiveTransform(cv::Mat image, cv::Mat& warpedImage, cv::Mat homography);
+void adjustImagePosition (cv::Mat image, cv::Mat& adjustedImage, cv::Mat& homography);
 
 #endif // CAMERA_CALIBRATION_HPP

@@ -32,7 +32,7 @@ void *showInputImage (void *arg)
 void *showOutputImage (void *arg)
 {
     cout << "THREAD: Show output image started." << endl;
-    namedWindow("Output Image", CV_WINDOW_AUTOSIZE);
+    namedWindow("Autonomous Driver", CV_WINDOW_AUTOSIZE);
     char key = getUiInputKey();
     
     while ((getModuleState() & MODULE_SHOW_OUT_IMAGE) == MODULE_SHOW_OUT_IMAGE) {
@@ -54,7 +54,7 @@ void *showOutputImage (void *arg)
             Rect insert = Rect(200,0, image.cols, image.rows);
             image.copyTo(outputImage(insert));
             
-            imshow("Output Image", outputImage);
+            imshow("Autonomous Driver", outputImage);
             key = waitKey(20);
             setUiInputKey(key);
         }

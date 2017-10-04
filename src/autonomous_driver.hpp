@@ -3,8 +3,8 @@
  * @author Sergiu-Petru Tabacariu
  * @date 27.6.2017
  * 
- * @brief This header describes the enums, structs
- *         and function prototypes for the system state,
+ * @brief This header describes the enums, structs 
+ *        and function prototypes for the system state,
  */
 
 #ifndef AUTONOMOUS_DRIVER_HPP

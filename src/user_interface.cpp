@@ -69,6 +69,8 @@ char getUiInputKey (void)
     }
     
     key = uiState.key;
+    // Reset key to -1
+    uiState.key = -1;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
@@ -86,8 +88,13 @@ void processUiInput (Mat& image, char key)
     ConfigMode configState = getConfigState();
     ConfigMode preConfigState = configState;
     
+    // Close program if ESC key was pressed.
+    if (key == 27) {
+        state = UI_MODE_CLOSING;
+        sysState = SYS_MODE_CLOSING;
+    }
     // Key handling for standby mode
-    if (state == UI_MODE_STANDBY) {
+    else if (state == UI_MODE_STANDBY) {
         drawMainMenu(image);
         if (key == 'A') {
             state = UI_MODE_AUTO;
@@ -174,8 +181,14 @@ void processUiInput (Mat& image, char key)
         }
         else if (key == 'S') {
             cout << "Saving config..." << endl;
-            setUiInputKey('S');
+            //! @todo Save configuration
         }
+        else if ((key == 'Q') || (key == 'q')) {
+            configState = CONFIG_MODE_NONE;
+            state = UI_MODE_CLOSING;
+            sysState = SYS_MODE_CLOSING;
+        }
+        //! @todo Switch to correct sub menu
         else if (key == 'I') {
             configState = CONFIG_MODE_CALIB_INTRINSICS;
         }
@@ -186,11 +199,6 @@ void processUiInput (Mat& image, char key)
         }
         else if (key == 'P') {
             configState =CONFIG_MODE_IMAGE_POSITION;
-        }
-        else if ((key == 'Q') || (key == 'q')) {
-            configState = CONFIG_MODE_NONE;
-            state = UI_MODE_CLOSING;
-            sysState = SYS_MODE_CLOSING;
         }
     }
     // Key handling for about mode
@@ -206,11 +214,11 @@ void processUiInput (Mat& image, char key)
         }
     }
     else if (state == UI_MODE_CLOSING) {
-        setUiInputKey('Q');
         setModuleState(MODULE_NONE);
         setSystemState(SYS_MODE_CLOSING);
     }
     
+    // Change states only if not the same as previous states
     if (prevState != state) {
         setUiStatus(state);
     }
@@ -224,17 +232,4 @@ void processUiInput (Mat& image, char key)
             setConfigState(configState);
         }
     }
-}
-
-void *showAboutImage (void *arg)
-{
-    cout << "THREAD: About started." << endl;
-    
-    while (getUiStatus() == UI_MODE_ABOUT) {
-        
-    }
-    
-    cout << "THREAD: About ended." << endl;
-    
-    return NULL;
 }
