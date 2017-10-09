@@ -62,9 +62,10 @@ struct ConfigData {
     bool fixK4; //!< Fix K4 distortion coefficient
     bool fixK5; //!< Fix K5 distortion coefficient
     
-    cv::Mat homography; //!< Homography for inverse perspective transform
+    cv::Mat homography; //!< Homography for perspective transform
+    cv::Mat transformation; //!< Transformation matrix for image position
     cv::Mat intrinsics; //!< Intrinsic camera matrix
-    cv::Mat diffCoeffs; //!< Differential coeffitiens
+    cv::Mat diffCoeffs; //!< Differential coeffitiens for undistortion
     
     pthread_mutex_t lock; //!< Lock exlusiv access
 };

@@ -70,7 +70,7 @@ char getUiInputKey (void)
     
     key = uiState.key;
     // Reset key to -1
-    uiState.key = -1;
+    //~ uiState.key = -1;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
@@ -174,32 +174,88 @@ void processUiInput (Mat& image, char key)
     }
     // Key handling for configuration mode
     else if (state == UI_MODE_CONFIG) {
-        drawConfigMode(image);
-        if (key == 'B') {
-            state = UI_MODE_STANDBY;
-            sysState = SYS_MODE_STANDBY;
-        }
-        else if (key == 'S') {
-            cout << "Saving config..." << endl;
-            //! @todo Save configuration
-        }
-        else if ((key == 'Q') || (key == 'q')) {
+        if ((key == 'Q') || (key == 'q')) {
             configState = CONFIG_MODE_NONE;
             state = UI_MODE_CLOSING;
             sysState = SYS_MODE_CLOSING;
+            configState = CONFIG_MODE_NONE;
         }
-        //! @todo Switch to correct sub menu
-        else if (key == 'I') {
-            configState = CONFIG_MODE_CALIB_INTRINSICS;
+        // Config mode sub menu
+        if (configState == CONFIG_MODE_NONE) {
+            drawConfigMode(image);
+            if (key == 'B') {
+                state = UI_MODE_STANDBY;
+                sysState = SYS_MODE_STANDBY;
+            }
+            else if (key == 'R') {
+                //! @todo reset configuration
+                cout << "Resetting config..." << endl;
+                Mat homography;
+                setHomography(homography);
+            }
+            else if (key == 'I') {
+                configState = CONFIG_MODE_CALIB_INTRINSICS;
+            }
+            else if (key == 'E') {
+                configState = CONFIG_MODE_CALIB_EXTRINSICS;
+            }
+            else if (key == 'P') {
+                configState =CONFIG_MODE_IMAGE_POSITION;
+            }
         }
-        else if (key == 'E') {
-            configState = CONFIG_MODE_CALIB_EXTRINSICS;
-            Mat homography;
-            setHomography(homography);
+        else if (configState == CONFIG_MODE_CALIB_INTRINSICS) {
+            drawCalibIntrinsics(image);
+            if (key == 'B') {
+                state = UI_MODE_CONFIG;
+                sysState = SYS_MODE_CONFIG;
+                configState = CONFIG_MODE_NONE;
+            }
+            else if (key == 'R') {
+                //! @todo reset configuration
+                cout << "Resetting config..." << endl;
+                Mat homography;
+                setHomography(homography);
+            }
+            else if (key == 'S') {
+                cout << "Saving config..." << endl;
+                //! @todo Save configuration
+            }
         }
-        else if (key == 'P') {
-            configState =CONFIG_MODE_IMAGE_POSITION;
+        else if (configState == CONFIG_MODE_CALIB_EXTRINSICS) {
+            drawCalibExtrinsics(image);
+            if (key == 'B') {
+                state = UI_MODE_CONFIG;
+                sysState = SYS_MODE_CONFIG;
+                configState = CONFIG_MODE_NONE;
+            }
+            else if (key == 'R') {
+                //! @todo reset configuration
+                cout << "Resetting config..." << endl;
+                Mat homography;
+                setHomography(homography);
+            }
+            else if (key == 'S') {
+                cout << "Saving config..." << endl;
+                //! @todo Save configuration
+            }
         }
+        else if (configState == CONFIG_MODE_IMAGE_POSITION) {
+            drawPositionImage(image);
+            if (key == 'B') {
+                state = UI_MODE_CONFIG;
+                sysState = SYS_MODE_CONFIG;
+                configState = CONFIG_MODE_NONE;
+            }
+            else if (key == 'R') {
+                //! @todo reset configuration
+                cout << "Resetting config..." << endl;
+            }
+            else if (key == 'S') {
+                cout << "Saving config..." << endl;
+                //! @todo Save configuration
+            }
+        }
+        
     }
     // Key handling for about mode
     else if (state == UI_MODE_ABOUT) {

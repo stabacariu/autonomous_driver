@@ -28,7 +28,7 @@ void *vehicleControl (void* arg)
         
         cout << "STRG: " << steering << "° PWM: " << steeringValue << " ACL: " << acceleration << "% PWM: " << accelerationValue << endl;
     }
-    cout  << endl;
+    
     resetMotorDriver();
     
     cout << "Thread: Vehicle control ended." << endl;

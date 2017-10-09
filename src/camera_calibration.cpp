@@ -87,6 +87,17 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
         imagePoints[3] = corners[(boardSize.height-1)*boardSize.width + boardSize.width-1];
         
         homography = getPerspectiveTransform(objectPoints, imagePoints);
+        
+        // Shift to image center
+        double xOffset = image.cols/2 * (-1) + 15 + 15+ 15;
+        double yOffset = image.rows/2 * (-1) + 15 + 15;
+        double zOffset = 15;
+        
+        Mat t = Mat::eye(3, 3, CV_64F);
+        t.at<double>(0, 2) = xOffset;
+        t.at<double>(1, 2) = yOffset;
+        t.at<double>(2, 2) = zOffset;
+        homography *= t;
     }
     
     //! @todo Save calibration to XML file
@@ -108,59 +119,78 @@ void showChessBoardCorners (Mat& image, Size boardSize)
 
 void inversePerspectiveTransform (Mat image, Mat& warpedImage, Mat homography)
 {
-   double xOffset = image.size().width/2 * (-1) + 30;
-   double yOffset = image.size().height/2 * (-1) + 30;
-   double zOffset = 15;
-
-   Mat transform = Mat::eye(3, 3, CV_64F);
-   transform.at<double>(0, 2) = xOffset;
-   transform.at<double>(1, 2) = yOffset;
-   transform.at<double>(2, 2) = zOffset;
-   //transform = homography * transform;
-
+   //~ double xOffset = image.size().width/2 * (-1) + 30;
+   //~ double yOffset = image.size().height/2 * (-1) + 30;
+   //~ double zOffset = 15;
+//~ 
+   //~ Mat t = Mat::eye(3, 3, CV_64F);
+   //~ t.at<double>(0, 2) = xOffset;
+   //~ t.at<double>(1, 2) = yOffset;
+   //~ t.at<double>(2, 2) = zOffset;
+   //~ homography *= t;
+   
    Size warpedImageSize(image.size().width, image.size().height);
-   warpPerspective(image, warpedImage, transform, warpedImageSize); //, WARP_INVERSE_MAP + INTER_LINEAR);
+   warpPerspective(image, warpedImage, homography, warpedImageSize, WARP_INVERSE_MAP + INTER_LINEAR);
 }
 
-void adjustImagePosition (Mat image, Mat& adjustedImage, Mat& homography)
+vector<Point2f> ptSrc;
+vector<Point2f> ptDst;
+
+void initImagePosition (Mat image)
+{
+    ptSrc.push_back(Point2f(0, 0));
+    ptSrc.push_back(Point2f(image.cols-1, 0));
+    ptSrc.push_back(Point2f(0,image.rows-1));
+    ptDst.push_back(Point2f(0, 0));
+    ptDst.push_back(Point2f(image.cols-1, 0));
+    ptDst.push_back(Point2f(0,image.rows-1));
+}
+    
+void adjustImagePosition (Mat image, Mat& adjustedImage, char key)
 {
     double xOffset = 0;
     double yOffset = 0;
     double zOffset = 0;
     
     if (!image.empty()) {
-        char key = getUiInputKey();
         // Zoom in
         if (key == '+') {
-            zOffset += 5;
+            zOffset = -5;
         }
         // Zoom out
         else if (key == '-') {
-            zOffset -= 5;
+            zOffset = 5;
         }
         // Move left
-        else if (key == 37) {
-            xOffset -= 5;
+        else if (key == 'a') {
+            xOffset = -5;
         }
         // Move up
-        else if (key == 38) {
-            yOffset -= 5;
+        else if (key == 'w') {
+            yOffset = -5;
         }
         // Move right
-        else if (key == 39) {
-            xOffset += 5;
+        else if (key == 'd') {
+            xOffset = 5;
         }
         // Move down
-        else if (key == 40) {
-            yOffset += 5;
+        else if (key == 's') {
+            yOffset = 5;
         }
         
-        Mat t = Mat::eye(2, 3, CV_64F);
-        t.at<double>(0, 2) = xOffset;
-        t.at<double>(1, 2) = yOffset;
-        //t.at<double>(2, 2) = zOffset;
-        //t = homography * t;
+        Mat t;
+        getHomography(t);
+        if (t.empty()) {
+            t = Mat::eye(3, 3, CV_64F);
+        }
+        t.at<double>(0, 2) += xOffset;
+        t.at<double>(1, 2) += yOffset;
+        t.at<double>(2, 2) += zOffset;
+        setHomography(t);
         
-        transform(image, adjustedImage, t);
+        
+        //~ t = getAffineTransform(ptSrc, ptDst);
+        //~ warpAffine(image, adjustedImage, t, image.size());
+        warpPerspective(image, adjustedImage, t, image.size());
     }
 }

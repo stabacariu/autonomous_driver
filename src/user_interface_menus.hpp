@@ -18,6 +18,9 @@ void drawRcCom (cv::Mat& image, cv::Point position);
 void drawRcMode (cv::Mat& image);
 void drawDevMode (cv::Mat& image);
 void drawConfigMode (cv::Mat& image);
+void drawCalibIntrinsics (cv::Mat& image);
+void drawCalibExtrinsics (cv::Mat& image);
+void drawPositionImage (cv::Mat& image);
 void drawAboutMode (cv::Mat& image);
 void drawErrorMode (cv::Mat& image);
 
