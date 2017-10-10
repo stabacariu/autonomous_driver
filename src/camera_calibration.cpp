@@ -89,18 +89,50 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
         homography = getPerspectiveTransform(objectPoints, imagePoints);
         
         // Shift to image center
-        double xOffset = image.cols/2 * (-1) + 15 + 15+ 15;
-        double yOffset = image.rows/2 * (-1) + 15 + 15;
-        double zOffset = 15;
-        
         Mat t = Mat::eye(3, 3, CV_64F);
-        t.at<double>(0, 2) = xOffset;
-        t.at<double>(1, 2) = yOffset;
-        t.at<double>(2, 2) = zOffset;
+        t.at<double>(0, 2) = image.cols/2 * (-1) + 15 + 15 + 15; // Shift width
+        t.at<double>(1, 2) = image.rows * (-1) + 15 + 15 + 15 + 15 + 15; // Shift height
+        t.at<double>(2, 2) = 15;
         homography *= t;
     }
     
     //! @todo Save calibration to XML file
+}
+
+float euclidDist (Point2f& p1, Point2f& p2)
+{
+    Point2f diff = p1 - p2;
+    return sqrt(diff.x*diff.x + diff.y*diff.y);
+}
+
+float calcPixelPerMm (Mat image, Size boardSize, float squareSize)
+{
+    float pixelPerMm;
+    float avgPxPerMm = 0.0;
+    int distCnt = 0;
+    Mat grayImage;
+    cvtColor(image, grayImage, CV_BGR2GRAY);
+    
+    vector<Point2f> corners;
+    bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    
+    if (found) {
+        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, squareSize, 0.1));
+        
+        for (int i = 0; i < (corners.size()-1); i++) {
+            if ((i%boardSize.width) < 6) {
+                pixelPerMm = euclidDist(corners[i+1], corners[i]);
+                avgPxPerMm += pixelPerMm;
+                distCnt++;
+            }
+            else {
+                i++;
+            }
+        }
+        avgPxPerMm /= distCnt;
+        cout << "Avg distance " << avgPxPerMm << " mm per px " << avgPxPerMm/squareSize << endl;
+    }
+    return avgPxPerMm/squareSize;
 }
 
 void showChessBoardCorners (Mat& image, Size boardSize)
@@ -119,16 +151,6 @@ void showChessBoardCorners (Mat& image, Size boardSize)
 
 void inversePerspectiveTransform (Mat image, Mat& warpedImage, Mat homography)
 {
-   //~ double xOffset = image.size().width/2 * (-1) + 30;
-   //~ double yOffset = image.size().height/2 * (-1) + 30;
-   //~ double zOffset = 15;
-//~ 
-   //~ Mat t = Mat::eye(3, 3, CV_64F);
-   //~ t.at<double>(0, 2) = xOffset;
-   //~ t.at<double>(1, 2) = yOffset;
-   //~ t.at<double>(2, 2) = zOffset;
-   //~ homography *= t;
-   
    Size warpedImageSize(image.size().width, image.size().height);
    warpPerspective(image, warpedImage, homography, warpedImageSize, WARP_INVERSE_MAP + INTER_LINEAR);
 }
@@ -187,10 +209,5 @@ void adjustImagePosition (Mat image, Mat& adjustedImage, char key)
         t.at<double>(1, 2) += yOffset;
         t.at<double>(2, 2) += zOffset;
         setHomography(t);
-        
-        
-        //~ t = getAffineTransform(ptSrc, ptDst);
-        //~ warpAffine(image, adjustedImage, t, image.size());
-        warpPerspective(image, adjustedImage, t, image.size());
     }
 }

@@ -170,6 +170,8 @@ void *configCalibExtrinsics (void *arg)
     else {
         cout << "Homography couldn't be aquired!" << endl;
     }
+    
+    float pixelPerMm = calcPixelPerMm(warpedImage, boardSize, 30.0);
 
     setConfigState(CONFIG_MODE_NONE);
     

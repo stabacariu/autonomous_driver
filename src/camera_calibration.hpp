@@ -17,5 +17,6 @@ void showChessBoardCorners (cv::Mat& image, cv::Size boardSize);
 void inversePerspectiveTransform(cv::Mat image, cv::Mat& warpedImage, cv::Mat homography);
 void initImagePosition (cv::Mat image);
 void adjustImagePosition (cv::Mat image, cv::Mat& adjustedImage, char key);
+float calcPixelPerMm (cv::Mat image, cv::Size boardSize, float squareSize);
 
 #endif // CAMERA_CALIBRATION_HPP
