@@ -185,14 +185,14 @@ void systemRCMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Remote Control Mode" << endl;
     
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE + MODULE_CONTROL_REMOTE);
     
     //! @todo RC mode
     pthread_t cameraCaptureThread;
     pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
-    //~ pthread_t remoteControlThread;
-    //~ pthread_t vehicleControlThread;
+    pthread_t remoteControlThread;
+    pthread_t vehicleControlThread;
     
     // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
@@ -204,6 +204,12 @@ void systemRCMode (void)
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
+    if (pthread_create(&remoteControlThread, NULL, remoteControl, NULL)) {
+        cerr << "ERROR: Couldn't create remote control thread!" << endl;
+    }
+    if (pthread_create(&vehicleControlThread, NULL, vehicleControl, NULL)) {
+        cerr << "ERROR: Couldn't create vehicle control thread!" << endl;
+    }
     
     // Join thread
     if (pthread_join(cameraCaptureThread, NULL)) {
@@ -213,6 +219,12 @@ void systemRCMode (void)
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
     if (pthread_join(showOutputImageThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(remoteControlThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(vehicleControlThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
 }

@@ -90,8 +90,8 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
         
         // Shift to image center
         Mat t = Mat::eye(3, 3, CV_64F);
-        t.at<double>(0, 2) = image.cols/2 * (-1) + 15 + 15 + 15; // Shift width
-        t.at<double>(1, 2) = image.rows * (-1) + 15 + 15 + 15 + 15 + 15; // Shift height
+        t.at<double>(0, 2) = image.cols/2 * (-1) + 3*15; // Shift width
+        t.at<double>(1, 2) = image.rows * (-1) + 2*3*15; // Shift height
         t.at<double>(2, 2) = 15;
         homography *= t;
     }
@@ -99,7 +99,7 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
     //! @todo Save calibration to XML file
 }
 
-float euclidDist (Point2f& p1, Point2f& p2)
+float euclidDist (Point2f p1, Point2f p2)
 {
     Point2f diff = p1 - p2;
     return sqrt(diff.x*diff.x + diff.y*diff.y);

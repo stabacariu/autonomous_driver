@@ -6,26 +6,26 @@
 
 #include "timer_tools.hpp"
 
-void timespec_norm (timespec *ts)
-{
-    if (ts->tv_nsec >= NSEC_PER_SEC) {
-        ts->tv_nsec -= NSEC_PER_SEC;
-        ts->tv_sec++;
-    }
-    else if (ts->tv_nsec < 0) {
-        ts->tv_nsec += NSEC_PER_SEC;
-        ts->tv_sec--;
-    }
-}
-
-void timespec_add (timespec *ts1, timespec *ts2)
-{
-    do {
-        ts1->tv_nsec += ts2->tv_nsec;
-        ts1->tv_sec += ts2->tv_sec;
-        timespec_norm(ts1);
-    } while (0);
-}
+//~ void timespec_norm (timespec& ts)
+//~ {
+    //~ if (ts.tv_nsec >= NSEC_PER_SEC) {
+        //~ ts.tv_nsec -= NSEC_PER_SEC;
+        //~ ts.tv_sec++;
+    //~ }
+    //~ else if (ts.tv_nsec < 0) {
+        //~ ts.tv_nsec += NSEC_PER_SEC;
+        //~ ts.tv_sec--;
+    //~ }
+//~ }
+//~ 
+//~ void timespec_add (timespec& ts1, timespec& ts2)
+//~ {
+    //~ do {
+        //~ ts1.tv_nsec += ts2.tv_nsec;
+        //~ ts1.tv_sec += ts2.tv_sec;
+        //~ timespec_norm(ts1);
+    //~ } while (0);
+//~ }
 
 void delay_ms (long value)
 {

@@ -5,7 +5,6 @@
  */
  
 #include "motor_driver.hpp"
-#include <unistd.h>
 
 PCA9685 pwmModule;
 
@@ -14,8 +13,7 @@ void initMotorDriver (void)
     pwmModule.init(1,0x40);
     pwmModule.setPWMFreq(50);
     pwmModule.setPWM(ESC, ESC_N);
-    usleep(1000);
-    // delay_ms(5000); // Doesn't work!!!
+    delay_ms(10000); // Doesn't work!!!
 }
 
 void setSteeringValue (int direction)

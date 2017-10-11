@@ -18,6 +18,7 @@
 #include "user_interface.hpp"
 #include "planning.hpp"
 #include "vehicle_control.hpp"
+#include "remote_control.hpp"
 #include "configuration.hpp"
 
 
@@ -70,7 +71,8 @@ enum ModuleFlag {
     
     MODULE_CONTROL_VEHICLE = 0x10000,
     MODULE_CONTROL_STEERING = 0x20000,
-    MODULE_CONTROL_SPEED = 0x30000,
+    MODULE_CONTROL_SPEED = 0x40000,
+    MODULE_CONTROL_REMOTE = 0x80000,
     
     MODULE_CONFIG_CALIB_INTRINSICS = 0x100000,
     MODULE_CONFIG_CALIB_EXTRINSICS = 0x200000,
