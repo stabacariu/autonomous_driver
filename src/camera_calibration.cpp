@@ -151,24 +151,11 @@ void showChessBoardCorners (Mat& image, Size boardSize)
 
 void inversePerspectiveTransform (Mat image, Mat& warpedImage, Mat homography)
 {
-   Size warpedImageSize(image.size().width, image.size().height);
+   Size warpedImageSize(image.cols, image.rows);
    warpPerspective(image, warpedImage, homography, warpedImageSize, WARP_INVERSE_MAP + INTER_LINEAR);
 }
-
-vector<Point2f> ptSrc;
-vector<Point2f> ptDst;
-
-void initImagePosition (Mat image)
-{
-    ptSrc.push_back(Point2f(0, 0));
-    ptSrc.push_back(Point2f(image.cols-1, 0));
-    ptSrc.push_back(Point2f(0,image.rows-1));
-    ptDst.push_back(Point2f(0, 0));
-    ptDst.push_back(Point2f(image.cols-1, 0));
-    ptDst.push_back(Point2f(0,image.rows-1));
-}
     
-void adjustImagePosition (Mat image, Mat& adjustedImage, char key)
+void adjustImagePosition (Mat image, Mat& adjustedImage, char key, Mat& homography)
 {
     double xOffset = 0;
     double yOffset = 0;
@@ -200,14 +187,11 @@ void adjustImagePosition (Mat image, Mat& adjustedImage, char key)
             yOffset = 5;
         }
         
-        Mat t;
-        getHomography(t);
-        if (t.empty()) {
-            t = Mat::eye(3, 3, CV_64F);
+        if (homography.empty()) {
+            homography = Mat::eye(3, 3, CV_64F);
         }
-        t.at<double>(0, 2) += xOffset;
-        t.at<double>(1, 2) += yOffset;
-        t.at<double>(2, 2) += zOffset;
-        setHomography(t);
+        homography.at<double>(0, 2) += xOffset;
+        homography.at<double>(1, 2) += yOffset;
+        homography.at<double>(2, 2) += zOffset;
     }
 }

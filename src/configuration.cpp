@@ -186,7 +186,6 @@ void *configImagePosition (void *arg)
     Mat homography;
     
     getInputImageData(inputImage);
-    initImagePosition(inputImage);
     
     while ((getModuleState() & MODULE_CONFIG_IMAGE_POSITION) == MODULE_CONFIG_IMAGE_POSITION) {
         getInputImageData(inputImage);
@@ -194,7 +193,8 @@ void *configImagePosition (void *arg)
         
         if (!inputImage.empty()) {
             char key = getUiInputKey();
-            adjustImagePosition(inputImage, adjustedImage, key);
+            adjustImagePosition(inputImage, adjustedImage, key, homography);
+            setHomography(homography);
             setOutputImageData(adjustedImage);
         }
     }

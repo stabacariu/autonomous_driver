@@ -106,3 +106,63 @@ Point getTargetPosition (void)
     
     return position;
 }
+
+void setRoiLeft (Rect roi)
+{
+    if (pthread_mutex_lock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+    }
+    
+    actualLane.roiLeft = roi;
+    
+    if (pthread_mutex_unlock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+    }
+}
+
+Rect getRoiLeft (void)
+{
+    Rect roi;
+    
+    if (pthread_mutex_lock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+    }
+    
+    roi = actualLane.roiLeft;
+    
+    if (pthread_mutex_unlock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+    }
+    
+    return roi;
+}
+
+void setRoiRight (Rect roi)
+{
+    if (pthread_mutex_lock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+    }
+    
+    actualLane.roiRight = roi;
+    
+    if (pthread_mutex_unlock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+    }
+}
+
+Rect getRoiRight (void)
+{
+    Rect roi;
+    
+    if (pthread_mutex_lock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+    }
+    
+    roi = actualLane.roiRight;
+    
+    if (pthread_mutex_unlock(&actualLane.lock)) {
+        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+    }
+    
+    return roi;
+}

@@ -19,6 +19,20 @@ void *showInputImage (void *arg)
     while ((getModuleState() & MODULE_SHOW_IN_IMAGE) == MODULE_SHOW_IN_IMAGE) {
         Mat image;
         getInputImageData(image);
+        
+        // Undistort captured image
+        Mat intrinsics, diffCoeffs;
+        getIntrinsics(intrinsics, diffCoeffs);
+        if (!intrinsics.empty() && !diffCoeffs.empty()) {
+            undistort(image, image, intrinsics, diffCoeffs);
+        }
+        // Apply perspective transform
+        Mat homography;
+        getHomography(homography);
+        if (!homography.empty()) {
+            inversePerspectiveTransform(image, image, homography);
+        }
+        
         setOutputImageData(image);
     }
     

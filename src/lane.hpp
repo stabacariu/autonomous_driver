@@ -31,6 +31,8 @@ enum LaneMarkingPosition {
 
 struct LaneData {
     std::vector<cv::Vec4i> lane;
+    cv::Rect roiLeft;
+    cv::Rect roiRight;
     pthread_mutex_t lock;
 };
 
@@ -46,5 +48,10 @@ void setActualPosition (cv::Point position);
 cv::Point getActualPosition (void);
 void setTargetPosition (cv::Point position);
 cv::Point getTargetPosition (void);
+
+void setRoiLeft (cv::Rect roi);
+cv::Rect getRoiLeft (void);
+void setRoiRight (cv::Rect roi);
+cv::Rect getRoiRight (void);
 
 #endif // LANE_HPP

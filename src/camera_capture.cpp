@@ -34,18 +34,19 @@ void *cameraCapture (void *arg)
             cerr << "ERROR: Couldn't aquire image data!" << endl;
         }
         else {
+            //! @note Do not undistort or warp image here!
             // Undistort captured image
-            Mat intrinsics, diffCoeffs;
-            getIntrinsics(intrinsics, diffCoeffs);
-            if (!intrinsics.empty() && !diffCoeffs.empty()) {
-                undistort(image, image, intrinsics, diffCoeffs);
-            }
-            // Apply perspective transform
-            Mat homography;
-            getHomography(homography);
-            if (!homography.empty()) {
-                inversePerspectiveTransform(image, image, homography);
-            }
+            //~ Mat intrinsics, diffCoeffs;
+            //~ getIntrinsics(intrinsics, diffCoeffs);
+            //~ if (!intrinsics.empty() && !diffCoeffs.empty()) {
+                //~ undistort(image, image, intrinsics, diffCoeffs);
+            //~ }
+            //~ // Apply perspective transform
+            //~ Mat homography;
+            //~ getHomography(homography);
+            //~ if (!homography.empty()) {
+                //~ inversePerspectiveTransform(image, image, homography);
+            //~ }
             setInputImageData(image);
         }
     }

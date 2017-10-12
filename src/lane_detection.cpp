@@ -197,14 +197,10 @@ void *laneDetection (void *arg)
     cout << "THREAD: Lane detection started." << endl;
     
     // Initialize line prediction
-    //~ KalmanFilter kf(4, 4, 0);
     KalmanFilter kfL(4, 4, 0);
     KalmanFilter kfR(4, 4, 0);
-    //~ initLinePrediction(kf, 4);
     initLinePrediction(kfL, 4);
     initLinePrediction(kfR, 4);
-    //~ KalmanFilter kf(8, 8, 0);
-    //~ initLinePrediction(kf, 8);
     vector<Vec4i> measuredLines;
     vector<Vec4i> predictedLines;
     vector<Vec4i> measuredLeftLines;
@@ -215,9 +211,9 @@ void *laneDetection (void *arg)
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
+        getHomography(homography);
         
         if (!image.empty()) {
-            // TODO: Homography check
             Mat warpedImage;
             if (!homography.empty()) {
                 inversePerspectiveTransform(image, warpedImage, homography);
@@ -259,6 +255,8 @@ void *laneDetection (void *arg)
             }
             if (predictedLeftLines.size() > 0) {
                 predictedLane.push_back(predictedLeftLines[0]);
+                Rect leftLineRoi = Rect(Point(predictedLeftLines[0][0], predictedLeftLines[0][1]), Point(predictedLeftLines[0][2], predictedLeftLines[0][3]));
+                setRoiLeft(leftLineRoi);
             }
             
             if (rightLines.size() > 0) {
@@ -267,6 +265,8 @@ void *laneDetection (void *arg)
             }
             if (predictedRightLines.size() > 0) {
                 predictedLane.push_back(predictedRightLines[0]);
+                Rect rightLineRoi = Rect(Point(predictedRightLines[0][0], predictedRightLines[0][1]), Point(predictedRightLines[0][2], predictedRightLines[0][3]));
+                setRoiRight(rightLineRoi);
             }
             
             // Check if lines are parallel
@@ -279,6 +279,9 @@ void *laneDetection (void *arg)
             predictedLane.clear();
             
             drawCenterLine(warpedImage, Scalar(0,255,0));
+            
+            rectangle(warpedImage, getRoiLeft(), Scalar(255, 0, 0), 1);
+            rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
             
             setOutputImageData(warpedImage);
         }
