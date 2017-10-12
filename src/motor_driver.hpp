@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <ctime>
+#include <unistd.h>
 #include "timer_tools.hpp"
 #include "../lib/PCA9685.h"
 
@@ -41,8 +42,8 @@ enum MotorDriverSteering {
 };
 
 struct MotorDriver {
-    int direction;
-    int acceleration;
+    int direction;      //!< Direction from 0 to 4095
+    int acceleration;   //!< Accerelration from 0 to 4095
     pthread_mutex_t lock;
 };
 

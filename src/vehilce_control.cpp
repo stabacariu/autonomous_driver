@@ -16,17 +16,15 @@ void *vehicleControl (void* arg)
     initMotorDriver();
     
     while ((getModuleState() & MODULE_CONTROL_VEHICLE) == MODULE_CONTROL_VEHICLE) {
-        // Get steering angle and set steering motor direction
+        // Calculate steering value from rad to a value from 0 to 4096
         double steering = getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
         setSteeringValue(steeringValue);
         
-        // Get acceleration 
+        // Calculate acceleration value from percent to value from 0 to 4096
         double acceleration = getAcceleration();
         int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
         setAccelerationValue(accelerationValue);
-        
-        cout << "STRG: " << steering << "° PWM: " << steeringValue << " ACL: " << acceleration << "% PWM: " << accelerationValue << endl;
     }
     
     resetMotorDriver();

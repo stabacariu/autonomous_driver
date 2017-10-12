@@ -11,8 +11,8 @@
 #include <pthread.h>
 
 struct Vehicle {
-    double acceleration; //!< Accerelration from 0 to 4095
-    int direction; //!< Direction from 0 to 4095
+    double acceleration; //!< Accerelration from 0 to 100 percent
+    int direction; //!< Direction from -1 to 1
     double speed; //!< Speed in m/s
     double steering; //!< Steering angle in radian
     double width; //!< Vehicle width in mm

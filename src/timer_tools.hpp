@@ -9,6 +9,8 @@
 #define NSEC_PER_SEC    (1000000000)
 #define NSEC_PER_MSEC   (1000000)
 #define NSEC_PER_USEC   (1000)
+#define USEC_PER_SEC    (1000000)
+#define USEC_PER_MSEC   (1000)
 
 #define timespec_norm(t) {                                             \
     if ((t)->tv_nsec >= NSEC_PER_SEC) {                                \

@@ -13,7 +13,8 @@ void initMotorDriver (void)
     pwmModule.init(1,0x40);
     pwmModule.setPWMFreq(50);
     pwmModule.setPWM(ESC, ESC_N);
-    delay_ms(10000); // Doesn't work!!!
+    // delay_ms(10000); //!< @todo delay function doesn't work!
+    usleep(3*USEC_PER_SEC);
 }
 
 void setSteeringValue (int direction)

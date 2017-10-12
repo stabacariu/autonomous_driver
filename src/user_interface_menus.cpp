@@ -268,25 +268,25 @@ void drawRcCom (Mat& image, Point position)
     Point pt2(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)-5);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     Point textOrg(pt1.x, pt2.y);
-    putText(image, "<UP>", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
     // Down arrow
     pt1 = Point(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)+5);
     pt2 = Point(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)+35);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "<DOWN>", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
     // Left arrow
     pt1 = Point(controls.x + (controls.width/2-1)-55, controls.y + (controls.height/2-1)-15);
     pt2 = Point(controls.x + (controls.width/2-1)-25, controls.y + (controls.height/2-1)+15);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "<LEFT>", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
     // Right arrow
     pt1 = Point(controls.x + (controls.width/2-1)+25, controls.y + (controls.height/2-1)-15);
     pt2 = Point(controls.x + (controls.width/2-1)+55, controls.y + (controls.height/2-1)+15);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "<RIGHT>", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
 }
 
 void drawRcMode (Mat& image)
@@ -327,6 +327,23 @@ void drawRcMode (Mat& image)
     pt1.y += 25;
     pt1.x = 200/2 - 120/2;
     drawRcCom(image, pt1);
+    
+    textOrg.y += 20;
+    pt1 = Point(0, textOrg.y);
+    pt2 = Point(200, pt1.y);
+    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    
+    vector<string> stateList;
+    getAutoStateList(stateList);
+    fontFace = CV_FONT_HERSHEY_SIMPLEX;
+    fontScale = 0.5;
+    textOrg.x = 10;
+    for (size_t i = 0; i < stateList.size(); i++) {
+        string text = stateList[i];
+        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 20 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    }
 }
 
 void drawDevMode (Mat& image)

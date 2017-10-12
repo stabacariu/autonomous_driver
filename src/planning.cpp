@@ -22,7 +22,7 @@ void calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
         setAcceleration(0);
     }
     else if (theta == (CV_PI/2)) {
-        setAcceleration(65);
+        setAcceleration(60);
     }
     else {
         //~ setSteering((double) theta - (CV_PI/2));
@@ -30,21 +30,21 @@ void calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
         
         // Car is too much to the left
         if (diffX2 > 0) {
-            setAcceleration(60);
+            setAcceleration(59);
         }
         else if (diffX2 == 0) {
             if (diffX1 > 0) {
-                setAcceleration(60);
+                setAcceleration(59);
             }
             else if (diffX1 < 0) {
-                setAcceleration(60);
+                setAcceleration(59);
             }
             else {
-                setAcceleration(0);
+                setAcceleration(50);
             }
         }
         else {
-            setAcceleration(60);
+            setAcceleration(59);
         }
     }
 }
@@ -58,7 +58,7 @@ void *pathPlanning (void *arg)
     initLaneData();
     
     while ((getModuleState() & MODULE_PLAN_PATH) == MODULE_PLAN_PATH) {
-        //@TODO Calculate difference between middle line and lane mid.
+        //! @todo Calculate difference between middle line and lane mid.
         //      Correct driving trajectory by steering
         vector<Vec4i> actualLane;
         getActualLane(actualLane);
