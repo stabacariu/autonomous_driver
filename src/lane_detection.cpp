@@ -17,25 +17,11 @@ float getEuclidDistance(Point pt1, Point pt2)
    //~ return norm(pt1-pt2);
 }
 
-/**
- * @brief This function calculates the distance rho for the polar line form.
- *  (rho, theta)
- * @param pt point on the line
- * @param rho slope of the line
- * @return r the distance of the line to the origin for the polar form 
- */
 float getRho (Point pt1, Point pt2)
 {
    return (pt1.y * pt2.x - pt2.y * pt1.x)/getEuclidDistance(pt1, pt2);
 }
 
-/**
- * @brief This function calculates the angle theta for the polar line form.
- *  (rho, theta)
- * @param pt1 starting point of the line
- * @param pt2 ending point of the line
- * @return theta the angle for the polar form
- */
 float getTheta (Point pt1, Point pt2)
 {
    return atan2((pt2.y - pt1.y), (pt2.x - pt1.x));
@@ -191,7 +177,6 @@ Vec4i getLaneMid (vector<Vec4i> lane)
 /**
  * @brief Thread for lane detection
  */
-
 void *laneDetection (void *arg)
 {
     cout << "THREAD: Lane detection started." << endl;
@@ -222,13 +207,15 @@ void *laneDetection (void *arg)
                 image.copyTo(warpedImage);
             }
             
+            Rect leftLineRoi, rightLineRoi;
+            
             autoAdjustImage(warpedImage);
             
             Mat grayImage;
             whiteColorFilter(warpedImage, grayImage);
             
-            Mat yellowImage;
-            yellowColorFilter(warpedImage, yellowImage);
+            //~ Mat yellowImage;
+            //~ yellowColorFilter(warpedImage, yellowImage);
             
             // Merge images
             //~ bitwise_or(grayImage, yellowImage, grayImage);
@@ -240,7 +227,9 @@ void *laneDetection (void *arg)
             vector<Vec4i> lines;
             detectLines(grayImage, lines);
             // Show lines
-            //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+            drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+            
+            // Filter lines
             vector<Vec4i> leftLines;
             vector<Vec4i> rightLines;
             vector<Vec4i> lane;
@@ -255,7 +244,8 @@ void *laneDetection (void *arg)
             }
             if (predictedLeftLines.size() > 0) {
                 predictedLane.push_back(predictedLeftLines[0]);
-                Rect leftLineRoi = Rect(Point(predictedLeftLines[0][0], predictedLeftLines[0][1]), Point(predictedLeftLines[0][2], predictedLeftLines[0][3]));
+                // Set left ROI with offset
+                leftLineRoi = Rect(Point(predictedLeftLines[0][0]-5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]+5, predictedLeftLines[0][3]+5));
                 setRoiLeft(leftLineRoi);
             }
             
@@ -265,7 +255,8 @@ void *laneDetection (void *arg)
             }
             if (predictedRightLines.size() > 0) {
                 predictedLane.push_back(predictedRightLines[0]);
-                Rect rightLineRoi = Rect(Point(predictedRightLines[0][0], predictedRightLines[0][1]), Point(predictedRightLines[0][2], predictedRightLines[0][3]));
+                // Set right ROI with offset
+                rightLineRoi = Rect(Point(predictedRightLines[0][0]-5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]+5, predictedRightLines[0][3]+5));
                 setRoiRight(rightLineRoi);
             }
             
@@ -280,9 +271,11 @@ void *laneDetection (void *arg)
             
             drawCenterLine(warpedImage, Scalar(0,255,0));
             
+            // Draw found ROI
             rectangle(warpedImage, getRoiLeft(), Scalar(255, 0, 0), 1);
             rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
             
+            //~ cvtColor(grayImage, warpedImage, CV_GRAY2BGR); //< Only for debugging
             setOutputImageData(warpedImage);
         }
     }
