@@ -174,6 +174,50 @@ Vec4i getLaneMid (vector<Vec4i> lane)
    return laneMid;
 }
 
+void imageFiltering (Mat image, vector<Vec4i>& lines)
+{
+    autoAdjustImage(image);
+            
+    Mat grayImage;
+    whiteColorFilter(image, grayImage);
+    
+    //~ Mat yellowImage;
+    //~ yellowColorFilter(image, yellowImage);
+    
+    // Merge images
+    //~ bitwise_or(image, yellowImage, grayImage);
+    
+    // Blur image
+    GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
+    
+    // Detect lines
+    detectLines(grayImage, lines);
+}
+
+void imageFiltering2 (Mat& image, vector<Point>& points)
+{
+    autoAdjustImage(image);
+    
+    Mat grayImage;
+    whiteColorFilter(image, grayImage);
+    
+    threshold(grayImage, grayImage, 200, 255, CV_THRESH_BINARY);
+    
+    bitwise_not(grayImage, grayImage);
+    
+    Mat distance;
+    distanceTransform(grayImage, distance, CV_DIST_L2, 3);
+    normalize(distance, distance, 0, 255, NORM_MINMAX);
+    
+    cvtColor(distance, image, CV_GRAY2BGR);
+}
+
+void resetRois (void)
+{
+    setRoiLeft(Rect(Point(0, 0), Point(640-1, 340-1)));
+    setRoiRight(Rect(Point(0, 0), Point(640-1, 340-1)));
+}
+
 /**
  * @brief Thread for lane detection
  */
@@ -207,75 +251,117 @@ void *laneDetection (void *arg)
                 image.copyTo(warpedImage);
             }
             
-            Rect leftLineRoi, rightLineRoi;
+            vector<Vec4i> lines, someLines;
+            Rect leftLineRoi = getRoiLeft();
+            Rect rightLineRoi = getRoiRight();
             
-            autoAdjustImage(warpedImage);
+            if ((leftLineRoi.width == image.cols) || (rightLineRoi.width == image.cols)) {
+                imageFiltering(warpedImage, lines);
+            }
+            else if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
+                imageFiltering(warpedImage(leftLineRoi), someLines);
+                lines.insert(lines.end(), someLines.begin(), someLines.end());
+                imageFiltering(warpedImage(rightLineRoi), someLines);
+                lines.insert(lines.end(), someLines.begin(), someLines.end());
+            }
             
-            Mat grayImage;
-            whiteColorFilter(warpedImage, grayImage);
-            
-            //~ Mat yellowImage;
-            //~ yellowColorFilter(warpedImage, yellowImage);
-            
-            // Merge images
-            //~ bitwise_or(grayImage, yellowImage, grayImage);
-            
-            // Blur image
-            GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
-            
-            // Detect lines
-            vector<Vec4i> lines;
-            detectLines(grayImage, lines);
-            // Show lines
-            drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
-            
-            // Filter lines
-            vector<Vec4i> leftLines;
-            vector<Vec4i> rightLines;
-            vector<Vec4i> lane;
-            filterLines(lines, grayImage.size(), leftLines, rightLines, lane);
-            
-            // Predict lane
-            vector<Vec4i> predictedLane;
-            if (leftLines.size() > 0) {
+            if (lines.size() > 0) {
+                // Show lines
+                drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
                 
-                predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
-                drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
+                // Filter lines
+                vector<Vec4i> leftLines;
+                vector<Vec4i> rightLines;
+                vector<Vec4i> lane;
+                filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
+                
+                // Predict lane
+                vector<Vec4i> predictedLane;
+                if (leftLines.size() > 0) {
+                    
+                    predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
+                    drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
+                }
+                if (predictedLeftLines.size() > 0) {
+                    predictedLane.push_back(predictedLeftLines[0]);
+                    // Set left ROI with offset
+                    if (predictedLeftLines[0][0] <= predictedLeftLines[0][2]) {
+                        leftLineRoi = Rect(Point(predictedLeftLines[0][0]-5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]+5, predictedLeftLines[0][3]+5));
+                    }
+                    else {
+                        leftLineRoi = Rect(Point(predictedLeftLines[0][0]+5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]-5, predictedLeftLines[0][3]+5));
+                    }
+                    
+                    setRoiLeft(leftLineRoi);
+                }
+                
+                if (rightLines.size() > 0) {
+                    predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
+                    drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
+                }
+                if (predictedRightLines.size() > 0) {
+                    predictedLane.push_back(predictedRightLines[0]);
+                    // Set right ROI with offset
+                    if (predictedRightLines[0][0] <= predictedRightLines[0][2]) {
+                        rightLineRoi = Rect(Point(predictedRightLines[0][0]-5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]+5, predictedRightLines[0][3]+5));
+                    }
+                    else {
+                        rightLineRoi = Rect(Point(predictedRightLines[0][0]+5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]-5, predictedRightLines[0][3]+5));
+                    }
+                    setRoiRight(rightLineRoi);
+                }
+                
+                // Check if lines are parallel
+                if (predictedLane.size() == 2) {
+                    checkParallelLine(predictedLane);
+                    drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
+                    // Save detected lane
+                    setActualLane(predictedLane);
+                }
+                predictedLane.clear();
+                
+                drawCenterLine(warpedImage, Scalar(0,255,0));
+                
+                // Draw found ROI
+                rectangle(warpedImage, getRoiLeft(), Scalar(255, 0, 0), 1);
+                rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
             }
-            if (predictedLeftLines.size() > 0) {
-                predictedLane.push_back(predictedLeftLines[0]);
-                // Set left ROI with offset
-                leftLineRoi = Rect(Point(predictedLeftLines[0][0]-5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]+5, predictedLeftLines[0][3]+5));
-                setRoiLeft(leftLineRoi);
+            else {
+                resetRois();
             }
-            
-            if (rightLines.size() > 0) {
-                predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
-                drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
-            }
-            if (predictedRightLines.size() > 0) {
-                predictedLane.push_back(predictedRightLines[0]);
-                // Set right ROI with offset
-                rightLineRoi = Rect(Point(predictedRightLines[0][0]-5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]+5, predictedRightLines[0][3]+5));
-                setRoiRight(rightLineRoi);
-            }
-            
-            // Check if lines are parallel
-            if (predictedLane.size() == 2) {
-                checkParallelLine(predictedLane);
-                drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
-                // Save detected lane
-                setActualLane(predictedLane);
-            }
-            predictedLane.clear();
-            
-            drawCenterLine(warpedImage, Scalar(0,255,0));
-            
-            // Draw found ROI
-            rectangle(warpedImage, getRoiLeft(), Scalar(255, 0, 0), 1);
-            rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
             
             //~ cvtColor(grayImage, warpedImage, CV_GRAY2BGR); //< Only for debugging
+            setOutputImageData(warpedImage);
+        }
+    }
+    
+    cout << "THREAD: Lane detection ended." << endl;
+    
+    return NULL;
+}
+
+
+void *laneDetection2 (void *arg)
+{
+    cout << "THREAD: Lane detection started." << endl;
+    
+    while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
+        Mat image, homography;
+        getInputImageData(image);
+        getHomography(homography);
+        
+        if (!image.empty()) {
+            Mat warpedImage;
+            if (!homography.empty()) {
+                inversePerspectiveTransform(image, warpedImage, homography);
+            }
+            else {
+                image.copyTo(warpedImage);
+            }
+            
+            vector<Point> points;
+            imageFiltering2(warpedImage, points);
+            
             setOutputImageData(warpedImage);
         }
     }
