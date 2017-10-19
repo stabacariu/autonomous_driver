@@ -5,6 +5,7 @@
  */
 
 #include "lane_detection.hpp"
+#include <fstream>
 
 using namespace std;
 using namespace cv;
@@ -65,7 +66,9 @@ void detectLines (Mat grayImage, vector<Vec4i>& lines)
    lines.clear();
 
    Mat imageEdges;
-   Canny(grayImage, imageEdges, 10, 30);
+   // Canny(grayImage, imageEdges, 10, 30);
+   Sobel(grayImage, imageEdges, CV_16S, 1, 0, 1);
+   convertScaleAbs(imageEdges, imageEdges);
 
    /**
     * Find lines with probabilistic Hough line function.
@@ -194,24 +197,6 @@ void imageFiltering (Mat image, vector<Vec4i>& lines)
     detectLines(grayImage, lines);
 }
 
-void imageFiltering2 (Mat& image, vector<Point>& points)
-{
-    autoAdjustImage(image);
-    
-    Mat grayImage;
-    whiteColorFilter(image, grayImage);
-    
-    threshold(grayImage, grayImage, 200, 255, CV_THRESH_BINARY);
-    
-    bitwise_not(grayImage, grayImage);
-    
-    Mat distance;
-    distanceTransform(grayImage, distance, CV_DIST_L2, 3);
-    normalize(distance, distance, 0, 255, NORM_MINMAX);
-    
-    cvtColor(distance, image, CV_GRAY2BGR);
-}
-
 void resetRois (void)
 {
     setRoiLeft(Rect(Point(0, 0), Point(640-1, 340-1)));
@@ -255,19 +240,22 @@ void *laneDetection (void *arg)
             Rect leftLineRoi = getRoiLeft();
             Rect rightLineRoi = getRoiRight();
             
-            if ((leftLineRoi.width == image.cols) || (rightLineRoi.width == image.cols)) {
-                imageFiltering(warpedImage, lines);
-            }
-            else if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
-                imageFiltering(warpedImage(leftLineRoi), someLines);
-                lines.insert(lines.end(), someLines.begin(), someLines.end());
-                imageFiltering(warpedImage(rightLineRoi), someLines);
-                lines.insert(lines.end(), someLines.begin(), someLines.end());
-            }
+            
+            imageFiltering(warpedImage, lines);
+            
+            //~ if ((leftLineRoi.width == image.cols) || (rightLineRoi.width == image.cols)) {
+                //~ imageFiltering(warpedImage, lines);
+            //~ }
+            //~ else if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
+                //~ imageFiltering(warpedImage(leftLineRoi), someLines);
+                //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
+                //~ imageFiltering(warpedImage(rightLineRoi), someLines);
+                //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
+            //~ }
             
             if (lines.size() > 0) {
                 // Show lines
-                drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+                //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
                 
                 // Filter lines
                 vector<Vec4i> leftLines;
@@ -340,6 +328,30 @@ void *laneDetection (void *arg)
     return NULL;
 }
 
+void imageFiltering2 (Mat& image, vector<Point>& points)
+{
+    autoAdjustImage(image);
+    
+    Mat grayImage;
+    whiteColorFilter(image, grayImage);
+    
+    Mat imageEdges;
+    Canny(grayImage, imageEdges, 10, 30);
+    
+    bitwise_not(imageEdges, imageEdges);
+    
+    Mat distance;
+    distanceTransform(imageEdges, distance, CV_DIST_C, CV_DIST_MASK_3);
+    
+    ofstream logging;
+    logging.open("../output/log_distance.txt");
+    logging << "Distance " << distance << endl;
+    logging.close();
+    
+    normalize(distance, distance, 0, 255, NORM_MINMAX);
+    
+    cvtColor(distance, image, CV_GRAY2BGR);
+}
 
 void *laneDetection2 (void *arg)
 {
