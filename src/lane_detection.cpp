@@ -66,15 +66,15 @@ void detectLines (Mat grayImage, vector<Vec4i>& lines)
    lines.clear();
 
    Mat imageEdges;
-   // Canny(grayImage, imageEdges, 10, 30);
-   Sobel(grayImage, imageEdges, CV_16S, 1, 0, 1);
+   Canny(grayImage, imageEdges, 10, 30);
+   //~ Sobel(grayImage, imageEdges, CV_16S, 1, 0, 1);
    convertScaleAbs(imageEdges, imageEdges);
 
    /**
     * Find lines with probabilistic Hough line function.
-    * Note: threshold 35 seems to be optimal
-    * Note: minLineLength 40 seems to be optimal
-    * Note: maxLineGap 10 seems to be optimal
+    * @note threshold 35 seems to be optimal
+    * @note minLineLength 40 seems to be optimal
+    * @note maxLineGap 10 seems to be optimal
     */
    HoughLinesP(imageEdges, lines, 1, CV_PI/180, 35, 40, 10);
    
@@ -177,7 +177,7 @@ Vec4i getLaneMid (vector<Vec4i> lane)
    return laneMid;
 }
 
-void imageFiltering (Mat image, vector<Vec4i>& lines)
+void imageFiltering (Mat& image, vector<Vec4i>& lines)
 {
     autoAdjustImage(image);
             
@@ -195,6 +195,7 @@ void imageFiltering (Mat image, vector<Vec4i>& lines)
     
     // Detect lines
     detectLines(grayImage, lines);
+    cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void resetRois (void)
@@ -253,6 +254,10 @@ void *laneDetection (void *arg)
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
             //~ }
             
+            if (lines.size() <= 0) {
+                lines.insert(lines.end(), predictedLines.begin(), predictedLines.end());
+            }
+            
             if (lines.size() > 0) {
                 // Show lines
                 //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
@@ -266,7 +271,6 @@ void *laneDetection (void *arg)
                 // Predict lane
                 vector<Vec4i> predictedLane;
                 if (leftLines.size() > 0) {
-                    
                     predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
                     drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
                 }
@@ -305,8 +309,9 @@ void *laneDetection (void *arg)
                     drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
                     // Save detected lane
                     setActualLane(predictedLane);
+                    
+                    predictedLane.clear();
                 }
-                predictedLane.clear();
                 
                 drawCenterLine(warpedImage, Scalar(0,255,0));
                 

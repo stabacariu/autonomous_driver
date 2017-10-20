@@ -18,11 +18,19 @@ void autoAdjustImage (Mat& image)
 {
     double minValue, maxValue;
     minMaxLoc(image, &minValue, &maxValue);
-    double range = maxValue - minValue;
+    double range = maxValue - 50 - minValue;
     double targetRange = 255;
     double alpha = targetRange/range;
     double beta = (-1) * minValue * alpha;
     image.convertTo(image, -1, alpha, beta);
+    
+    //~ Mat yuvImage;
+    //~ cvtColor(image, yuvImage, CV_BGR2YUV);
+    //~ vector<Mat> yuvChannels;
+    //~ split(yuvImage, yuvChannels);
+    //~ equalizeHist(yuvChannels[0], yuvChannels[0]);
+    //~ merge(yuvChannels, yuvImage);
+    //~ cvtColor(yuvImage, image, CV_YUV2BGR);
 }
 
 /**
@@ -33,6 +41,11 @@ void autoAdjustImage (Mat& image)
  */
 void whiteColorFilter (Mat image, Mat& filteredImage)
 {
+    
+    //~ Mat imageHLS;
+    //~ cvtColor(image, imageHLS, CV_BGR2HLS);
+    //~ inRange(imageHLS, Scalar(175, 0, 0), Scalar(180, 255, 255), filteredImage);
+    //~ cvtColor(filteredImage, filteredImage, CV_HLS2BGR);
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
     threshold(grayImage, filteredImage, 235, 255, CV_THRESH_BINARY); // lower threshold 235 - 240
