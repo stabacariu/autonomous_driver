@@ -9,12 +9,16 @@
  */
 
 #include <iostream>
+#include "configuration.hpp"
 #include "autonomous_driver.hpp"
 #include "user_interface.hpp"
+#include "motor_driver.hpp"
 
 int main (int argc, char *argv[])
 {
     // Startup
+    initConfig();
+    
     // Init system state
     initSystemState();
     initUiState();

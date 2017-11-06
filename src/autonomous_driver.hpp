@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <pthread.h>
-#include "image_processing.hpp"
+#include "image_show.hpp"
 #include "lane_detection.hpp"
 #include "traffic_sign_detection.hpp"
 #include "user_interface.hpp"

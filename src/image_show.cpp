@@ -1,10 +1,10 @@
 /**
- * @file image_preprocessing.cpp
+ * @file image_show.cpp
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
  */
 
-#include "image_processing.hpp"
+#include "image_show.hpp"
 
 using namespace std;
 using namespace cv;
@@ -21,14 +21,14 @@ void *showInputImage (void *arg)
         getInputImageData(image);
         
         // Undistort captured image
-        Mat intrinsics, diffCoeffs;
-        getIntrinsics(intrinsics, diffCoeffs);
-        if (!intrinsics.empty() && !diffCoeffs.empty()) {
-            undistort(image, image, intrinsics, diffCoeffs);
+        Mat cameraMatrix, diffCoeffs;
+        getIntrinsics(cameraMatrix, diffCoeffs);
+        if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
+            undistort(image, image, cameraMatrix, diffCoeffs);
         }
         // Apply perspective transform
         Mat homography;
-        getHomography(homography);
+        getExtrinsics(homography);
         if (!homography.empty()) {
             inversePerspectiveTransform(image, image, homography);
         }

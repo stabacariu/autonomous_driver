@@ -1,11 +1,11 @@
 /**
- * @file image_processing.hpp
+ * @file image_show.hpp
  * @author Sergiu-Petru Tabacariu
- * @date 30.6.2017
+ * @date 24.10.2017
  */
 
-#ifndef IMAGE_PROCESSING_HPP
-#define IMAGE_PROCESSING_HPP
+#ifndef IMAGE_SHOW_HPP
+#define IMAGE_SHOW_HPP
 
 #include <iostream>
 #include <pthread.h>
@@ -19,4 +19,4 @@
 void *showInputImage (void *arg);
 void *showOutputImage (void *arg);
 
-#endif // IMAGE_PROCESSING_HPP
+#endif // IMAGE_SHOW_HPP

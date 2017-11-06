@@ -174,6 +174,9 @@ void processUiInput (Mat& image, char key)
     }
     // Key handling for configuration mode
     else if (state == UI_MODE_CONFIG) {
+        FileStorage fs("../config/config.xml", FileStorage::WRITE);
+        ConfigData c;
+        
         if ((key == 'Q') || (key == 'q')) {
             configState = CONFIG_MODE_NONE;
             state = UI_MODE_CLOSING;
@@ -191,7 +194,7 @@ void processUiInput (Mat& image, char key)
                 //! @todo reset configuration
                 cout << "Resetting config..." << endl;
                 Mat homography;
-                setHomography(homography);
+                setExtrinsics(homography);
             }
             else if (key == 'I') {
                 configState = CONFIG_MODE_CALIB_INTRINSICS;
@@ -211,13 +214,15 @@ void processUiInput (Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                //! @todo reset configuration
                 cout << "Resetting config..." << endl;
                 Mat homography;
-                setHomography(homography);
+                setExtrinsics(homography);
+                //! @todo reset configuration
             }
             else if (key == 'S') {
                 cout << "Saving config..." << endl;
+                c = getConfigData();
+                saveConfig(fs, c);
                 //! @todo Save configuration
             }
         }
@@ -229,13 +234,15 @@ void processUiInput (Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                //! @todo reset configuration
                 cout << "Resetting config..." << endl;
                 Mat homography;
-                setHomography(homography);
+                setExtrinsics(homography);
+                //! @todo reset configuration
             }
             else if (key == 'S') {
                 cout << "Saving config..." << endl;
+                c = getConfigData();
+                saveConfig(fs, c);
                 //! @todo Save configuration
             }
         }
@@ -247,15 +254,15 @@ void processUiInput (Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                //! @todo reset configuration
                 cout << "Resetting config..." << endl;
+                //! @todo reset configuration
             }
             else if (key == 'S') {
                 cout << "Saving config..." << endl;
                 //! @todo Save configuration
             }
         }
-        
+        fs.release();
     }
     // Key handling for about mode
     else if (state == UI_MODE_ABOUT) {

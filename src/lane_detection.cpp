@@ -177,7 +177,7 @@ Vec4i getLaneMid (vector<Vec4i> lane)
    return laneMid;
 }
 
-void imageFiltering (Mat& image, vector<Vec4i>& lines)
+void imageProcessing (Mat& image, vector<Vec4i>& lines)
 {
     autoAdjustImage(image);
             
@@ -195,7 +195,7 @@ void imageFiltering (Mat& image, vector<Vec4i>& lines)
     
     // Detect lines
     detectLines(grayImage, lines);
-    cvtColor(grayImage, image, CV_GRAY2BGR);
+    //~ cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void resetRois (void)
@@ -226,7 +226,7 @@ void *laneDetection (void *arg)
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
-        getHomography(homography);
+        getExtrinsics(homography);
         
         if (!image.empty()) {
             Mat warpedImage;
@@ -242,15 +242,15 @@ void *laneDetection (void *arg)
             Rect rightLineRoi = getRoiRight();
             
             
-            imageFiltering(warpedImage, lines);
+            imageProcessing(warpedImage, lines);
             
             //~ if ((leftLineRoi.width == image.cols) || (rightLineRoi.width == image.cols)) {
-                //~ imageFiltering(warpedImage, lines);
+                //~ imageProcessing(warpedImage, lines);
             //~ }
             //~ else if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
-                //~ imageFiltering(warpedImage(leftLineRoi), someLines);
+                //~ imageProcessing(warpedImage(leftLineRoi), someLines);
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
-                //~ imageFiltering(warpedImage(rightLineRoi), someLines);
+                //~ imageProcessing(warpedImage(rightLineRoi), someLines);
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
             //~ }
             
@@ -333,7 +333,7 @@ void *laneDetection (void *arg)
     return NULL;
 }
 
-void imageFiltering2 (Mat& image, vector<Point>& points)
+void imageProcessing2 (Mat& image, vector<Point>& points)
 {
     autoAdjustImage(image);
     
@@ -365,7 +365,7 @@ void *laneDetection2 (void *arg)
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
-        getHomography(homography);
+        getExtrinsics(homography);
         
         if (!image.empty()) {
             Mat warpedImage;
@@ -377,7 +377,7 @@ void *laneDetection2 (void *arg)
             }
             
             vector<Point> points;
-            imageFiltering2(warpedImage, points);
+            imageProcessing2(warpedImage, points);
             
             setOutputImageData(warpedImage);
         }

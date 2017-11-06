@@ -430,7 +430,7 @@ void drawCalibIntrinsics (Mat& image)
     Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
-    string titleText = "Calibrate Intrinsics";
+    string titleText = "Calibrate cameraMatrix";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;

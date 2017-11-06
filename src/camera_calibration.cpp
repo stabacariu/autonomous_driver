@@ -20,7 +20,7 @@ void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>&
     }
 }
 
-void calibrateIntrinsics (Mat image, Mat& intrinsics, Mat& distCoeffs, Size boardSize, double squareSize, int sampleCnt)
+void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size boardSize, double squareSize, int sampleCnt)
 {
     //~ int sampleCnt = 50;
     //~ double squareSize = 30.0; //!< Chessboard square size is 30 mm
@@ -43,24 +43,24 @@ void calibrateIntrinsics (Mat image, Mat& intrinsics, Mat& distCoeffs, Size boar
         }
     }
     
-    intrinsics = Mat::eye(3, 3, CV_64F); //!< Intrinsic camera matrix
+    cameraMatrix = Mat::eye(3, 3, CV_64F); //!< Intrinsic camera matrix
     distCoeffs = Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
     vector<Mat> rvecs; //!< Rotation vectors
     vector<Mat> tvecs; //!< Translation vectors
     
     // Set aspect ratio
-    intrinsics.at<double>(1, 1) = aspRatio;
+    cameraMatrix.at<double>(1, 1) = aspRatio;
     // Calculate cornerpoints
     vector<vector<Point3f> > objectPoints(1);
     calcBoardCornerPosition(boardSize, squareSize, objectPoints[0]);
     objectPoints.resize(imagePoints.size(), objectPoints[0]);
     
     // Calibrate camera and get reprojection error rms
-    double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), intrinsics, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
+    double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
     
     
     //vector<double> reprojErrs;
-    //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, intrinsics, distCoeffs, reprojErrs, 1);
+    //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, cameraMatrix, distCoeffs, reprojErrs, 1);
     
     //! @todo Save intrinsic calibration to XML file
 }
@@ -76,23 +76,30 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
     if (found) {
         cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
         
-        Point2f objectPoints[4], imagePoints[4];
+        Point2f objectPoints[4];
         objectPoints[0] = Point2f(0, 0);
-        objectPoints[1] = Point2f(boardSize.width-1, 0);
-        objectPoints[2] = Point2f(0, boardSize.height-1);
-        objectPoints[3] = Point2f(boardSize.width-1, boardSize.height-1);
+        objectPoints[1] = Point2f((boardSize.width-1)*squareSize, 0);
+        objectPoints[2] = Point2f(0, (boardSize.height-1)*squareSize);
+        objectPoints[3] = Point2f((boardSize.width-1)*squareSize, (boardSize.height-1)*squareSize);
+        Point2f imagePoints[4];
         imagePoints[0] = corners[0];
         imagePoints[1] = corners[boardSize.width-1];
         imagePoints[2] = corners[(boardSize.height-1)*boardSize.width];
         imagePoints[3] = corners[(boardSize.height-1)*boardSize.width + boardSize.width-1];
         
+        
         homography = getPerspectiveTransform(objectPoints, imagePoints);
         
         // Shift to image center
+        //~ Mat t = Mat::eye(3, 3, CV_64F);
+        //~ t.at<double>(0, 2) = image.cols/2 * (-1) + 3*15; // Shift width
+        //~ t.at<double>(1, 2) = image.rows * (-1) + 2*3*15; // Shift height
+        //~ t.at<double>(2, 2) = 15;
+        //~ homography *= t;
         Mat t = Mat::eye(3, 3, CV_64F);
-        t.at<double>(0, 2) = image.cols/2 * (-1) + 3*15; // Shift width
-        t.at<double>(1, 2) = image.rows * (-1) + 2*3*15; // Shift height
-        t.at<double>(2, 2) = 15;
+        t.at<double>(0, 2) = (image.cols-1)/2 * (-1) + 0.5*(squareSize*(boardSize.width-1)/2); // Shift width
+        t.at<double>(1, 2) = (image.rows-1) * (-1) + 0.5*(squareSize*(boardSize.height)); // Shift height
+        t.at<double>(2, 2) = 0.5;
         homography *= t;
     }
     

@@ -112,7 +112,7 @@ void systemStandbyMode (void)
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
     
-    // Join threads
+    // Join threads in the same sequence as they where created
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
@@ -187,7 +187,6 @@ void systemRCMode (void)
     
     setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE + MODULE_CONTROL_REMOTE);
     
-    //! @todo RC mode
     pthread_t cameraCaptureThread;
     pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
@@ -330,7 +329,7 @@ void systemAboutMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: About Mode" << endl;
-    //! @todo About mode
+    
     setModuleState(MODULE_SHOW_OUT_IMAGE);
     
     pthread_t showOutputImageThread;
@@ -348,8 +347,8 @@ void systemErrorMode (void)
 {
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Error Mode" << endl;
-    //! @todo ERROR mode
     
+    //! @todo ERROR mode
     setModuleState(MODULE_NONE);
     
     while (getSystemState() == SYS_MODE_ERROR) {

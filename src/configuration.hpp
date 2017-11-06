@@ -34,6 +34,7 @@ struct ConfigState {
  * This structure holds all configuration data with a mutex lock.
  */
 struct ConfigData {
+    cv::Size imageSize; //!< Image size
     cv::Size boardSize; //!< Number of chessboard squares
     double squareSize; //! Size of a chessboard square in mm
     
@@ -64,8 +65,10 @@ struct ConfigData {
     
     cv::Mat homography; //!< Homography for perspective transform
     cv::Mat transformation; //!< Transformation matrix for image position
-    cv::Mat intrinsics; //!< Intrinsic camera matrix
+    cv::Mat cameraMatrix; //!< Intrinsic camera matrix
     cv::Mat diffCoeffs; //!< Differential coeffitiens for undistortion
+
+    float pixelPerMm; //!< Average mm per pixel
     
     pthread_mutex_t lock; //!< Lock exlusiv access
 };
@@ -82,10 +85,16 @@ void initConfig (void);
 
 void setConfigState (ConfigMode mode);
 ConfigMode getConfigState (void);
-void setHomography (cv::Mat homography);
-void getHomography (cv::Mat& homography);
-void setIntrinsics (cv::Mat intrinsics, cv::Mat diffCoeffs);
-void getIntrinsics (cv::Mat& intrinsics, cv::Mat& diffCoeffs);
+
+ConfigData getConfigData (void);
+void setConfigData (ConfigData c);
+void setExtrinsics (cv::Mat homography);
+void getExtrinsics (cv::Mat& homography);
+void setIntrinsics (cv::Mat cameraMatrix, cv::Mat diffCoeffs);
+void getIntrinsics (cv::Mat& cameraMatrix, cv::Mat& diffCoeffs);
+
+void saveConfig(cv::FileStorage& fs, ConfigData c);
+void loadConfig(cv::FileStorage fs, ConfigData& c);
 
 void *configCalibIntrinsics(void *arg);
 void *configCalibExtrinsics (void *arg);
