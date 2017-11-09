@@ -9,10 +9,9 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "configuration.hpp"
 #include "autonomous_driver.hpp"
 #include "image_data.hpp"
-
-//void cameraCaptureInit (void);
 
 /**
  * @brief Thread for capturing a camera image

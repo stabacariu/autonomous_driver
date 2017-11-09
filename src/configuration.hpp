@@ -34,41 +34,29 @@ struct ConfigState {
  * This structure holds all configuration data with a mutex lock.
  */
 struct ConfigData {
-    cv::Size imageSize; //!< Image size
-    cv::Size boardSize; //!< Number of chessboard squares
-    double squareSize; //! Size of a chessboard square in mm
-    
-    int sampleCnt; //! Number of samples to use for calibration
-    double aspectRatio; //! Aspect ratio of input image
-    bool calibZeroTangentDist; //!< Assume zero tangential distortion
-    bool calibFixPrincipalPoint; //!< Fix principal point at the center
-    int calibFlags; //!< Calibration flags
-    
-    std::string outputFileName; //!< File name of config file
-    
-    bool showUndistorted; //!< Show undistorted image after calibration
-    bool flipVertical; //1< Flip input image around the horizonal axis
-    
-    cv::VideoCapture inputCapture; //!<
+    // Camera config
     int cameraID; //!< Camera identification
-    std::string input; //!< Input file
-    std::vector<std::string> imageList; //!< Image list for calibration
-    size_t imageListCnt; //!< Image list counter
-    int inputDelay; //!< Video input delay
-    bool validData; //!< Valid input flag
-    
-    bool fixK1; //!< Fix K1 distortion coefficient
-    bool fixK2; //!< Fix K2 distortion coefficient
-    bool fixK3; //!< Fix K3 distortion coefficient
-    bool fixK4; //!< Fix K4 distortion coefficient
-    bool fixK5; //!< Fix K5 distortion coefficient
-    
-    cv::Mat homography; //!< Homography for perspective transform
-    cv::Mat transformation; //!< Transformation matrix for image position
+    cv::Size cameraImageSize; //!< Camera image size
+    int cameraFPS; //!< Camera frames per second
+    // Calibration config
+    std::string calibrationTime; //!< Calibration time stamp
+    cv::Size calibrationImageSize; //!< Calibration image size
+    std::string calibrationPattern; //!< Calibration pattern
+    cv::Size calibrationPatternDimension; //!< Calibration Pattern dimension
+    double calibrationPatternSize; //! Size of a pattern element in mm
+    int calibrationSampleCount; //! Number of samples to use for calibration
+    // Calibration data
+    bool calibIntrinsicDone; //! Calibration done flag
     cv::Mat cameraMatrix; //!< Intrinsic camera matrix
     cv::Mat diffCoeffs; //!< Differential coeffitiens for undistortion
-
+    bool calibExtrinsicDone; //! Calibration done flag
+    cv::Mat homography; //!< Homography for extrinsic calibration
+    cv::Mat transformation; //!< Transformation matrix for image position
     float pixelPerMm; //!< Average mm per pixel
+    
+    bool validData; //!< Valid input flag
+    
+    std::string defaultConfigFileName; //! Default config file name
     
     pthread_mutex_t lock; //!< Lock exlusiv access
 };
@@ -88,17 +76,28 @@ ConfigMode getConfigState (void);
 
 ConfigData getConfigData (void);
 void setConfigData (ConfigData c);
-void setExtrinsics (cv::Mat homography);
-void getExtrinsics (cv::Mat& homography);
-void setIntrinsics (cv::Mat cameraMatrix, cv::Mat diffCoeffs);
-void getIntrinsics (cv::Mat& cameraMatrix, cv::Mat& diffCoeffs);
 
-void saveConfig(cv::FileStorage& fs, ConfigData c);
-void loadConfig(cv::FileStorage fs, ConfigData& c);
+int getCameraID (void);
+cv::Size getImageSize (void);
+int getFPS (void);
+cv::Size getBoardSize (void);
+double getSquareSize (void);
+void setExtr (cv::Mat homography);
+void getExtr (cv::Mat& homography);
+void setIntr (cv::Mat cameraMatrix, cv::Mat diffCoeffs);
+void getIntr (cv::Mat& cameraMatrix, cv::Mat& diffCoeffs);
 
-void *configCalibIntrinsics(void *arg);
-void *configCalibExtrinsics (void *arg);
-void *configImagePosition (void *arg);
+void saveCalibConfig (cv::FileStorage& fs, ConfigData c);
+void saveCalibConfig (void);
+void loadConfig (cv::FileStorage fs, ConfigData& c);
+void loadConfig (void);
+void generateDefaultConfig (void);
+void loadDefaultConfig (cv::FileStorage fs, ConfigData& c);
+bool validateConfig (ConfigData& c);
+
+void *configCalibIntr (void *arg);
+void *configCalibExtr (void *arg);
+void *configImagePos (void *arg);
 void *showChessBoard (void *arg);
 
 #endif

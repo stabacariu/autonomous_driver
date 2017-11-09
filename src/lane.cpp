@@ -19,8 +19,9 @@ void initLaneData (void)
     pthread_mutex_init(&actualPosition.lock, NULL);
     pthread_mutex_init(&targetPosition.lock, NULL);
     
-    setRoiLeft(Rect(Point(0, 0), Point(640-1, 340-1)));
-    setRoiRight(Rect(Point(0, 0), Point(640-1, 340-1)));
+    Size imageSize = getImageSize();
+    setRoiLeft(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
+    setRoiRight(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
 }
 
 

@@ -12,9 +12,9 @@ using namespace cv;
 void CameraConfig::write (FileStorage& fs) const
 {
     fs << "{"
-    << "board_size_width" << boardSize.width
-    << "board_size_height" << boardSize.height
-    << "square_size" << squareSize
+    << "board_size_width" << calibrationPatternDimension.width
+    << "board_size_height" << calibrationPatternDimension.height
+    << "square_size" << calibrationPatternSize
     
     << "calibration_pattern" << patternToUse
     << "calibration_nr_of_samples" << sampleCnt
@@ -37,9 +37,9 @@ void CameraConfig::write (FileStorage& fs) const
 
 void CameraConfig::read (const FileNode& node)
 {
-    node["board_size_width"] >> boardSize.width;
-    node["board_size_height"] >> boardSize.height;
-    node["square_size"] >> squareSize;
+    node["board_size_width"] >> calibrationPatternDimension.width;
+    node["board_size_height"] >> calibrationPatternDimension.height;
+    node["square_size"] >> calibrationPatternSize;
     
     node["calibration_pattern"] >> patternToUse;
     node["calibration_nr_of_samples"] >> sampleCnt;
@@ -72,11 +72,11 @@ void CameraConfig::validate (void)
     validData = true;
     
     // Check pattern config
-    if ((boardSize.width <= 0) || (boardSize.height <= 0)) {
+    if ((calibrationPatternDimension.width <= 0) || (calibrationPatternDimension.height <= 0)) {
         cerr << "ERROR: Invalid board size!" << endl;
         validData = false;
     }
-    if (squareSize <= 10e-6) {
+    if (calibrationPatternSize <= 10e-6) {
         cerr << "ERROR: Invalid square size!" << endl;
         validData = false;
     }
@@ -235,9 +235,9 @@ void saveCameraConfig (CameraConfig& config, Size& imageSize, Mat& cameraMatrix,
     }
     fs << "image_width" << imageSize.width;
     fs << "image_height" << imageSize.height;
-    fs << "board_width" << config.boardSize.width;
-    fs << "board_height" << config.boardSize.height;
-    fs << "square_size" << config.squareSize;
+    fs << "board_width" << config.calibrationPatternDimension.width;
+    fs << "board_height" << config.calibrationPatternDimension.height;
+    fs << "square_size" << config.calibrationPatternSize;
     
     // Save calibration data
     if (config.calibFlags & CALIB_FIX_ASPECT_RATIO) {

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<cameraID>0</cameraID>
+<cameraImageSize_width>640</cameraImageSize_width>
+<cameraImageSize_height>360</cameraImageSize_height>
+<cameraFPS>10</cameraFPS>
+<calibrationImageSize_width>640</calibrationImageSize_width>
+<calibrationImageSize_height>360</calibrationImageSize_height>
+<calibrationPattern>""</calibrationPattern>
+<calibrationPatternDimension_width>7</calibrationPatternDimension_width>
+<calibrationPatternDimension_height>5</calibrationPatternDimension_height>
+<calibrationPatternSize>30.</calibrationPatternSize>
+<calibIntrinsicDone>0</calibIntrinsicDone>
+<cameraMatrix type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></cameraMatrix>
+<diffCoeffs type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></diffCoeffs>
+<calibExtrinsicDone>1</calibExtrinsicDone>
+<homography type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    9.4454913189220413e-01 -5.0636020176433283e-01
+    3.2869826845791437e+00 -2.1435041787782438e-02
+    8.4814243726670346e-02 1.0075967296731766e+02
+    -3.8118621932935887e-05 -1.5683377305035738e-03
+    9.5585241787263930e-01</data></homography>
+<transformation type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></transformation>
+<pixelPerMm>2.3738738193336452e+31</pixelPerMm>
+<validData>0</validData>
+</opencv_storage>

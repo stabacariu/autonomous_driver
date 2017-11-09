@@ -13,10 +13,10 @@ void *cameraCapture (void *arg)
 {
     cout << "THREAD: Camera capture started." << endl;
     // Initalize camera
-    VideoCapture camera(CV_CAP_ANY);
-    camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    camera.set(CV_CAP_PROP_FRAME_HEIGHT, 360); //480
-    camera.set(CV_CAP_PROP_FPS, 10);
+    VideoCapture camera(getCameraID());
+    camera.set(CV_CAP_PROP_FRAME_WIDTH, getImageSize().width);
+    camera.set(CV_CAP_PROP_FRAME_HEIGHT, getImageSize().height); //480
+    camera.set(CV_CAP_PROP_FPS, getFPS());
     
     if (!camera.isOpened()) {
         cerr << "ERROR: Could not open camera!" << endl;
@@ -37,13 +37,13 @@ void *cameraCapture (void *arg)
             //! @note Do not undistort or warp image here!
             // Undistort captured image
             //~ Mat cameraMatrix, diffCoeffs;
-            //~ getIntrinsics(cameraMatrix, diffCoeffs);
+            //~ getIntr(cameraMatrix, diffCoeffs);
             //~ if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
                 //~ undistort(image, image, cameraMatrix, diffCoeffs);
             //~ }
             //~ // Apply perspective transform
             //~ Mat homography;
-            //~ getExtrinsics(homography);
+            //~ getExtr(homography);
             //~ if (!homography.empty()) {
                 //~ inversePerspectiveTransform(image, image, homography);
             //~ }

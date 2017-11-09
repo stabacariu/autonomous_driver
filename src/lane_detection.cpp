@@ -5,7 +5,6 @@
  */
 
 #include "lane_detection.hpp"
-#include <fstream>
 
 using namespace std;
 using namespace cv;
@@ -198,10 +197,10 @@ void imageProcessing (Mat& image, vector<Vec4i>& lines)
     //~ cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
-void resetRois (void)
+void resetRois (Size imageSize)
 {
-    setRoiLeft(Rect(Point(0, 0), Point(640-1, 340-1)));
-    setRoiRight(Rect(Point(0, 0), Point(640-1, 340-1)));
+    setRoiLeft(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
+    setRoiRight(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
 }
 
 /**
@@ -226,12 +225,13 @@ void *laneDetection (void *arg)
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
-        getExtrinsics(homography);
+        getExtr(homography);
         
         if (!image.empty()) {
             Mat warpedImage;
             if (!homography.empty()) {
-                inversePerspectiveTransform(image, warpedImage, homography);
+                //~ inversePerspectiveTransform(image, warpedImage, homography);
+                warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             }
             else {
                 image.copyTo(warpedImage);
@@ -320,7 +320,7 @@ void *laneDetection (void *arg)
                 rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
             }
             else {
-                resetRois();
+                resetRois(image.size());
             }
             
             //~ cvtColor(grayImage, warpedImage, CV_GRAY2BGR); //< Only for debugging
@@ -365,12 +365,14 @@ void *laneDetection2 (void *arg)
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
-        getExtrinsics(homography);
+        getExtr(homography);
         
         if (!image.empty()) {
             Mat warpedImage;
             if (!homography.empty()) {
-                inversePerspectiveTransform(image, warpedImage, homography);
+                //~ inversePerspectiveTransform(image, warpedImage, homography);
+                warpPerspective(image, image, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+                
             }
             else {
                 image.copyTo(warpedImage);

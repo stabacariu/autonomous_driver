@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "configuration.hpp"
 
 enum LaneMarking {
     LANE_MARKING_NONE,

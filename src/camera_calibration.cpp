@@ -9,21 +9,19 @@
 using namespace std;
 using namespace cv;
 
-void calcBoardCornerPosition (Size boardSize, float squareSize, vector<Point3f>& corners)
+void calcBoardCornerPosition (Size calibrationPatternDimension, float calibrationPatternSize, vector<Point3f>& corners)
 {
     corners.clear();
     // Calculate corner position of chessboard squares
-    for (int i = 0; i < boardSize.height; i++) {
-        for (int j = 0; j < boardSize.width; j++) {
-            corners.push_back(Point3f(j*squareSize, i*squareSize, 0));
+    for (int i = 0; i < calibrationPatternDimension.height; i++) {
+        for (int j = 0; j < calibrationPatternDimension.width; j++) {
+            corners.push_back(Point3f(j*calibrationPatternSize, i*calibrationPatternSize, 0));
         }
     }
 }
 
-void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size boardSize, double squareSize, int sampleCnt)
+void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size calibrationPatternDimension, double calibrationPatternSize, int sampleCnt)
 {
-    //~ int sampleCnt = 50;
-    //~ double squareSize = 30.0; //!< Chessboard square size is 30 mm
     double aspRatio = 1.0;
     
     vector<vector<Point2f> >imagePoints;
@@ -34,7 +32,7 @@ void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size bo
         
         vector<Point2f> corners;
         
-        bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+        bool found = findChessboardCorners(image, calibrationPatternDimension, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
         
         if (found) {
             cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
@@ -52,7 +50,7 @@ void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size bo
     cameraMatrix.at<double>(1, 1) = aspRatio;
     // Calculate cornerpoints
     vector<vector<Point3f> > objectPoints(1);
-    calcBoardCornerPosition(boardSize, squareSize, objectPoints[0]);
+    calcBoardCornerPosition(calibrationPatternDimension, calibrationPatternSize, objectPoints[0]);
     objectPoints.resize(imagePoints.size(), objectPoints[0]);
     
     // Calibrate camera and get reprojection error rms
@@ -65,27 +63,27 @@ void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size bo
     //! @todo Save intrinsic calibration to XML file
 }
 
-void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squareSize)
+void calibExtr (Mat image, Mat& homography, Size calibrationPatternDimension, double calibrationPatternSize)
 {
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
     
     vector<Point2f> corners;
-    bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(image, calibrationPatternDimension, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
     
     if (found) {
         cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
         
         Point2f objectPoints[4];
         objectPoints[0] = Point2f(0, 0);
-        objectPoints[1] = Point2f((boardSize.width-1)*squareSize, 0);
-        objectPoints[2] = Point2f(0, (boardSize.height-1)*squareSize);
-        objectPoints[3] = Point2f((boardSize.width-1)*squareSize, (boardSize.height-1)*squareSize);
+        objectPoints[1] = Point2f((calibrationPatternDimension.width-1)*calibrationPatternSize, 0);
+        objectPoints[2] = Point2f(0, (calibrationPatternDimension.height-1)*calibrationPatternSize);
+        objectPoints[3] = Point2f((calibrationPatternDimension.width-1)*calibrationPatternSize, (calibrationPatternDimension.height-1)*calibrationPatternSize);
         Point2f imagePoints[4];
         imagePoints[0] = corners[0];
-        imagePoints[1] = corners[boardSize.width-1];
-        imagePoints[2] = corners[(boardSize.height-1)*boardSize.width];
-        imagePoints[3] = corners[(boardSize.height-1)*boardSize.width + boardSize.width-1];
+        imagePoints[1] = corners[calibrationPatternDimension.width-1];
+        imagePoints[2] = corners[(calibrationPatternDimension.height-1)*calibrationPatternDimension.width];
+        imagePoints[3] = corners[(calibrationPatternDimension.height-1)*calibrationPatternDimension.width + calibrationPatternDimension.width-1];
         
         
         homography = getPerspectiveTransform(objectPoints, imagePoints);
@@ -97,8 +95,8 @@ void calibrateExtrinsics (Mat image, Mat& homography, Size boardSize, double squ
         //~ t.at<double>(2, 2) = 15;
         //~ homography *= t;
         Mat t = Mat::eye(3, 3, CV_64F);
-        t.at<double>(0, 2) = (image.cols-1)/2 * (-1) + 0.5*(squareSize*(boardSize.width-1)/2); // Shift width
-        t.at<double>(1, 2) = (image.rows-1) * (-1) + 0.5*(squareSize*(boardSize.height)); // Shift height
+        t.at<double>(0, 2) = (image.cols-1)/2 * (-1) + 0.5*(calibrationPatternSize*(calibrationPatternDimension.width-1)/2); // Shift width
+        t.at<double>(1, 2) = (image.rows-1) * (-1) + 0.5*(calibrationPatternSize*(calibrationPatternDimension.height)); // Shift height
         t.at<double>(2, 2) = 0.5;
         homography *= t;
     }
@@ -112,7 +110,7 @@ float euclidDist (Point2f p1, Point2f p2)
     return sqrt(diff.x*diff.x + diff.y*diff.y);
 }
 
-float calcPixelPerMm (Mat image, Size boardSize, float squareSize)
+float calcPixelPerMm (Mat image, Size calibrationPatternDimension, float calibrationPatternSize)
 {
     float pixelPerMm;
     float avgPxPerMm = 0.0;
@@ -121,13 +119,13 @@ float calcPixelPerMm (Mat image, Size boardSize, float squareSize)
     cvtColor(image, grayImage, CV_BGR2GRAY);
     
     vector<Point2f> corners;
-    bool found = findChessboardCorners(image, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(image, calibrationPatternDimension, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
     
     if (found) {
-        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, squareSize, 0.1));
+        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, calibrationPatternSize, 0.1));
         
         for (int i = 0; i < (corners.size()-1); i++) {
-            if ((i%boardSize.width) < 6) {
+            if ((i%calibrationPatternDimension.width) < (calibrationPatternDimension.width-1)) {
                 pixelPerMm = euclidDist(corners[i+1], corners[i]);
                 avgPxPerMm += pixelPerMm;
                 distCnt++;
@@ -137,29 +135,30 @@ float calcPixelPerMm (Mat image, Size boardSize, float squareSize)
             }
         }
         avgPxPerMm /= distCnt;
-        cout << "Avg distance " << avgPxPerMm << " mm per px " << avgPxPerMm/squareSize << endl;
+        cout << "Avg distance " << avgPxPerMm << " mm per px " << avgPxPerMm/calibrationPatternSize << endl;
     }
-    return avgPxPerMm/squareSize;
+    return avgPxPerMm/calibrationPatternSize;
 }
 
-void showChessBoardCorners (Mat& image, Size boardSize)
+void showChessBoardCorners (Mat& image, Size calibrationPatternDimension)
 {
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
     
     vector<Point2f> corners;
-    bool found = findChessboardCorners(grayImage, boardSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(grayImage, calibrationPatternDimension, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
     
     if (found) {
         cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-        drawChessboardCorners(image, boardSize, corners, found);
+        drawChessboardCorners(image, calibrationPatternDimension, corners, found);
     }
 }
 
+//! @todo Delete this function
 void inversePerspectiveTransform (Mat image, Mat& warpedImage, Mat homography)
 {
    Size warpedImageSize(image.cols, image.rows);
-   warpPerspective(image, warpedImage, homography, warpedImageSize, WARP_INVERSE_MAP + INTER_LINEAR);
+   warpPerspective(image, warpedImage, homography, warpedImageSize, CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
 }
     
 void adjustImagePosition (Mat image, Mat& adjustedImage, char key, Mat& homography)

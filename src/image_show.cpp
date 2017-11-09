@@ -6,37 +6,36 @@
 
 #include "image_show.hpp"
 
-using namespace std;
-using namespace cv;
-
 /**
  * @brief Thread to copy input image to output image.
  */
 void *showInputImage (void *arg)
 {
-    cout << "THREAD: Show input image started." << endl;
+    std::cout << "THREAD: Show input image started." << std::endl;
     
     while ((getModuleState() & MODULE_SHOW_IN_IMAGE) == MODULE_SHOW_IN_IMAGE) {
-        Mat image;
+        cv::Mat image;
         getInputImageData(image);
         
-        // Undistort captured image
-        Mat cameraMatrix, diffCoeffs;
-        getIntrinsics(cameraMatrix, diffCoeffs);
-        if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
-            undistort(image, image, cameraMatrix, diffCoeffs);
+        if (!image.empty()) {
+            // Undistort captured image
+            cv::Mat cameraMatrix, diffCoeffs;
+            getIntr(cameraMatrix, diffCoeffs);
+            if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
+                cv::undistort(image, image, cameraMatrix, diffCoeffs);
+            }
+            // Apply perspective transform
+            cv::Mat homography;
+            getExtr(homography);
+            if (!homography.empty()) {
+                cv::warpPerspective(image, image, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+            }
+            
+            setOutputImageData(image);
         }
-        // Apply perspective transform
-        Mat homography;
-        getExtrinsics(homography);
-        if (!homography.empty()) {
-            inversePerspectiveTransform(image, image, homography);
-        }
-        
-        setOutputImageData(image);
     }
     
-    cout << "THREAD: Show input image ended." << endl;
+    std::cout << "THREAD: Show input image ended." << std::endl;
     return NULL;
 }
 
@@ -45,35 +44,37 @@ void *showInputImage (void *arg)
  */
 void *showOutputImage (void *arg)
 {
-    cout << "THREAD: Show output image started." << endl;
-    namedWindow("Autonomous Driver", CV_WINDOW_AUTOSIZE);
+    std::cout << "THREAD: Show output image started." << std::endl;
+    
+    cv::namedWindow("Autonomous Driver", CV_WINDOW_AUTOSIZE);
     char key = getUiInputKey();
     
     while ((getModuleState() & MODULE_SHOW_OUT_IMAGE) == MODULE_SHOW_OUT_IMAGE) {
-        Mat image;
+        cv::Mat image;
         getOutputImageData(image);
         
         if (image.empty()) {
-            image = Mat(640, 360, CV_8UC3, Scalar(0));
+            cv::Size imageSize = getImageSize();
+            image = cv::Mat(imageSize.width, imageSize.height, CV_8UC3, cv::Scalar(0));
         }
         
         // Create output image composition from UI menu and output image
-        Mat outputImage = Mat(image.rows, image.cols + 200, CV_8UC3, Scalar(0));
+        cv::Mat outputImage = cv::Mat(image.rows, image.cols + 200, CV_8UC3, cv::Scalar(0));
         
         // Process input and insert menu to output image
         processUiInput(outputImage, key);
         
         if (!image.empty()) {
             // Insert processed image to output image
-            Rect insert = Rect(200,0, image.cols, image.rows);
+            cv::Rect insert = cv::Rect(200,0, image.cols, image.rows);
             image.copyTo(outputImage(insert));
             
             imshow("Autonomous Driver", outputImage);
-            key = waitKey(20);
+            key = cv::waitKey(20);
             setUiInputKey(key);
         }
     }
     
-    cout << "THREAD: Show output image ended." << endl;
+    std::cout << "THREAD: Show output image ended." << std::endl;
     return NULL;
 }

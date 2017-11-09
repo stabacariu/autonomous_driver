@@ -8,6 +8,7 @@
 #define LANE_DETECTION_HPP
 
 #include <iostream>
+#include <fstream>
 #include <pthread.h>
 #include <opencv2/opencv.hpp>
 #include "autonomous_driver.hpp"

@@ -21,6 +21,7 @@ struct Vehicle {
     double wheelbase; //!< Vehicle wheelbase in mm
     double frontOverhang; //!< Vehicle front overhang in mm
     double rearOverhang; //!< Vehicle rear overhang in mm
+    
     pthread_mutex_t lock;
 };
 

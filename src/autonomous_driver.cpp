@@ -291,20 +291,20 @@ void systemConfigMode (void)
             }
         }
         else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
-            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTRINSICS);
-            if (pthread_create(&configThread, NULL, configCalibIntrinsics, NULL)) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTR);
+            if (pthread_create(&configThread, NULL, configCalibIntr, NULL)) {
                 cerr << "ERROR: Couldn't create config thread!" << endl;
             }
         }
         else if (mode == CONFIG_MODE_CALIB_EXTRINSICS) {
-            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_EXTRINSICS);
-            if (pthread_create(&configThread, NULL, configCalibExtrinsics, NULL)) {
+            setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_EXTR);
+            if (pthread_create(&configThread, NULL, configCalibExtr, NULL)) {
                 cerr << "ERROR: Couldn't create config thread!" << endl;
             }
         }
         else if (mode == CONFIG_MODE_IMAGE_POSITION) {
             setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_IMAGE_POSITION);
-            if (pthread_create(&configThread, NULL, configImagePosition, NULL)) {
+            if (pthread_create(&configThread, NULL, configImagePos, NULL)) {
                 cerr << "ERROR: Couldn't create config thread!" << endl;
             }
         }
