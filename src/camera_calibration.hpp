@@ -11,7 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include "configuration.hpp"
 
-void calibrateIntrinsics (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibrationPatternDimension, double calibrationPatternSize, int sampleCnt);
+void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibrationPatternDimension, double calibrationPatternSize, int sampleCnt);
 void calibExtr (cv::Mat image, cv::Mat& homography, cv::Size calibrationPatternDimension, double calibrationPatternSize);
 void showChessBoardCorners (cv::Mat& image, cv::Size calibrationPatternDimension);
 void inversePerspectiveTransform(cv::Mat image, cv::Mat& warpedImage, cv::Mat homography);

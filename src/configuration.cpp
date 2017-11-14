@@ -495,7 +495,7 @@ void *configCalibIntr(void *arg)
     while ((getModuleState() & MODULE_CONFIG_CALIB_INTR) == MODULE_CONFIG_CALIB_INTR) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
-            calibrateIntrinsics(inputImage, cameraMatrix, diffCoeffs, getBoardSize(), 30.0, 50);
+            calibIntr(inputImage, cameraMatrix, diffCoeffs, getBoardSize(), 30.0, 50);
             if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
                 setIntr(cameraMatrix, diffCoeffs);
             } 
@@ -526,7 +526,7 @@ void *configCalibExtr (void *arg)
     while ((getModuleState() & MODULE_CONFIG_CALIB_EXTR) == MODULE_CONFIG_CALIB_EXTR) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
-            calibExtr(inputImage, homography, getBoardSize(), 30.0);
+            calibExtr(inputImage, homography, getBoardSize(), getSquareSize());
         }
         if (!homography.empty()) {
             //~ inversePerspectiveTransform(inputImage, warpedImage, homography);
@@ -544,7 +544,7 @@ void *configCalibExtr (void *arg)
     
     if (!homography.empty()) {
         setExtr(homography);
-        float pixelPerMm = calcPixelPerMm(warpedImage, getBoardSize(), 30.0);
+        float pixelPerMm = calcPixelPerMm(warpedImage, getBoardSize(), getSquareSize());
     }
     else {
         std::cout << "Homography couldn't be aquired!" << std::endl;

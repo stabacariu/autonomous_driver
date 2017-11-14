@@ -18,7 +18,7 @@ void autoAdjustImage (Mat& image)
 {
     double minValue, maxValue;
     minMaxLoc(image, &minValue, &maxValue);
-    double range = maxValue - 50 - minValue;
+    double range = maxValue - minValue;
     double targetRange = 255;
     double alpha = targetRange/range;
     double beta = (-1) * minValue * alpha;

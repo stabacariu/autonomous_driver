@@ -20,7 +20,7 @@ void calcBoardCornerPosition (Size calibrationPatternDimension, float calibratio
     }
 }
 
-void calibrateIntrinsics (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size calibrationPatternDimension, double calibrationPatternSize, int sampleCnt)
+void calibIntr (Mat image, Mat& cameraMatrix, Mat& distCoeffs, Size calibrationPatternDimension, double calibrationPatternSize, int sampleCnt)
 {
     double aspRatio = 1.0;
     
@@ -97,7 +97,7 @@ void calibExtr (Mat image, Mat& homography, Size calibrationPatternDimension, do
         Mat t = Mat::eye(3, 3, CV_64F);
         t.at<double>(0, 2) = (image.cols-1)/2 * (-1) + 0.5*(calibrationPatternSize*(calibrationPatternDimension.width-1)/2); // Shift width
         t.at<double>(1, 2) = (image.rows-1) * (-1) + 0.5*(calibrationPatternSize*(calibrationPatternDimension.height)); // Shift height
-        t.at<double>(2, 2) = 0.5;
+        t.at<double>(2, 2) = 0.5 + 0.5;
         homography *= t;
     }
     

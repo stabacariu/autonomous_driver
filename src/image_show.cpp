@@ -28,7 +28,7 @@ void *showInputImage (void *arg)
             cv::Mat homography;
             getExtr(homography);
             if (!homography.empty()) {
-                cv::warpPerspective(image, image, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+                cv::warpPerspective(image, image, homography, image.size(), CV_INTER_LINEAR);
             }
             
             setOutputImageData(image);
@@ -56,6 +56,14 @@ void *showOutputImage (void *arg)
         if (image.empty()) {
             cv::Size imageSize = getImageSize();
             image = cv::Mat(imageSize.width, imageSize.height, CV_8UC3, cv::Scalar(0));
+        }
+        else {
+            // Invers perspective transform to normal view
+            //~ cv::Mat homography;
+            //~ getExtr(homography);
+            //~ if (!homography.empty()) {
+                //~ cv::warpPerspective(image, image, homography, image.size(), CV_INTER_LINEAR);
+            //~ }
         }
         
         // Create output image composition from UI menu and output image

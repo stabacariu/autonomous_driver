@@ -122,20 +122,24 @@ void drawCenterLine (Mat& image, Scalar color)
 void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines, vector<Vec4i>& rightLines, vector<Vec4i>& lane)
 {
     lane.clear();
-    Vec4i leftLine = Vec4i(imageSize.width-1, 0, imageSize.width-1, imageSize.height-1);
-    Vec4i rightLine = Vec4i(0, 0, 0, imageSize.height-1);
+    Vec4i leftLine = Vec4i(imageSize.width-1, imageSize.height-1, imageSize.width-1, 0);
+    Vec4i rightLine = Vec4i(0, imageSize.height-1, 0, 0);
     
     for (size_t i = 0; i < lines.size(); i++) {
         if (lines[i][2] <= ((imageSize.width/2)-1)) {
             leftLines.push_back(lines[i]);
-            if (lines[i][2] < leftLine[2]) {
-                leftLine = lines[i];
+            if (lines[i][2] <= leftLine[2]) {
+                if (lines[i][3] >= leftLine[3]) {
+                    leftLine = lines[i];
+                }
             }
         }
         else {
             rightLines.push_back(lines[i]);
-            if (lines[i][2] > rightLine[2]) {
-                rightLine = lines[i];
+            if (lines[i][2] >= rightLine[2]) {
+                if (lines[i][3] >= rightLine[3]) {
+                    rightLine = lines[i];
+                }
             }
         }
     }
@@ -178,7 +182,7 @@ Vec4i getLaneMid (vector<Vec4i> lane)
 
 void imageProcessing (Mat& image, vector<Vec4i>& lines)
 {
-    autoAdjustImage(image);
+    //~ autoAdjustImage(image);
             
     Mat grayImage;
     whiteColorFilter(image, grayImage);
@@ -215,12 +219,12 @@ void *laneDetection (void *arg)
     KalmanFilter kfR(4, 4, 0);
     initLinePrediction(kfL, 4);
     initLinePrediction(kfR, 4);
-    vector<Vec4i> measuredLines;
-    vector<Vec4i> predictedLines;
-    vector<Vec4i> measuredLeftLines;
-    vector<Vec4i> measuredRightLines;
-    vector<Vec4i> predictedLeftLines;
-    vector<Vec4i> predictedRightLines;
+    vector<Vec4i> measLines;
+    vector<Vec4i> predLines;
+    vector<Vec4i> measLLines;
+    vector<Vec4i> measRLines;
+    vector<Vec4i> predLLines;
+    vector<Vec4i> predRLines;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
@@ -254,8 +258,9 @@ void *laneDetection (void *arg)
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
             //~ }
             
+            // If no lines where found, take predicted lines
             if (lines.size() <= 0) {
-                lines.insert(lines.end(), predictedLines.begin(), predictedLines.end());
+                lines.insert(lines.end(), predLines.begin(), predLines.end());
             }
             
             if (lines.size() > 0) {
@@ -271,34 +276,40 @@ void *laneDetection (void *arg)
                 // Predict lane
                 vector<Vec4i> predictedLane;
                 if (leftLines.size() > 0) {
-                    predictLine(leftLines,  kfL, 4, measuredLeftLines, predictedLeftLines);
-                    drawArrowedLines(warpedImage, predictedLeftLines, Scalar(255, 0, 0));
+                    //~ predictLine(leftLines,  kfL, 4, measLLines, predLLines);
+                    vector<Vec4i> ll;
+                    ll.push_back(lane[0]);
+                    predictLine(ll,  kfL, 4, measLLines, predLLines);
+                    drawArrowedLines(warpedImage, predLLines, Scalar(255, 0, 0));
                 }
-                if (predictedLeftLines.size() > 0) {
-                    predictedLane.push_back(predictedLeftLines[0]);
+                if (predLLines.size() > 0) {
+                    predictedLane.push_back(predLLines[0]);
                     // Set left ROI with offset
-                    if (predictedLeftLines[0][0] <= predictedLeftLines[0][2]) {
-                        leftLineRoi = Rect(Point(predictedLeftLines[0][0]-5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]+5, predictedLeftLines[0][3]+5));
+                    if (predLLines[0][0] <= predLLines[0][2]) {
+                        leftLineRoi = Rect(Point(predLLines[0][0]-5, predLLines[0][1]-5), Point(predLLines[0][2]+5, predLLines[0][3]+5));
                     }
                     else {
-                        leftLineRoi = Rect(Point(predictedLeftLines[0][0]+5, predictedLeftLines[0][1]-5), Point(predictedLeftLines[0][2]-5, predictedLeftLines[0][3]+5));
+                        leftLineRoi = Rect(Point(predLLines[0][0]+5, predLLines[0][1]-5), Point(predLLines[0][2]-5, predLLines[0][3]+5));
                     }
                     
                     setRoiLeft(leftLineRoi);
                 }
                 
                 if (rightLines.size() > 0) {
-                    predictLine(rightLines, kfR, 4, measuredRightLines, predictedRightLines);
-                    drawArrowedLines(warpedImage, predictedRightLines, Scalar(0, 0, 255));
+                    //~ predictLine(rightLines, kfR, 4, measRLines, predRLines);
+                    vector<Vec4i> rl;
+                    rl.push_back(lane[1]);
+                    predictLine(rl, kfR, 4, measRLines, predRLines);
+                    drawArrowedLines(warpedImage, predRLines, Scalar(0, 0, 255));
                 }
-                if (predictedRightLines.size() > 0) {
-                    predictedLane.push_back(predictedRightLines[0]);
+                if (predRLines.size() > 0) {
+                    predictedLane.push_back(predRLines[0]);
                     // Set right ROI with offset
-                    if (predictedRightLines[0][0] <= predictedRightLines[0][2]) {
-                        rightLineRoi = Rect(Point(predictedRightLines[0][0]-5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]+5, predictedRightLines[0][3]+5));
+                    if (predRLines[0][0] <= predRLines[0][2]) {
+                        rightLineRoi = Rect(Point(predRLines[0][0]-5, predRLines[0][1]-5), Point(predRLines[0][2]+5, predRLines[0][3]+5));
                     }
                     else {
-                        rightLineRoi = Rect(Point(predictedRightLines[0][0]+5, predictedRightLines[0][1]-5), Point(predictedRightLines[0][2]-5, predictedRightLines[0][3]+5));
+                        rightLineRoi = Rect(Point(predRLines[0][0]+5, predRLines[0][1]-5), Point(predRLines[0][2]-5, predRLines[0][3]+5));
                     }
                     setRoiRight(rightLineRoi);
                 }
@@ -348,10 +359,10 @@ void imageProcessing2 (Mat& image, vector<Point>& points)
     Mat distance;
     distanceTransform(imageEdges, distance, CV_DIST_C, CV_DIST_MASK_3);
     
-    ofstream logging;
-    logging.open("../output/log_distance.txt");
-    logging << "Distance " << distance << endl;
-    logging.close();
+    //~ ofstream logging;
+    //~ logging.open("../output/log_distance.txt");
+    //~ logging << "Distance " << distance << endl;
+    //~ logging.close();
     
     normalize(distance, distance, 0, 255, NORM_MINMAX);
     
@@ -406,12 +417,14 @@ void initLinePrediction (KalmanFilter& kf, int valueCnt)
 
 /**
  * @brief This function predicts the line points.
+ * 
+ * @todo Measured lines unnecessary beacause measLines = lines
  */
 
-void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& measuredLines, vector<Vec4i>& predictedLines)
+void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& measLines, vector<Vec4i>& predLines)
 {
-    measuredLines.clear();
-    predictedLines.clear();
+    measLines.clear();
+    predLines.clear();
     
     for (size_t i = 0; i < lines.size(); i++) {
         Mat prediction = kf.predict();
@@ -427,10 +440,10 @@ void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Ve
         Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
         Vec4i measuredPts(measurement.at<float>(0), measurement.at<float>(1), measurement.at<float>(2), measurement.at<float>(3));
         
-        measuredLines.clear();
-        predictedLines.clear();
+        measLines.clear();
+        predLines.clear();
         
-        measuredLines.push_back(measuredPts);
-        predictedLines.push_back(statePts);
+        measLines.push_back(measuredPts);
+        predLines.push_back(statePts);
     }
 }
