@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<!-- Camera config -->
+<cameraID>0</cameraID>
+<cameraImageSize_width>640</cameraImageSize_width>
+<cameraImageSize_height>360</cameraImageSize_height>
+<cameraFPS>10</cameraFPS>
+<!-- Calibration config -->
+<calibImageSize_width>640</calibImageSize_width>
+<calibImageSize_height>360</calibImageSize_height>
+<calibPattern>CHESSBOARD</calibPattern>
+<calibPatternDim_width>7</calibPatternDim_width>
+<calibPatternDim_height>5</calibPatternDim_height>
+<calibPatternSize>30.</calibPatternSize>
+<!-- Calibration data -->
+<calibIntrDone>0</calibIntrDone>
+<cameraMatrix type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></cameraMatrix>
+<diffCoeffs type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></diffCoeffs>
+<calibExtrDone>1</calibExtrDone>
+<homography type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    9.7113012280048139e-01 -5.2872076113439836e-01
+    7.7676694110662936e-01 -2.6697793714398621e-02
+    8.7015164579081983e-02 1.0389739099558653e+02
+    -6.8353693417285560e-05 -1.6299247498202307e-03
+    9.8162754094528171e-01</data></homography>
+<transformation type_id="opencv-matrix">
+  <rows>0</rows>
+  <cols>0</cols>
+  <dt>u</dt>
+  <data></data></transformation>
+<pixelPerMm>1.4584891155468900e+32</pixelPerMm>
+<validData>0</validData>
+</opencv_storage>

@@ -10,25 +10,25 @@ using namespace std;
 
 void *vehicleControl (void* arg)
 {
-    cout << "Thread: Vehicle control started." << endl;
-    
+    cout << "THREAD: Vehicle control started." << endl;
+
     initVehicle();
     initMotorDriver();
-    
+
     while ((getModuleState() & MODULE_CONTROL_VEHICLE) == MODULE_CONTROL_VEHICLE) {
         // Calculate steering value from rad to a value from 0 to 4096
         double steering = getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
         setSteeringValue(steeringValue);
-        
+
         // Calculate acceleration value from percent to value from 0 to 4096
         double acceleration = getAcceleration();
         int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
         setAccelerationValue(accelerationValue);
     }
-    
+
     resetMotorDriver();
-    
-    cout << "Thread: Vehicle control ended." << endl;
+
+    cout << "THREAD: Vehicle control ended." << endl;
     return NULL;
 }

@@ -6,13 +6,13 @@
 <cameraImageSize_height>360</cameraImageSize_height>
 <cameraFPS>10</cameraFPS>
 <!-- Calibration config -->
-<calibrationImageSize_width>640</calibrationImageSize_width>
-<calibrationImageSize_height>360</calibrationImageSize_height>
-<calibrationPattern>CHESSBOARD</calibrationPattern>
-<calibrationPatternDimension_width>7</calibrationPatternDimension_width>
-<calibrationPatternDimension_height>5</calibrationPatternDimension_height>
-<calibrationPatternSize>30.</calibrationPatternSize>
-<calibrationIntrinsicDone>0</calibrationIntrinsicDone>
-<calibrationExtrinsicDone>0</calibrationExtrinsicDone>
+<calibImageSize_width>640</calibImageSize_width>
+<calibImageSize_height>360</calibImageSize_height>
+<calibPattern>CHESSBOARD</calibPattern>
+<calibPatternDim_width>7</calibPatternDim_width>
+<calibPatternDim_height>5</calibPatternDim_height>
+<calibPatternSize>30.</calibPatternSize>
+<calibIntrDone>0</calibIntrDone>
+<calibExtrDone>0</calibExtrDone>
 <validData>0</validData>
 </opencv_storage>

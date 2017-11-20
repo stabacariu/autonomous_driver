@@ -93,12 +93,24 @@ void getDevMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
+void getDevModeList (vector<string>& menuList)
+{
+    menuList.clear();
+    
+    menuList.push_back("(1) B/W");
+    menuList.push_back("(2) Canny");
+    menuList.push_back("(3) Warp");
+    menuList.push_back("(+) Exposure");
+    menuList.push_back("(-) Exposure");
+}
+
 void getConfigMenuList (vector<string>& menuList)
 {
     menuList.clear();
     
     menuList.push_back("(B)ack");
     menuList.push_back("(R)eset");
+    menuList.push_back("(S)ave");
     menuList.push_back("(Q)uit");
 }
 
@@ -430,7 +442,7 @@ void drawCalibIntrinsics (Mat& image)
     Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
-    string titleText = "Calibrate cameraMatrix";
+    string titleText = "Calib Intr";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
@@ -461,7 +473,7 @@ void drawCalibExtrinsics (Mat& image)
     Point pt2(200, (image.size().height-1));
     rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
     
-    string titleText = "Calibrate Extrinsics";
+    string titleText = "Calib Extr";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;

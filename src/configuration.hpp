@@ -30,7 +30,7 @@ struct ConfigState {
 
 /**
  * @brief Configuration data structure
- * 
+ *
  * This structure holds all configuration data with a mutex lock.
  */
 struct ConfigData {
@@ -39,33 +39,33 @@ struct ConfigData {
     cv::Size cameraImageSize; //!< Camera image size
     int cameraFPS; //!< Camera frames per second
     // Calibration config
-    std::string calibrationTime; //!< Calibration time stamp
-    cv::Size calibrationImageSize; //!< Calibration image size
-    std::string calibrationPattern; //!< Calibration pattern
-    cv::Size calibrationPatternDimension; //!< Calibration Pattern dimension
-    double calibrationPatternSize; //! Size of a pattern element in mm
-    int calibrationSampleCount; //! Number of samples to use for calibration
+    std::string calibTime; //!< Calibration time stamp
+    cv::Size calibImageSize; //!< Calibration image size
+    std::string calibPattern; //!< Calibration pattern
+    cv::Size calibPatternDim; //!< Calibration Pattern dimension
+    double calibPatternSize; //! Size of a pattern element in mm
+    int calibSampleCount; //! Number of samples to use for calibration
     // Calibration data
-    bool calibIntrinsicDone; //! Calibration done flag
+    bool calibIntrDone; //! Calibration done flag
     cv::Mat cameraMatrix; //!< Intrinsic camera matrix
     cv::Mat diffCoeffs; //!< Differential coeffitiens for undistortion
-    bool calibExtrinsicDone; //! Calibration done flag
+    bool calibExtrDone; //! Calibration done flag
     cv::Mat homography; //!< Homography for extrinsic calibration
     cv::Mat transformation; //!< Transformation matrix for image position
     float pixelPerMm; //!< Average mm per pixel
-    
+
     bool validData; //!< Valid input flag
-    
+
     std::string defaultConfigFileName; //! Default config file name
-    
+
     pthread_mutex_t lock; //!< Lock exlusiv access
 };
 
 /**
  * @brief Function to initialize configuration.
- * 
+ *
  * This function initializes the configuration of the autonomous driver platform.
- * 
+ *
  * @param void
  * @return void
  */
@@ -80,12 +80,14 @@ void setConfigData (ConfigData c);
 int getCameraID (void);
 cv::Size getImageSize (void);
 int getFPS (void);
-cv::Size getBoardSize (void);
-double getSquareSize (void);
+cv::Size getPatternDim (void);
+double getPatternSize (void);
 void setExtr (cv::Mat homography);
 void getExtr (cv::Mat& homography);
 void setIntr (cv::Mat cameraMatrix, cv::Mat diffCoeffs);
 void getIntr (cv::Mat& cameraMatrix, cv::Mat& diffCoeffs);
+void setPxPerMm (float pxPerMm);
+float getPxPerMm (void);
 
 void saveCalibConfig (cv::FileStorage& fs, ConfigData c);
 void saveCalibConfig (void);

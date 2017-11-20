@@ -35,8 +35,8 @@ class CameraConfig {
         bool readStringList (const std::string& filename, std::vector<std::string>& lst);
         
     public:
-        cv::Size calibrationPatternDimension; //!< Number of chessboard squares
-        double calibrationPatternSize; //! Size of a chessboard square in mm
+        cv::Size calibPatternDim; //!< Number of chessboard squares
+        double calibPatternSize; //! Size of a chessboard square in mm
         
         CalibPattern calibPattern; //!< Calibration pattern
         int sampleCnt; //! Number of samplese to use for calibration

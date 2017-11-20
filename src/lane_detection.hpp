@@ -21,14 +21,14 @@ void *laneDetection (void *arg);
 void *laneDetection2 (void *arg);
 
 void initLinePrediction (cv::KalmanFilter& kf, int valueCnt);
-void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueCnt, std::vector<cv::Vec4i>& measLines, std::vector<cv::Vec4i>& predLines);
+void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueCnt, std::vector<cv::Vec4i>& predLines);
 
 /**
  * @brief This function calculates the distance rho for the polar line form.
  *  (rho, theta)
  * @param pt point on the line
  * @param rho slope of the line
- * @return r the distance of the line to the origin for the polar form 
+ * @return r the distance of the line to the origin for the polar form
  */
 float getRho (cv::Point pt1, cv::Point pt2);
 

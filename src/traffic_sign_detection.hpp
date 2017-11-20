@@ -10,10 +10,12 @@
 #include <iostream>
 #include <pthread.h>
 #include <opencv2/opencv.hpp>
+#include "autonomous_driver.hpp"
+#include "image_data.hpp"
 
 /**
  * @brief Thread for traffic sign detection.
- * 
+ *
  * This thread detects traffic signs with Haar cascade.
  */
 void *trafficSignDetection (void *arg);
