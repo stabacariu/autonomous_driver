@@ -24,12 +24,13 @@ void *remoteControl (void *arg)
         double acceleration = getAcceleration();
         double steering = getSteering();
         
+        if (acceleration == 0) {
+            acceleration = 50;
+        }
+        
         if (prevKey != key) {
             // Set acceleration from 0 to 100 %
             if (key == 'w') {
-                if (acceleration == 0) {
-                    acceleration = 50;
-                }
                 acceleration += 1;
             }
             else if (key == 's') {
@@ -37,14 +38,20 @@ void *remoteControl (void *arg)
             }
             // Stop vehicle
             else if (key == ' ') {
-                acceleration = 0;
+                acceleration = getAcceleration();
+                if (acceleration > 60) {
+                    acceleration = 0;
+                }
+                else if (acceleration < 50) {
+                    acceleration = 50;
+                }
             }
             if (acceleration < 0) {
                 
-                acceleration = 0;
+                acceleration = 25;
             }
             else if (acceleration > 100) {
-                acceleration = 100;
+                acceleration = 75;
             }
             
             // Set steering from 0 to CV_PI rad

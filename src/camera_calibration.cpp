@@ -91,7 +91,7 @@ void calibExtr (Mat image, Mat& homography, Size calibPatternDim, double calibPa
         // Shift to image center
         Mat t = Mat::eye(3, 3, CV_64F);
         t.at<double>(0, 2) = (image.cols-1)/2 * (-1) + 0.5*(calibPatternSize*(calibPatternDim.width-1)/2); // Shift width
-        t.at<double>(1, 2) = (image.rows-1) * (-1) + 0.5*(calibPatternSize*(calibPatternDim.height)); // Shift height
+        t.at<double>(1, 2) = (image.rows-1) * (-1) + 1.5*(calibPatternSize*(calibPatternDim.height-1)/2); // Shift height
         t.at<double>(2, 2) = 0.5;
         homography *= t;
     }

@@ -29,6 +29,8 @@ void setInputImageData (Mat data)
     }
     
     data.copyTo(inputImage.data);
+    //~ inputImage.dataQueue.push(Mat());
+    //~ data.copyTo(inputImage.dataQueue.back());
     
     if (pthread_mutex_unlock(&inputImage.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
@@ -42,6 +44,10 @@ void getInputImageData (Mat& image)
     }
     
     inputImage.data.copyTo(image);
+    //~ if (!inputImage.dataQueue.empty()) {
+        //~ inputImage.dataQueue.front().copyTo(image);
+        //~ inputImage.dataQueue.pop();
+    //~ }
     
     if (pthread_mutex_unlock(&inputImage.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
@@ -55,6 +61,8 @@ void setOutputImageData (Mat data)
     }
     
     data.copyTo(outputImage.data);
+    //~ outputImage.dataQueue.push(Mat());
+    //~ data.copyTo(outputImage.dataQueue.back());
     
     if (pthread_mutex_unlock(&outputImage.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;
@@ -68,6 +76,10 @@ void getOutputImageData (Mat& image)
     }
     
     outputImage.data.copyTo(image);
+    //~ if (!outputImage.dataQueue.empty()) {
+        //~ outputImage.dataQueue.front().copyTo(image);
+        //~ outputImage.dataQueue.pop();
+    //~ }
     
     if (pthread_mutex_unlock(&outputImage.lock)) {
         cerr << "ERROR: Couldn't unlock status mutex!" << endl;

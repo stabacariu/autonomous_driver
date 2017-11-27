@@ -17,35 +17,48 @@ void calculateAcutalPosition (vector<Vec4i> actualLane, Size imageSize)
     int diffX2 = laneMid[2]-viewMid[2];
 
     float theta = getTheta(Point(laneMid[0], laneMid[1]), Point(laneMid[2], laneMid[3]));
-
-    if ((theta < (CV_PI*0.05)) && (theta > (CV_PI*0.95))) {
-        setAcceleration(0);
+    
+    setSteering(theta);
+    
+    if ((theta < (CV_PI*0.1)) && (theta > (CV_PI*0.90))) {
+        setAcceleration(50);
     }
     else if (theta == (CV_PI/2)) {
-        setSteering(theta);
-        setAcceleration(60);
+        //~ setSteering(theta);
+        setDirection(STRAIGHT);
+        setAcceleration(59);
     }
     else {
         //~ setSteering((double) theta - (CV_PI/2));
-        setSteering(theta);
-
+        //~ setSteering(theta);
+        
+        if (theta < CV_PI/2) {
+            setDirection(RIGHT);
+        }
+        else if (theta > CV_PI/2) {
+            setDirection(LEFT);
+        }
+        else setDirection(STRAIGHT);
+        
         // Car is too much to the left
         if (diffX2 > 0) {
-            setAcceleration(59);
+            setSteering(3*CV_PI/4);
+            setAcceleration(58.5);
         }
         else if (diffX2 == 0) {
             if (diffX1 > 0) {
-                setAcceleration(59);
+                setAcceleration(58.5);
             }
             else if (diffX1 < 0) {
-                setAcceleration(59);
+                setAcceleration(58.5);
             }
             else {
                 setAcceleration(50);
             }
         }
         else {
-            setAcceleration(59);
+            setSteering(CV_PI/4);
+            setAcceleration(58.5);
         }
     }
 }
@@ -68,6 +81,10 @@ void *pathPlanning (void *arg)
         getInputImageData(inputImage);
         if ((actualLane.size() == 2) && (!inputImage.empty())) {
             calculateAcutalPosition(actualLane, inputImage.size());
+        }
+        else {
+            setSteering(CV_PI/2);
+            setAcceleration(50);
         }
     }
 

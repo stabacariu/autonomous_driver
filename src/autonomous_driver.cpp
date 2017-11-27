@@ -143,12 +143,12 @@ void systemAutoMode (void)
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    //~ if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
-        //~ cerr << "ERROR: Couldn't create lane detection thread!" << endl;
-    //~ }
-    if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
-        cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
+    if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
+        cerr << "ERROR: Couldn't create lane detection thread!" << endl;
     }
+    //~ if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
+        //~ cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
+    //~ }
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -163,12 +163,12 @@ void systemAutoMode (void)
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
-    //~ if (pthread_join(detectLaneThread, NULL)) {
-        //~ cerr << "ERROR: Couldn't join thread!" << endl;
-    //~ }
-    if (pthread_join(detectTrafficSignThread, NULL)) {
+    if (pthread_join(detectLaneThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
+    //~ if (pthread_join(detectTrafficSignThread, NULL)) {
+        //~ cerr << "ERROR: Couldn't join thread!" << endl;
+    //~ }
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }

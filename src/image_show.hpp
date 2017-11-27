@@ -16,6 +16,8 @@
 #include "camera_capture.hpp"
 #include "user_interface.hpp"
 
+bool compareImage (const cv::Mat m1, const cv::Mat m2);
+
 void *showInputImage (void *arg);
 void *showOutputImage (void *arg);
 

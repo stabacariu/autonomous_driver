@@ -10,6 +10,12 @@
 #include <iostream>
 #include <pthread.h>
 
+enum Direction {
+    LEFT = -1,
+    STRAIGHT = 0,
+    RIGHT = 1
+};
+
 struct Vehicle {
     double acceleration; //!< Accerelration from 0 to 100 percent
     int direction; //!< Direction from -1 to 1

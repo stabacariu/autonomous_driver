@@ -13,6 +13,8 @@ void *showInputImage (void *arg)
 {
     std::cout << "THREAD: Show input image started." << std::endl;
 
+    initOutputData();
+
     while ((getModuleState() & MODULE_SHOW_IN_IMAGE) == MODULE_SHOW_IN_IMAGE) {
         cv::Mat image;
         getInputImageData(image);
@@ -39,31 +41,54 @@ void *showInputImage (void *arg)
     return NULL;
 }
 
+bool compareImage(const cv::Mat m1, const cv::Mat m2)
+{
+    if (m1.empty() && m2.empty()) {
+        return true;
+    }
+    else if ((m1.cols != m2.cols) || (m1.rows != m2.rows) || (m1.dims != m2.dims)) {
+        return false;
+    }
+
+    cv::Mat diff;
+    cv::compare(m1, m2, diff, cv::CMP_NE);
+    int nz = cv::countNonZero(diff);
+    return nz == 0;
+}
+
 /**
  * @brief Thread for showing output image on GUI.
  */
 void *showOutputImage (void *arg)
 {
     std::cout << "THREAD: Show output image started." << std::endl;
-
+    
+    initOutputData();
+    
     cv::namedWindow("Autonomous Driver", CV_WINDOW_AUTOSIZE);
     char key = getUiInputKey();
-
+    
+    cv::Mat image;
     while ((getModuleState() & MODULE_SHOW_OUT_IMAGE) == MODULE_SHOW_OUT_IMAGE) {
+        //~ cv::Mat newImage;
+        //~ getOutputImageData(newImage);
+        //~ 
+        //~ if ((!newImage.empty()) && (!image.empty())) {
+            //~ cv::Mat grayImage, grayNewImage;
+            //~ cvtColor(image, grayImage, CV_BGR2GRAY);
+            //~ cvtColor(newImage, grayNewImage, CV_BGR2GRAY);
+            //~ 
+            //~ if (!compareImage(grayImage, grayNewImage)) {
+                //~ newImage.copyTo(image);
+            //~ }
+        //~ }
+        
         cv::Mat image;
         getOutputImageData(image);
-
+        
         if (image.empty()) {
             cv::Size imageSize = getImageSize();
-            image = cv::Mat(imageSize.width, imageSize.height, CV_8UC3, cv::Scalar(0));
-        }
-        else {
-            // Invers perspective transform to normal view
-            //~ cv::Mat homography;
-            //~ getExtr(homography);
-            //~ if (!homography.empty()) {
-                //~ cv::warpPerspective(image, image, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
-            //~ }
+            image = cv::Mat(imageSize.height, imageSize.width, CV_8UC3, cv::Scalar(0));
         }
 
         // Create output image composition from UI menu and output image
@@ -78,7 +103,7 @@ void *showOutputImage (void *arg)
             image.copyTo(outputImage(insert));
 
             imshow("Autonomous Driver", outputImage);
-            key = cv::waitKey(40);
+            key = cv::waitKey(20);
             setUiInputKey(key);
         }
     }

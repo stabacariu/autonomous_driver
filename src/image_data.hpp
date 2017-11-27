@@ -13,6 +13,7 @@
 
 struct ImageData {
     cv::Mat data;
+    std::queue<cv::Mat> dataQueue;
     pthread_mutex_t lock;
 };
 
