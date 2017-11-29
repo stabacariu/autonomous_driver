@@ -458,7 +458,7 @@ void *laneDetection (void *arg)
     return NULL;
 }
 
-void imageProcessing2 (Mat& image)
+void imageProcessing2 (Mat& image, vector<Vec4i>& lines)
 {
     autoAdjustImage(image);
 
@@ -474,18 +474,32 @@ void imageProcessing2 (Mat& image)
     // Blur image
     GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
     
-    cvtColor(grayImage, image, CV_GRAY2BGR);
+    // Detect lines
+    detectLines(grayImage, lines);
+    //~ cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void *laneDetection2 (void *arg)
 {
     cout << "THREAD: Lane detection started." << endl;
+
+    // Initialize line prediction
+    KalmanFilter kfL(4, 4, 0);
+    KalmanFilter kfR(4, 4, 0);
+    initLinePrediction(kfL, 4);
+    initLinePrediction(kfR, 4);
+    vector<Vec4i> predLLines;
+    vector<Vec4i> predRLines;
+    vector<Vec4i> predictedLane;
+    
+    vector<Vec4i> ll;
+    vector<Vec4i> rl;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
         getExtr(homography);
-        
+
         if (!image.empty()) {
             Mat warpedImage;
             if (!homography.empty()) {
@@ -494,24 +508,71 @@ void *laneDetection2 (void *arg)
             else {
                 image.copyTo(warpedImage);
             }
-            
-            imageProcessing2(warpedImage);
-            
-            for (int y = (warpedImage.rows-1); y >= 0; y--) {
-                for (int x = (warpedImage.cols-1)/2; x >= 0; x--) {
-                    if (warpedImage.at<int>(y, x) == 1) {
-                        cout << "White detected left at " << x << ", " << y << endl;
-                        x = -1;
+                
+            for (size_t i = 0; i < warpedImage.rows; i = i + warpedImage.rows/3 - 1) {
+                vector<Vec4i> lines, someLines;
+                Rect rOI = Rect(Point(0, i), Point(warpedImage.cols-1, i + warpedImage.rows/3 - 1));
+                i++;
+                Mat windowedImage;
+                warpedImage(rOI).copyTo(windowedImage);
+                imageProcessing(windowedImage, lines);
+                
+                // If no lines where found, take predicted lines
+                if (lines.size() <= 0) {
+                    lines.insert(lines.end(), predictedLane.begin(), predictedLane.end());
+                }
+        
+                if (lines.size() > 0) {
+                    // Show lines
+                    //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+    
+                    // Filter lines
+                    vector<Vec4i> leftLines;
+                    vector<Vec4i> rightLines;
+                    vector<Vec4i> lane;
+                    filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
+    
+                    // Predict lane
+                    if (lane.size() == 2) {
+                        //~ vector<Vec4i> ll;
+                        ll.push_back(lane[0]);
+                        predictLine(ll, kfL, 4, predLLines);
+                        vector<Vec4i> lls;
+                        lls.push_back(Vec4i(predLLines[0][0], predLLines[0][1]+i, predLLines[0][2], predLLines[0][3]+i));
+                        drawArrowedLines(warpedImage, lls, Scalar(255, 0, 0));
+                        //~ vector<Vec4i> rl;
+                        rl.push_back(lane[1]);
+                        predictLine(rl, kfR, 4, predRLines);
+                        vector<Vec4i> rls;
+                        rls.push_back(Vec4i(predRLines[0][0], predRLines[0][1]+i, predRLines[0][2], predRLines[0][3]+i));
+                        drawArrowedLines(warpedImage, rls, Scalar(0, 0, 255));
+                    }
+                    if (predLLines.size() == 1) {
+                        predictedLane.push_back(predLLines[0]);
+                        predLLines.clear();
+                    }
+                    
+                    if (predRLines.size() == 1) {
+                        predictedLane.push_back(predRLines[0]);
+                        predRLines.clear();
+                    }
+                    
+                    // Check if lines are parallel
+                    if (predictedLane.size() > 1) {
+                        Vec4i laneMid = getLaneMid(predictedLane);
+                        laneMid[1] += i;
+                        laneMid[3] += i;
+                        drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
+                        setActualLane(predictedLane);
+                        predictedLane.clear();
                     }
                 }
-                for (int x = (warpedImage.cols)/2; x < warpedImage.cols; x++) {
-                    if (warpedImage.at<int>(y, x) == 1) {
-                        cout << "White detected right at " << x << ", " << y << endl;
-                        x = warpedImage.cols;
-                    }
-                } 
+                else {
+                    cout << "No lines found..." << endl;
+                }
             }
-            
+                
+            drawCenterLine(warpedImage, Scalar(0, 255, 0));
             setOutputImageData(warpedImage);
         }
     }

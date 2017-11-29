@@ -143,7 +143,7 @@ void systemAutoMode (void)
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
+    if (pthread_create(&detectLaneThread, NULL, laneDetection2, NULL)) {
         cerr << "ERROR: Couldn't create lane detection thread!" << endl;
     }
     //~ if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
