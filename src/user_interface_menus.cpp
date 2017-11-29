@@ -36,11 +36,11 @@ void getAutoStateList (vector<string>& stateList)
     stateList.clear();
     ostringstream text;
     
-    text << "Direction: " << getDirection();
-    stateList.push_back(text.str());
-    text.str("");
-    text.clear();
-    text << "Steering: " << getSteering() << "°";
+    //~ text << "Direction: " << getDirection();
+    //~ stateList.push_back(text.str());
+    //~ text.str("");
+    //~ text.clear();
+    text << "Steering: " << getSteering() << "rad";
     stateList.push_back(text.str());
     text.str("");
     text.clear();

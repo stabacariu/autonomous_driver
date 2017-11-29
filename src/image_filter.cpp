@@ -41,14 +41,13 @@ void autoAdjustImage (Mat& image)
  */
 void whiteColorFilter (Mat image, Mat& filteredImage)
 {
-    
     //~ Mat imageHLS;
     //~ cvtColor(image, imageHLS, CV_BGR2HLS);
     //~ inRange(imageHLS, Scalar(175, 0, 0), Scalar(180, 255, 255), filteredImage);
     //~ cvtColor(filteredImage, filteredImage, CV_HLS2BGR);
     Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
-    threshold(grayImage, filteredImage, 235, 255, CV_THRESH_BINARY); // lower threshold 235 - 240
+    threshold(grayImage, filteredImage, 230, 255, CV_THRESH_BINARY); // lower threshold 235 - 240
 }
 
 /**

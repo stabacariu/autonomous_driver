@@ -31,23 +31,22 @@ void *remoteControl (void *arg)
         if (prevKey != key) {
             // Set acceleration from 0 to 100 %
             if (key == 'w') {
-                acceleration += 1;
+                acceleration += 0.5;
             }
             else if (key == 's') {
-                acceleration -= 1;
+                acceleration -= 0.5;
             }
             // Stop vehicle
             else if (key == ' ') {
                 acceleration = getAcceleration();
-                if (acceleration > 60) {
+                if (acceleration >= 60) {
                     acceleration = 0;
                 }
-                else if (acceleration < 50) {
+                else {
                     acceleration = 50;
                 }
             }
             if (acceleration < 0) {
-                
                 acceleration = 25;
             }
             else if (acceleration > 100) {

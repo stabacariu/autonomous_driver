@@ -65,9 +65,9 @@ void detectLines (Mat grayImage, vector<Vec4i>& lines)
    lines.clear();
 
    Mat imageEdges;
-   Canny(grayImage, imageEdges, 10, 30);
+   Canny(grayImage, imageEdges, 10, 50);
    //~ Sobel(grayImage, imageEdges, CV_16S, 1, 0, 1);
-   convertScaleAbs(imageEdges, imageEdges);
+   //~ convertScaleAbs(imageEdges, imageEdges);
 
    /**
     * Find lines with probabilistic Hough line function.
@@ -126,7 +126,7 @@ void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines,
     Vec4i rightLine = Vec4i(0, imageSize.height-1, 0, 0);
 
     for (size_t i = 0; i < lines.size(); i++) {
-        if (lines[i][2] <= ((imageSize.width/2)-1)) {
+        if (lines[i][2] <= ((imageSize.width-1)/2)) {
             leftLines.push_back(lines[i]);
             if (lines[i][2] <= leftLine[2]) {
                 if (lines[i][3] >= leftLine[3]) {
@@ -195,9 +195,9 @@ bool checkForStopLine (vector<Vec4i> lines, Vec4i& stopLine)
 {
     for (size_t i = 0; i < lines.size(); i++) {
         float theta = getTheta(Point(lines[i][0], lines[i][1]), Point(lines[i][2],lines[i][3]));
-        
-        if ((theta < (CV_PI*0.2)) && (theta > (CV_PI*0.80))) {
+        if ((theta < (CV_PI*0.2)) || (theta > (CV_PI*0.80))) {
             stopLine = lines[i];
+            cout << "Stop line detected!" << endl;
             return true;
         }
     }
@@ -218,12 +218,18 @@ Vec4i getLaneMid (vector<Vec4i> lane)
    return laneMid;
 }
 
-void imageProcessing (Mat image, vector<Vec4i>& lines)
+void imageProcessing (Mat& image, vector<Vec4i>& lines)
 {
     autoAdjustImage(image);
+    
+    // Blur image
+    //~ GaussianBlur(image, image, Size(5, 5), 0);
 
     Mat grayImage;
     whiteColorFilter(image, grayImage);
+    
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5), Point(2, 2));
+    erode(grayImage, grayImage, kernel);
 
     //~ Mat yellowImage;
     //~ yellowColorFilter(image, yellowImage);
@@ -236,13 +242,52 @@ void imageProcessing (Mat image, vector<Vec4i>& lines)
 
     // Detect lines
     detectLines(grayImage, lines);
-    //~ cvtColor(grayImage, image, CV_GRAY2BGR);
+    cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void resetRois (Size imageSize)
 {
     setRoiLeft(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
     setRoiRight(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
+}
+
+void roiOfLine (Vec4i line, Rect& roi, Size imageSize)
+{
+    if (line[0] <= line[2]) {
+        roi = Rect(Point(line[0]-10, line[1]-10), Point(line[2]+10, line[3]+10));
+    }
+    else {
+        roi = Rect(Point(line[0]+10, line[1]-10), Point(line[2]-10, line[3]+10));
+    }
+    
+    // Check if ROI in bound
+    if (roi.tl().x < 0) {
+        roi = Rect(Point(0, roi.tl().y), roi.br());
+    }
+    else if (roi.tl().x > (imageSize.width-1)) {
+        roi = Rect(Point((imageSize.width-1), roi.tl().y), roi.br());
+    }
+    
+    if (roi.tl().y < 0) {
+        roi = Rect(Point(roi.tl().x, 0), roi.br());
+    }
+    else if (roi.tl().y > (imageSize.height-1)) {
+        roi = Rect(Point(roi.tl().x, (imageSize.height-1)), roi.br());
+    }
+    
+    if (roi.br().x < 0) {
+        roi = Rect(roi.tl(), Point(0, roi.br().y));
+    }
+    else if (roi.br().x > (imageSize.width-1)) {
+        roi = Rect(roi.tl(), Point((imageSize.width-1), roi.br().y));
+    }
+    
+    if (roi.br().y < 0) {
+        roi = Rect(roi.tl(), Point(roi.br().x, 0));
+    }
+    else if (roi.br().y > (imageSize.height-1)) {
+        roi = Rect(roi.tl(), Point(roi.br().x, (imageSize.height-1)));
+    }
 }
 
 /**
@@ -257,13 +302,12 @@ void *laneDetection (void *arg)
     KalmanFilter kfR(4, 4, 0);
     initLinePrediction(kfL, 4);
     initLinePrediction(kfR, 4);
-    vector<Vec4i> measLines;
-    vector<Vec4i> predLines;
-    vector<Vec4i> measLLines;
-    vector<Vec4i> measRLines;
     vector<Vec4i> predLLines;
     vector<Vec4i> predRLines;
+    vector<Vec4i> predictedLane;
     
+    vector<Vec4i> ll;
+    vector<Vec4i> rl;
     //~ Mat prevImage;
     //~ getInputImageData(prevImage);
     
@@ -273,7 +317,6 @@ void *laneDetection (void *arg)
         getExtr(homography);
         
         //~ bool procIm = false;
-        
         //~ if ((!image.empty()) && (!prevImage.empty())) {
             //~ cv::Mat grayImage, grayPrevImage;
             //~ cvtColor(image, grayImage, CV_BGR2GRAY);
@@ -283,9 +326,8 @@ void *laneDetection (void *arg)
                 //~ procIm = true;
             //~ }
         //~ }
-
         //~ if (procIm && !image.empty()) {
-        
+
         if (!image.empty()) {
             Mat warpedImage;
             if (!homography.empty()) {
@@ -296,29 +338,38 @@ void *laneDetection (void *arg)
             }
 
             vector<Vec4i> lines, someLines;
-            Rect leftLineRoi = getRoiLeft();
-            Rect rightLineRoi = getRoiRight();
+            //~ Rect leftLineRoi = getRoiLeft();
+            //~ Rect rightLineRoi = getRoiRight();
 
             imageProcessing(warpedImage, lines);
-            
-            Vec4i stopLine;
-            if (checkForStopLine(lines, stopLine)) {
-                drawLine(warpedImage, stopLine, Scalar(255,0,255));
-            }
+            //~ // Detect stop lines
+            //~ Vec4i stopLine;
+            //~ if (checkForStopLine(lines, stopLine)) {
+                //~ drawLine(warpedImage, stopLine, Scalar(0,0,255));
+                //~ setSteering(CV_PI/2);
+                //~ setAcceleration(50);
+            //~ }
 
             //~ if ((leftLineRoi.width == image.cols) || (rightLineRoi.width == image.cols)) {
                 //~ imageProcessing(warpedImage, lines);
             //~ }
-            //~ else if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
+            //~ else 
+            //~ if ((leftLineRoi.area() > 0) && (rightLineRoi.area() > 0)){
                 //~ imageProcessing(warpedImage(leftLineRoi), someLines);
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
                 //~ imageProcessing(warpedImage(rightLineRoi), someLines);
                 //~ lines.insert(lines.end(), someLines.begin(), someLines.end());
             //~ }
+            //~ else {
+                //~ imageProcessing(warpedImage, lines);
+                //~ resetRois(warpedImage.size());
+            //~ }
 
             // If no lines where found, take predicted lines
             if (lines.size() <= 0) {
-                lines.insert(lines.end(), predLines.begin(), predLines.end());
+                //~ lines.insert(lines.end(), predLLines.begin(), predLLines.end());
+                //~ lines.insert(lines.end(), predRLines.begin(), predRLines.end());
+                lines.insert(lines.end(), predictedLane.begin(), predictedLane.end());
             }
 
             if (lines.size() > 0) {
@@ -332,133 +383,141 @@ void *laneDetection (void *arg)
                 filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
 
                 // Predict lane
-                vector<Vec4i> predictedLane;
-                if (leftLines.size() > 0) {
-                    //~ predictLine(leftLines,  kfL, 4, predLLines);
-                    vector<Vec4i> ll;
+                if (lane.size() == 2) {
+                    //~ vector<Vec4i> ll;
                     ll.push_back(lane[0]);
-                    predictLine(ll,  kfL, 4, predLLines);
+                    predictLine(ll, kfL, 4, predLLines);
                     drawArrowedLines(warpedImage, predLLines, Scalar(255, 0, 0));
-                }
-                if (predLLines.size() > 0) {
-                    predictedLane.push_back(predLLines[0]);
-                    // Set left ROI with offset
-                    //~ if (predLLines[0][0] <= predLLines[0][2]) {
-                        //~ leftLineRoi = Rect(Point(predLLines[0][0]-5, predLLines[0][1]-5), Point(predLLines[0][2]+5, predLLines[0][3]+5));
-                    //~ }
-                    //~ else {
-                        //~ leftLineRoi = Rect(Point(predLLines[0][0]+5, predLLines[0][1]-5), Point(predLLines[0][2]-5, predLLines[0][3]+5));
-                    //~ }
-//~ 
-                    //~ setRoiLeft(leftLineRoi);
-                }
-
-                if (rightLines.size() > 0) {
-                    //~ predictLine(rightLines, kfR, 4, predRLines);
-                    vector<Vec4i> rl;
+                    //~ vector<Vec4i> rl;
                     rl.push_back(lane[1]);
                     predictLine(rl, kfR, 4, predRLines);
                     drawArrowedLines(warpedImage, predRLines, Scalar(0, 0, 255));
                 }
-                if (predRLines.size() > 0) {
+                //~ if (leftLines.size() > 0) {
+                    //~ //~ predictLine(leftLines,  kfL, 4, predLLines);
+                    //~ vector<Vec4i> ll;
+                    //~ ll.push_back(lane[0]);
+                    //~ predictLine(ll,  kfL, 4, predLLines);
+                    //~ drawArrowedLines(warpedImage, predLLines, Scalar(255, 0, 0));
+                //~ }
+                //~ if (predLLines.size() > 0) {
+                if (predLLines.size() == 1) {
+                    predictedLane.push_back(predLLines[0]);
+                    predLLines.clear();
+                    // Set left ROI with offset
+                    //~ roiOfLine(predLLines[0], leftLineRoi, warpedImage.size());
+                    //~ setRoiLeft(leftLineRoi);
+                    //~ rectangle(warpedImage, leftLineRoi, Scalar(255, 0, 0), 1);
+                }
+                
+                //~ if (rightLines.size() > 0) {
+                    //~ //~ predictLine(rightLines, kfR, 4, predRLines);
+                    //~ vector<Vec4i> rl;
+                    //~ rl.push_back(lane[1]);
+                    //~ predictLine(rl, kfR, 4, predRLines);
+                    //~ drawArrowedLines(warpedImage, predRLines, Scalar(0, 0, 255));
+                //~ }
+                //~ if (predRLines.size() > 0) {
+                if (predRLines.size() == 1) {
                     predictedLane.push_back(predRLines[0]);
+                    predRLines.clear();
                     // Set right ROI with offset
-                    //~ if (predRLines[0][0] <= predRLines[0][2]) {
-                        //~ rightLineRoi = Rect(Point(predRLines[0][0]-5, predRLines[0][1]-5), Point(predRLines[0][2]+5, predRLines[0][3]+5));
-                    //~ }
-                    //~ else {
-                        //~ rightLineRoi = Rect(Point(predRLines[0][0]+5, predRLines[0][1]-5), Point(predRLines[0][2]-5, predRLines[0][3]+5));
-                    //~ }
+                    //~ roiOfLine(predRLines[0], rightLineRoi, warpedImage.size());
                     //~ setRoiRight(rightLineRoi);
+                    //~ rectangle(warpedImage, rightLineRoi, Scalar(0, 0, 255), 1);
                 }
-
+                
                 // Check if lines are parallel
-                if (predictedLane.size() == 2) {
+                if (predictedLane.size() > 1) {
                     drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
-                    //~ setActualLane(predictedLane);
+                    setActualLane(predictedLane);
                     //~ setActualLane(lane);
-                    if (checkParallelLine(predictedLane)) {
-                        // Save detected lane
-                        setActualLane(predictedLane);
-                    }
-                    //~ predictedLane.clear();
+                    
+                    //~ if (checkParallelLine(predictedLane)) {
+                        //~ // Save detected lane
+                        //~ setActualLane(predictedLane);
+                    //~ }
+                    predictedLane.clear();
                 }
-
-                drawCenterLine(warpedImage, Scalar(0,255,0));
-
-                // Draw found ROI
-                //~ rectangle(warpedImage, getRoiLeft(), Scalar(255, 0, 0), 1);
-                //~ rectangle(warpedImage, getRoiRight(), Scalar(0, 0, 255), 1);
+                else {
+                    //~ setActualLane();
+                }
             }
             else {
-                //~ resetRois(image.size());
-                setActualLane(lines);
+                cout << "No lines found..." << endl;
+                //~ setActualLane(predictedLane);
+                //~ resetRois(warpedImage.size());
             }
-
-            //~ cvtColor(grayImage, warpedImage, CV_GRAY2BGR); //< Only for debugging
+            drawCenterLine(warpedImage, Scalar(0, 255, 0));
             setOutputImageData(warpedImage);
         }
     }
-
+    
     cout << "THREAD: Lane detection ended." << endl;
-
+    
     return NULL;
 }
 
-void imageProcessing2 (Mat& image, vector<Point>& points)
+void imageProcessing2 (Mat& image)
 {
     autoAdjustImage(image);
 
     Mat grayImage;
     whiteColorFilter(image, grayImage);
 
-    Mat imageEdges;
-    Canny(grayImage, imageEdges, 10, 30);
+    //~ Mat yellowImage;
+    //~ yellowColorFilter(image, yellowImage);
 
-    bitwise_not(imageEdges, imageEdges);
+    // Merge images
+    //~ bitwise_or(image, yellowImage, grayImage);
 
-    Mat distance;
-    distanceTransform(imageEdges, distance, CV_DIST_C, CV_DIST_MASK_3);
-
-    //~ ofstream logging;
-    //~ logging.open("../output/log_distance.txt");
-    //~ logging << "Distance " << distance << endl;
-    //~ logging.close();
-
-    normalize(distance, distance, 0, 255, NORM_MINMAX);
-
-    cvtColor(distance, image, CV_GRAY2BGR);
+    // Blur image
+    GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
+    
+    cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void *laneDetection2 (void *arg)
 {
     cout << "THREAD: Lane detection started." << endl;
-
+    
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
         getInputImageData(image);
         getExtr(homography);
-
+        
         if (!image.empty()) {
             Mat warpedImage;
             if (!homography.empty()) {
-                //~ inversePerspectiveTransform(image, warpedImage, homography);
-                warpPerspective(image, image, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
-
+                warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             }
             else {
                 image.copyTo(warpedImage);
             }
-
-            vector<Point> points;
-            imageProcessing2(warpedImage, points);
-
+            
+            imageProcessing2(warpedImage);
+            
+            for (int y = (warpedImage.rows-1); y >= 0; y--) {
+                for (int x = (warpedImage.cols-1)/2; x >= 0; x--) {
+                    if (warpedImage.at<int>(y, x) == 1) {
+                        cout << "White detected left at " << x << ", " << y << endl;
+                        x = -1;
+                    }
+                }
+                for (int x = (warpedImage.cols)/2; x < warpedImage.cols; x++) {
+                    if (warpedImage.at<int>(y, x) == 1) {
+                        cout << "White detected right at " << x << ", " << y << endl;
+                        x = warpedImage.cols;
+                    }
+                } 
+            }
+            
             setOutputImageData(warpedImage);
         }
     }
-
+    
     cout << "THREAD: Lane detection ended." << endl;
-
+    
     return NULL;
 }
 
@@ -473,27 +532,27 @@ void initLinePrediction (KalmanFilter& kf, int valueCnt)
     //~ kf.transitionMatrix.at<double>(0, 0) = 1;
     //~ kf.transitionMatrix.at<double>(0, 1) = 0;
     //~ kf.transitionMatrix.at<double>(0, 2) = 0;
-    //~ kf.transitionMatrix.at<double>(0, 3) = 1;
+    //~ kf.transitionMatrix.at<double>(0, 3) = 0;
     //~ 
     //~ kf.transitionMatrix.at<double>(1, 0) = 0;
     //~ kf.transitionMatrix.at<double>(1, 1) = 1;
     //~ kf.transitionMatrix.at<double>(1, 2) = 0;
-    //~ kf.transitionMatrix.at<double>(1, 3) = 1;
+    //~ kf.transitionMatrix.at<double>(1, 3) = 0;
     //~ 
     //~ kf.transitionMatrix.at<double>(2, 0) = 0;
     //~ kf.transitionMatrix.at<double>(2, 1) = 0;
     //~ kf.transitionMatrix.at<double>(2, 2) = 1;
-    //~ kf.transitionMatrix.at<double>(2, 3) = 1;
+    //~ kf.transitionMatrix.at<double>(2, 3) = 0;
     //~ 
     //~ kf.transitionMatrix.at<double>(3, 0) = 0;
     //~ kf.transitionMatrix.at<double>(3, 1) = 0;
     //~ kf.transitionMatrix.at<double>(3, 2) = 0;
     //~ kf.transitionMatrix.at<double>(3, 3) = 1;
-    //~ 
+    
     setIdentity(kf.transitionMatrix);
     setIdentity(kf.measurementMatrix);
-    setIdentity(kf.processNoiseCov, Scalar::all(100));
-    //~ setIdentity(kf.measurementNoiseCov, Scalar::all(5));
+    setIdentity(kf.processNoiseCov, Scalar::all(500));
+    setIdentity(kf.measurementNoiseCov, Scalar::all(500));
     //~ setIdentity(kf.errorCovPre, Scalar::all(1000));
     //~ setIdentity(kf.errorCovPost, Scalar::all(500));
 }
