@@ -11,6 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include "vehicle.hpp"
 #include "lane_detection.hpp"
+#include "obstacle_detection.hpp"
 
 void drawMainMenu (cv::Mat& image);
 void drawAutoMode (cv::Mat& image);

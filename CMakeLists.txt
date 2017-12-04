@@ -3,6 +3,7 @@ project(autonomous_driver)
 
 find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED)
+find_library(WiringPi REQUIRED)
 file(GLOB SRC src/*.cpp LIB lib/*.cpp)
 add_executable(autonomous_driver ${SRC} ${LIB})
-target_link_libraries(autonomous_driver pthread ${OpenCV_LIBS} ${Threads_LIBS})
+target_link_libraries(autonomous_driver pthread wiringPi ${OpenCV_LIBS} ${Threads_LIBS} ${WiringPi_LIBS})

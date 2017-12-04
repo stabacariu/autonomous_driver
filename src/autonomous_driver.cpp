@@ -129,12 +129,13 @@ void systemAutoMode (void)
     cout << "---------------------------------" << endl;
     cout << "SYSTEM: Autonomous Driving Mode" << endl;
 
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_DETECT_TRAFFIC_SIGNS + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_DETECT_OBSTACLE + MODULE_DETECT_TRAFFIC_SIGNS + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
 
     pthread_t cameraCaptureThread;
     pthread_t detectLaneThread;
     pthread_t detectTrafficSignThread;
     //~ pthread_t detectObstacleThread;
+    pthread_t detectObstacleThread;
     pthread_t showOutputImageThread;
     pthread_t pathPlanningThread;
     pthread_t vehicleControlThread;
@@ -149,6 +150,9 @@ void systemAutoMode (void)
     //~ if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
         //~ cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
     //~ }
+    if (pthread_create(&detectObstacleThread, NULL, obstacleDetection, NULL)) {
+        cerr << "ERROR: Couldn't create obstacle detection thread!" << endl;
+    }
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
@@ -169,6 +173,9 @@ void systemAutoMode (void)
     //~ if (pthread_join(detectTrafficSignThread, NULL)) {
         //~ cerr << "ERROR: Couldn't join thread!" << endl;
     //~ }
+    if (pthread_join(detectObstacleThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
@@ -234,32 +241,60 @@ void systemDevMode (void)
     cout << "SYSTEM: Development Mode" << endl;
 
     //! @todo Dev mode
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_DETECT_TRAFFIC_SIGNS + MODULE_DETECT_OBSTACLE + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
 
     pthread_t cameraCaptureThread;
-    pthread_t showInputImageThread;
+    pthread_t detectLaneThread;
+    pthread_t detectTrafficSignThread;
+    pthread_t detectObstacleThread;
     pthread_t showOutputImageThread;
+    pthread_t pathPlanningThread;
+    pthread_t vehicleControlThread;
 
     // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         cerr << "ERROR: Couldn't create camera capture thread!" << endl;
     }
-    if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
-        cerr << "ERROR: Couldn't create show input image thread!" << endl;
+    if (pthread_create(&detectLaneThread, NULL, laneDetection, NULL)) {
+        cerr << "ERROR: Couldn't create lane detection thread!" << endl;
+    }
+    if (pthread_create(&detectTrafficSignThread, NULL, trafficSignDetection, NULL)) {
+        cerr << "ERROR: Couldn't create traffic sign detection thread!" << endl;
+    }
+    if (pthread_create(&detectObstacleThread, NULL, obstacleDetection, NULL)) {
+        cerr << "ERROR: Couldn't create obstacle detection thread!" << endl;
     }
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         cerr << "ERROR: Couldn't create show output image thread!" << endl;
     }
+    if (pthread_create(&pathPlanningThread, NULL, pathPlanning, NULL)) {
+        cerr << "ERROR: Couldn't create path planning thread!" << endl;
+    }
+    if (pthread_create(&vehicleControlThread, NULL, vehicleControl, NULL)) {
+        cerr << "ERROR: Couldn't create vehicle control thread!" << endl;
+    }
 
-    // Join thread
+    // Join threads
     if (pthread_join(cameraCaptureThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
-    if (pthread_join(showInputImageThread, NULL)) {
+    if (pthread_join(detectLaneThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(detectTrafficSignThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(detectObstacleThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
     }
     if (pthread_join(showOutputImageThread, NULL)) {
         cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(pathPlanningThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread!" << endl;
+    }
+    if (pthread_join(vehicleControlThread, NULL)) {
+        cerr << "ERROR: Couldn't join thread" << endl;
     }
 }
 

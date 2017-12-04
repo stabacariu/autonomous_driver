@@ -1,0 +1,73 @@
+/**
+ * @file obstacle_detection.cpp
+ * @author Sergiu-Petru Tabacariu
+ * @date 4.12.2017
+ */
+
+#include "obstacle_detection.hpp"
+#include "autonomous_driver.hpp"
+
+ObstacleData obstacle;
+
+using namespace std;
+
+void initObstacleData (void)
+{
+    pthread_mutex_init(&obstacle.lock, NULL);
+}
+
+double getDistance (void)
+{
+    double distance;
+    
+    if (pthread_mutex_lock(&obstacle.lock)) {
+        cerr << "ERROR: Couldn't lock actual position mutex!" << endl;
+    }
+    
+    distance = obstacle.distance;
+    
+    if (pthread_mutex_unlock(&obstacle.lock)) {
+        cerr << "ERROR: Couldn't unlock actual position mutex!" << endl;
+    }
+    
+    return distance;
+}
+
+void setDistance (double distance)
+{
+    if (pthread_mutex_lock(&obstacle.lock)) {
+        cerr << "ERROR: Couldn't lock actual position mutex!" << endl;
+    }
+    
+    obstacle.distance = distance;
+    
+    if (pthread_mutex_unlock(&obstacle.lock)) {
+        cerr << "ERROR: Couldn't unlock actual position mutex!" << endl;
+    }
+}
+
+void *obstacleDetection (void *arg)
+{
+    cout << "THREAD: Obstacle detection started." << endl;
+    
+    int trigger = 0; //!< WiringPi lib pin number 
+    int echo = 2; //!< Wirring Pi lib pin number
+    
+    if (wiringPiSetup() == -1) {
+        cerr << "ERROR: Couldn't init wiringPi lib!" << endl;
+    }
+
+    Sonar sonar;
+    sonar.init(trigger, echo);
+    
+    initObstacleData();
+        
+    while ((getModuleState() & MODULE_DETECT_OBSTACLE) == MODULE_DETECT_OBSTACLE) {
+        //~ cout << "Obstacle detection: Distance is " << sonar.distance(1000) << " cm." << endl;
+        setDistance(sonar.distance(1000));
+        delay(500);
+    }
+
+    cout << "THREAD: Obstacle detection ended." << endl;
+    return NULL;
+}

@@ -73,6 +73,10 @@ void getAutoDetectList (vector<string>& detectList)
     detectList.push_back(text.str());
     text.str("");
     text.clear();
+    text << "Obstacle: " << getDistance() << " cm";
+    detectList.push_back(text.str());
+    text.str("");
+    text.clear();
     detectList.push_back("Signs: ");
 }
 

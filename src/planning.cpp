@@ -169,7 +169,7 @@ void *pathPlanning (void *arg)
         getActualLane(actualLane);
         
         getInputImageData(inputImage);
-        if ((actualLane.size() > 0) && (!inputImage.empty())) {
+        if ((getDistance() > 25) && (actualLane.size() > 0) && (!inputImage.empty())) {
             calcTrajectory(actualLane, kfT, getImageSize());
         }
         else {

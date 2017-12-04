@@ -12,6 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include "autonomous_driver.hpp"
 #include "image_data.hpp"
+#include "configuration.hpp"
 
 /**
  * @brief Thread for traffic sign detection.
