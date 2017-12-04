@@ -65,9 +65,9 @@ int getCameraID (void)
     return cameraID;
 }
 
-int getFPS (void)
+double getFPS (void)
 {
-    int cameraFPS;
+    double cameraFPS;
 
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;

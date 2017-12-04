@@ -129,7 +129,7 @@ float calcPixelPerMm (Mat image, Size calibPatternDim, float calibPatternSize)
         }
         avgPxDist /= distCnt;
         cout << "Avg distance in px " << avgPxDist << endl;
-        cout << "Px per mm" << avgPxDist/calibPatternSize << endl;
+        cout << "Px per mm " << avgPxDist/calibPatternSize << endl;
     }
     return avgPxDist/calibPatternSize;
 }

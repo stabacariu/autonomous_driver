@@ -4,7 +4,7 @@
 <cameraID>0</cameraID>
 <cameraImageSize_width>640</cameraImageSize_width>
 <cameraImageSize_height>360</cameraImageSize_height>
-<cameraFPS>7</cameraFPS>
+<cameraFPS>7.5000000000000000e+00</cameraFPS>
 <!-- Calibration config -->
 <calibImageSize_width>640</calibImageSize_width>
 <calibImageSize_height>360</calibImageSize_height>
@@ -30,16 +30,16 @@
   <cols>3</cols>
   <dt>d</dt>
   <data>
-    9.7447477368907975e-01 -4.9382857855485507e-01
-    -2.4717195232598840e+01 -1.1295711313633383e-02
-    7.7949627619217976e-02 1.0601465948198674e+02
-    -9.1975588031173450e-08 -1.5956896257549979e-03
-    9.2926571063921504e-01</data></homography>
+    9.6575908536740052e-01 -5.1752540659333646e-01
+    -8.2030553466501743e+00 -1.8926335900370184e-02
+    9.8466180987329066e-02 9.9321147420933897e+01
+    -3.6471966072718076e-05 -1.6143321515933945e-03
+    9.4424866748254788e-01</data></homography>
 <transformation type_id="opencv-matrix">
   <rows>0</rows>
   <cols>0</cols>
   <dt>u</dt>
   <data></data></transformation>
-<pixelPerMm>0.</pixelPerMm>
+<pixelPerMm>4.9731561541557312e-01</pixelPerMm>
 <validData>0</validData>
 </opencv_storage>

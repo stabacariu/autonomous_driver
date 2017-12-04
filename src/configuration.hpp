@@ -37,7 +37,7 @@ struct ConfigData {
     // Camera config
     int cameraID; //!< Camera identification
     cv::Size cameraImageSize; //!< Camera image size
-    int cameraFPS; //!< Camera frames per second
+    double cameraFPS; //!< Camera frames per second
     // Calibration config
     std::string calibTime; //!< Calibration time stamp
     cv::Size calibImageSize; //!< Calibration image size
@@ -79,7 +79,7 @@ void setConfigData (ConfigData c);
 
 int getCameraID (void);
 cv::Size getImageSize (void);
-int getFPS (void);
+double getFPS (void);
 cv::Size getPatternDim (void);
 double getPatternSize (void);
 void setExtr (cv::Mat homography);

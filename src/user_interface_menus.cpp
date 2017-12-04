@@ -59,17 +59,20 @@ void getAutoDetectList (vector<string>& detectList)
     detectList.clear();
     ostringstream text;
     //! @todo Get lane
-    //~ vector<Vec4i> lane;
-    //~ getLaneMid(lane);
+    vector<Vec4i> lane;
+    getActualLane(lane);
     
     text << "Lane: ";
-    //~ if (lane.size() > 0) {
-        //~ text << lane[0][0] << lane[0][1] << lane[0][2] << lane[0][3];
-    //~ }
+    if (lane.size() > 0) {
+        text << "[" << lane[0][0] << ", " << lane[0][1] << ", " << lane[0][2] << ", " << lane[0][3] << "]\n";
+        text << "[" << lane[1][0] << ", " << lane[1][1] << ", " << lane[1][2] << ", " << lane[1][3] << "]";
+    }
+    else {
+        text << "No lane found...";
+    }
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    detectList.push_back("Objects: ");
     detectList.push_back("Signs: ");
 }
 

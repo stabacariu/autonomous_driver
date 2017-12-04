@@ -206,16 +206,79 @@ bool checkForStopLine (vector<Vec4i> lines, Vec4i& stopLine)
 
 Vec4i getLaneMid (vector<Vec4i> lane)
 {
-   Point ptl1 = Point(lane[0][0], lane[0][1]);
-   Point ptl2 = Point(lane[0][2], lane[0][3]);
-   Point ptr1 = Point(lane[1][0], lane[1][1]);
-   Point ptr2 = Point(lane[1][2], lane[1][3]);
+    Point ptl1 = Point(lane[0][0], lane[0][1]);
+    Point ptl2 = Point(lane[0][2], lane[0][3]);
+    Point ptr1 = Point(lane[1][0], lane[1][1]);
+    Point ptr2 = Point(lane[1][2], lane[1][3]);
+    
+    Point ptmid1 = Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
+    Point ptmid2 = Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
+    Vec4i laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+    
+    return laneMid;
+}
 
-   Point ptmid1 = Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
-   Point ptmid2 = Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
-   Vec4i laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+/**
+ * @brief This function initializes the line prediction with a Kalman filter.
+ */
 
-   return laneMid;
+void initLinePrediction (KalmanFilter& kf, int valueCnt)
+{
+    kf.statePre = Mat::zeros(valueCnt, 1, CV_32F);
+    
+    //~ kf.transitionMatrix.at<double>(0, 0) = 1;
+    //~ kf.transitionMatrix.at<double>(0, 1) = 0;
+    //~ kf.transitionMatrix.at<double>(0, 2) = 0;
+    //~ kf.transitionMatrix.at<double>(0, 3) = 0;
+    //~ 
+    //~ kf.transitionMatrix.at<double>(1, 0) = 0;
+    //~ kf.transitionMatrix.at<double>(1, 1) = 1;
+    //~ kf.transitionMatrix.at<double>(1, 2) = 0;
+    //~ kf.transitionMatrix.at<double>(1, 3) = 0;
+    //~ 
+    //~ kf.transitionMatrix.at<double>(2, 0) = 0;
+    //~ kf.transitionMatrix.at<double>(2, 1) = 0;
+    //~ kf.transitionMatrix.at<double>(2, 2) = 1;
+    //~ kf.transitionMatrix.at<double>(2, 3) = 0;
+    //~ 
+    //~ kf.transitionMatrix.at<double>(3, 0) = 0;
+    //~ kf.transitionMatrix.at<double>(3, 1) = 0;
+    //~ kf.transitionMatrix.at<double>(3, 2) = 0;
+    //~ kf.transitionMatrix.at<double>(3, 3) = 1;
+    
+    setIdentity(kf.transitionMatrix);
+    setIdentity(kf.measurementMatrix);
+    setIdentity(kf.processNoiseCov, Scalar::all(500));
+    setIdentity(kf.measurementNoiseCov, Scalar::all(500));
+    //~ setIdentity(kf.errorCovPre, Scalar::all(1000));
+    //~ setIdentity(kf.errorCovPost, Scalar::all(500));
+}
+
+/**
+ * @brief This function predicts the line points.
+ *
+ * @todo Measured lines unnecessary beacause measLines = lines
+ */
+
+void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& predLines)
+{
+    //~ predLines.clear();
+
+    for (size_t i = 0; i < lines.size(); i++) {
+        Mat prediction = kf.predict();
+        Vec4i predictedPts(prediction.at<float>(0), prediction.at<float>(1), prediction.at<float>(2), prediction.at<float>(3));
+
+        Mat measurement = Mat::zeros(valueCnt, 1, CV_32F);
+        for (size_t j = 0; j < valueCnt; j++) {
+            measurement.at<float>(j) = lines[i][j];
+        }
+
+        Mat estimated = kf.correct(measurement);
+
+        Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
+        predLines.clear();
+        predLines.push_back(statePts);
+    }
 }
 
 void imageProcessing (Mat& image, vector<Vec4i>& lines)
@@ -300,14 +363,17 @@ void *laneDetection (void *arg)
     // Initialize line prediction
     KalmanFilter kfL(4, 4, 0);
     KalmanFilter kfR(4, 4, 0);
+    KalmanFilter kfM(4, 4, 0);
     initLinePrediction(kfL, 4);
     initLinePrediction(kfR, 4);
-    vector<Vec4i> predLLines;
-    vector<Vec4i> predRLines;
-    vector<Vec4i> predictedLane;
+    initLinePrediction(kfM, 4);
+    vector<Vec4i> leftLinesPredicted;
+    vector<Vec4i> rightLinesPredicted;
+    vector<Vec4i> lanePredicted;
+    vector<Vec4i> predictedTrajectory;
     
-    vector<Vec4i> ll;
-    vector<Vec4i> rl;
+    vector<Vec4i> leftLine;
+    vector<Vec4i> rightLine;
     //~ Mat prevImage;
     //~ getInputImageData(prevImage);
     
@@ -367,9 +433,9 @@ void *laneDetection (void *arg)
 
             // If no lines where found, take predicted lines
             if (lines.size() <= 0) {
-                //~ lines.insert(lines.end(), predLLines.begin(), predLLines.end());
-                //~ lines.insert(lines.end(), predRLines.begin(), predRLines.end());
-                lines.insert(lines.end(), predictedLane.begin(), predictedLane.end());
+                //~ lines.insert(lines.end(), leftLinesPredicted.begin(), leftLinesPredicted.end());
+                //~ lines.insert(lines.end(), rightLinesPredicted.begin(), rightLinesPredicted.end());
+                lines.insert(lines.end(), lanePredicted.begin(), lanePredicted.end());
             }
 
             if (lines.size() > 0) {
@@ -383,61 +449,71 @@ void *laneDetection (void *arg)
                 filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
 
                 // Predict lane
-                if (lane.size() == 2) {
-                    //~ vector<Vec4i> ll;
-                    ll.push_back(lane[0]);
-                    predictLine(ll, kfL, 4, predLLines);
-                    drawArrowedLines(warpedImage, predLLines, Scalar(255, 0, 0));
-                    //~ vector<Vec4i> rl;
-                    rl.push_back(lane[1]);
-                    predictLine(rl, kfR, 4, predRLines);
-                    drawArrowedLines(warpedImage, predRLines, Scalar(0, 0, 255));
-                }
-                //~ if (leftLines.size() > 0) {
-                    //~ //~ predictLine(leftLines,  kfL, 4, predLLines);
-                    //~ vector<Vec4i> ll;
-                    //~ ll.push_back(lane[0]);
-                    //~ predictLine(ll,  kfL, 4, predLLines);
-                    //~ drawArrowedLines(warpedImage, predLLines, Scalar(255, 0, 0));
+                //~ if (lane.size() == 2) {
+                    //~ //~ vector<Vec4i> leftLine;
+                    //~ leftLine.push_back(lane[0]);
+                    //~ predictLine(leftLine, kfL, 4, leftLinesPredicted);
+                    //~ drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
+                    //~ //~ vector<Vec4i> rightLine;
+                    //~ rightLine.push_back(lane[1]);
+                    //~ predictLine(rightLine, kfR, 4, rightLinesPredicted);
+                    //~ drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
                 //~ }
-                //~ if (predLLines.size() > 0) {
-                if (predLLines.size() == 1) {
-                    predictedLane.push_back(predLLines[0]);
-                    predLLines.clear();
+                // Predict left line
+                if (leftLines.size() > 0) {
+                    vector<Vec4i> leftLine;
+                    leftLine.push_back(lane[0]);
+                    predictLine(leftLine,  kfL, 4, leftLinesPredicted);
+                    drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
+                }
+                //~ if (leftLinesPredicted.size() > 0) {
+                if (leftLinesPredicted.size() == 1) {
+                    lanePredicted.push_back(leftLinesPredicted[0]);
+                    leftLinesPredicted.clear();
                     // Set left ROI with offset
-                    //~ roiOfLine(predLLines[0], leftLineRoi, warpedImage.size());
+                    //~ roiOfLine(leftLinesPredicted[0], leftLineRoi, warpedImage.size());
                     //~ setRoiLeft(leftLineRoi);
                     //~ rectangle(warpedImage, leftLineRoi, Scalar(255, 0, 0), 1);
                 }
+                else {
+                    lanePredicted.push_back(Vec4i(0, 0, 0, 0));
+                }
                 
-                //~ if (rightLines.size() > 0) {
-                    //~ //~ predictLine(rightLines, kfR, 4, predRLines);
-                    //~ vector<Vec4i> rl;
-                    //~ rl.push_back(lane[1]);
-                    //~ predictLine(rl, kfR, 4, predRLines);
-                    //~ drawArrowedLines(warpedImage, predRLines, Scalar(0, 0, 255));
-                //~ }
-                //~ if (predRLines.size() > 0) {
-                if (predRLines.size() == 1) {
-                    predictedLane.push_back(predRLines[0]);
-                    predRLines.clear();
+                //Predict right line
+                if (rightLines.size() > 0) {
+                    vector<Vec4i> rightLine;
+                    rightLine.push_back(lane[1]);
+                    predictLine(rightLine, kfR, 4, rightLinesPredicted);
+                    drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
+                }
+                //~ if (rightLinesPredicted.size() > 0) {
+                if (rightLinesPredicted.size() == 1) {
+                    lanePredicted.push_back(rightLinesPredicted[0]);
+                    rightLinesPredicted.clear();
                     // Set right ROI with offset
-                    //~ roiOfLine(predRLines[0], rightLineRoi, warpedImage.size());
+                    //~ roiOfLine(rightLinesPredicted[0], rightLineRoi, warpedImage.size());
                     //~ setRoiRight(rightLineRoi);
                     //~ rectangle(warpedImage, rightLineRoi, Scalar(0, 0, 255), 1);
                 }
+                else {
+                    lanePredicted.push_back(Vec4i(warpedImage.cols-1, 0, warpedImage.cols-1, 0));
+                }
                 
                 // Check if lines are parallel
-                if (predictedLane.size() > 1) {
-                    drawArrowedLine(warpedImage, getLaneMid(predictedLane), Scalar(200,200,0));
-                    setActualLane(predictedLane);
+                if (lanePredicted.size() > 0) {
+                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), Scalar(200,200,0));
+                    setActualLane(lanePredicted);
+                    
                     //~ setActualLane(lane);
                     
-                    //~ if (checkParallelLine(predictedLane)) {
+                    //~ predictLine(lanePredicted, kfM, 4, predictedTrajectory);
+                    //~ drawArrowedLines(warpedImage, predictedTrajectory, Scalar(200,200,0));
+                    
+                    //~ if (checkParallelLine(lanePredicted)) {
                         //~ // Save detected lane
-                        //~ setActualLane(predictedLane);
+                        //~ setActualLane(lanePredicted);
                     //~ }
-                    predictedLane.clear();
+                    lanePredicted.clear();
                 }
                 else {
                     //~ setActualLane();
@@ -445,7 +521,7 @@ void *laneDetection (void *arg)
             }
             else {
                 cout << "No lines found..." << endl;
-                //~ setActualLane(predictedLane);
+                setActualLane(lanePredicted);
                 //~ resetRois(warpedImage.size());
             }
             drawCenterLine(warpedImage, Scalar(0, 255, 0));
@@ -458,13 +534,16 @@ void *laneDetection (void *arg)
     return NULL;
 }
 
+
 void imageProcessing2 (Mat& image, vector<Vec4i>& lines)
 {
     autoAdjustImage(image);
 
     Mat grayImage;
     whiteColorFilter(image, grayImage);
-
+    Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5), Point(2, 2));
+    erode(grayImage, grayImage, kernel);
+    
     //~ Mat yellowImage;
     //~ yellowColorFilter(image, yellowImage);
 
@@ -476,7 +555,7 @@ void imageProcessing2 (Mat& image, vector<Vec4i>& lines)
     
     // Detect lines
     detectLines(grayImage, lines);
-    //~ cvtColor(grayImage, image, CV_GRAY2BGR);
+    cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void *laneDetection2 (void *arg)
@@ -484,16 +563,30 @@ void *laneDetection2 (void *arg)
     cout << "THREAD: Lane detection started." << endl;
 
     // Initialize line prediction
-    KalmanFilter kfL(4, 4, 0);
-    KalmanFilter kfR(4, 4, 0);
-    initLinePrediction(kfL, 4);
-    initLinePrediction(kfR, 4);
-    vector<Vec4i> predLLines;
-    vector<Vec4i> predRLines;
-    vector<Vec4i> predictedLane;
+    KalmanFilter kfLT(4, 4, 0);
+    KalmanFilter kfLM(4, 4, 0);
+    KalmanFilter kfLB(4, 4, 0);
+    KalmanFilter kfRT(4, 4, 0);
+    KalmanFilter kfRM(4, 4, 0);
+    KalmanFilter kfRB(4, 4, 0);
+    initLinePrediction(kfLT, 4);
+    initLinePrediction(kfLM, 4);
+    initLinePrediction(kfLB, 4);
+    initLinePrediction(kfRT, 4);
+    initLinePrediction(kfRM, 4);
+    initLinePrediction(kfRB, 4);
+    vector<KalmanFilter> kf;
+    kf.push_back(kfLT);
+    kf.push_back(kfLM);
+    kf.push_back(kfLB);
+    kf.push_back(kfRT);
+    kf.push_back(kfRM);
+    kf.push_back(kfRB);
     
-    vector<Vec4i> ll;
-    vector<Vec4i> rl;
+    vector<Vec4i> leftLine;
+    vector<Vec4i> rightLine;
+    
+    vector<Vec4i> lanePredicted;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         Mat image, homography;
@@ -508,69 +601,105 @@ void *laneDetection2 (void *arg)
             else {
                 image.copyTo(warpedImage);
             }
-                
+            
+            int kfIt = 0;
             for (size_t i = 0; i < warpedImage.rows; i = i + warpedImage.rows/3 - 1) {
-                vector<Vec4i> lines, someLines;
-                Rect rOI = Rect(Point(0, i), Point(warpedImage.cols-1, i + warpedImage.rows/3 - 1));
-                i++;
+                vector<Vec4i> lines;
+                vector<Vec4i> leftLinesPredicted;
+                vector<Vec4i> rightLinesPredicted;
+                // Set ROI
+                Rect rOI = Rect(Point(0, i), Point(warpedImage.cols-1, i + warpedImage.rows/3));
+                
                 Mat windowedImage;
                 warpedImage(rOI).copyTo(windowedImage);
-                imageProcessing(windowedImage, lines);
+                imageProcessing2(windowedImage, lines);
+                rectangle(warpedImage, rOI, Scalar(0, 255, 0), 1);
+                windowedImage.copyTo(warpedImage(rOI));
                 
                 // If no lines where found, take predicted lines
-                if (lines.size() <= 0) {
-                    lines.insert(lines.end(), predictedLane.begin(), predictedLane.end());
-                }
+                //~ if (lines.size() <= 0) {
+                    //~ lines.insert(lines.end(), lanePredicted.begin(), lanePredicted.end());
+                //~ }
         
                 if (lines.size() > 0) {
-                    // Show lines
-                    //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
-    
                     // Filter lines
-                    vector<Vec4i> leftLines;
-                    vector<Vec4i> rightLines;
-                    vector<Vec4i> lane;
-                    filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
-    
-                    // Predict lane
-                    if (lane.size() == 2) {
-                        //~ vector<Vec4i> ll;
-                        ll.push_back(lane[0]);
-                        predictLine(ll, kfL, 4, predLLines);
-                        vector<Vec4i> lls;
-                        lls.push_back(Vec4i(predLLines[0][0], predLLines[0][1]+i, predLLines[0][2], predLLines[0][3]+i));
-                        drawArrowedLines(warpedImage, lls, Scalar(255, 0, 0));
-                        //~ vector<Vec4i> rl;
-                        rl.push_back(lane[1]);
-                        predictLine(rl, kfR, 4, predRLines);
-                        vector<Vec4i> rls;
-                        rls.push_back(Vec4i(predRLines[0][0], predRLines[0][1]+i, predRLines[0][2], predRLines[0][3]+i));
-                        drawArrowedLines(warpedImage, rls, Scalar(0, 0, 255));
-                    }
-                    if (predLLines.size() == 1) {
-                        predictedLane.push_back(predLLines[0]);
-                        predLLines.clear();
-                    }
+                    vector<Vec4i> leftLinesFiltered;
+                    vector<Vec4i> rightLinesFiltered;
+                    vector<Vec4i> laneSuggestion;
+                    filterLines(lines, warpedImage.size(), leftLinesFiltered, rightLinesFiltered, laneSuggestion);
                     
-                    if (predRLines.size() == 1) {
-                        predictedLane.push_back(predRLines[0]);
-                        predRLines.clear();
+                    // Check lane suggestion
+                    // Check orientation
+                    if (laneSuggestion[0][1] > laneSuggestion[0][3]) {
+                        cout << "Lane detection: Wrong left line orientation" << endl;
                     }
+                    else if (laneSuggestion[1][1] > laneSuggestion[1][3]) {
+                        cout << "Lane detection: Wrong right line orientation!" << endl;
+                    }
+                    else {
+                        // Predict left and right line marker
+                        if (laneSuggestion.size() == 2) {
+                            //~ vector<Vec4i> leftLine;
+                            leftLine.push_back(laneSuggestion[0]);
+                            predictLine(leftLine, kf[kfIt], 4, leftLinesPredicted);
+                            leftLinesPredicted[0][1] = leftLinesPredicted[0][1]+i;
+                            leftLinesPredicted[0][3] = leftLinesPredicted[0][3]+i;
+                            drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
+                            
+                            //~ vector<Vec4i> rightLine;
+                            rightLine.push_back(laneSuggestion[1]);
+                            predictLine(rightLine, kf[kfIt+3], 4, rightLinesPredicted);
+                            rightLinesPredicted[0][1] = rightLinesPredicted[0][1]+i;
+                            rightLinesPredicted[0][3] = rightLinesPredicted[0][3]+i;
+                            drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
+                        }
+                        
+                        // Store predicted lines as laneSuggestion
+                        if (leftLinesPredicted.size() == 1) {
+                            lanePredicted.push_back(leftLinesPredicted[0]);
+                        }
+                        if (rightLinesPredicted.size() == 1) {
+                            lanePredicted.push_back(rightLinesPredicted[0]);
+                        }
+                    }                    
                     
-                    // Check if lines are parallel
-                    if (predictedLane.size() > 1) {
-                        Vec4i laneMid = getLaneMid(predictedLane);
-                        laneMid[1] += i;
-                        laneMid[3] += i;
-                        drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
-                        setActualLane(predictedLane);
-                        predictedLane.clear();
-                    }
                 }
                 else {
-                    cout << "No lines found..." << endl;
+                    cout << "Lane detection: No lines found!" << endl;
                 }
+                
+                // Set actual lane only if all three segments have lines
+                if ((lanePredicted.size() == 6) && (2 == i%(warpedImage.rows/3 - 1))) {
+                    setActualLane(lanePredicted);
+                    lanePredicted.clear();
+                }
+                 
+                i++; //!< Iterate for next window
+                kfIt++; //!< Iterate for next Kalman filter
             }
+            
+            //! @todo Move this part to planning thread
+            // Calculate trajectory
+            vector<Vec4i> foundLane;
+            vector<Point> leftLinePts, rightLinePts, midLinePts;
+            getActualLane(foundLane);
+            if (foundLane.size() != 6) {
+                cout << "Lane detection: Only part of lane detected. foundLane size " << foundLane.size() << endl;
+            }
+            for (size_t n = 0; n < foundLane.size(); n += 2) {
+                vector<Vec4i> lanePart;
+                lanePart.push_back(foundLane[n]);
+                lanePart.push_back(foundLane[n+1]);
+                Vec4i laneMid = getLaneMid(lanePart);
+                //~ drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
+                midLinePts.push_back(Point(laneMid[0], laneMid[1]));
+                midLinePts.push_back(Point(laneMid[2], laneMid[3]));
+            }
+            // Draw trajectory
+            polylines(warpedImage, midLinePts, false, Scalar(200,200,0), 3);
+            //~ vector<Point> smooth;
+            //~ approxPolyDP(midLinePts, smooth, 200, false);
+            //~ polylines(warpedImage, midLinePts, false, Scalar(0,200,255), 2);
                 
             drawCenterLine(warpedImage, Scalar(0, 255, 0));
             setOutputImageData(warpedImage);
@@ -582,65 +711,117 @@ void *laneDetection2 (void *arg)
     return NULL;
 }
 
-/**
- * @brief This function initializes the line prediction with a Kalman filter.
- */
-
-void initLinePrediction (KalmanFilter& kf, int valueCnt)
+void calcHistogramm (Mat image, Rect roi, vector<int>& hist)
 {
-    kf.statePre = Mat::zeros(valueCnt, 1, CV_32F);
-    
-    //~ kf.transitionMatrix.at<double>(0, 0) = 1;
-    //~ kf.transitionMatrix.at<double>(0, 1) = 0;
-    //~ kf.transitionMatrix.at<double>(0, 2) = 0;
-    //~ kf.transitionMatrix.at<double>(0, 3) = 0;
-    //~ 
-    //~ kf.transitionMatrix.at<double>(1, 0) = 0;
-    //~ kf.transitionMatrix.at<double>(1, 1) = 1;
-    //~ kf.transitionMatrix.at<double>(1, 2) = 0;
-    //~ kf.transitionMatrix.at<double>(1, 3) = 0;
-    //~ 
-    //~ kf.transitionMatrix.at<double>(2, 0) = 0;
-    //~ kf.transitionMatrix.at<double>(2, 1) = 0;
-    //~ kf.transitionMatrix.at<double>(2, 2) = 1;
-    //~ kf.transitionMatrix.at<double>(2, 3) = 0;
-    //~ 
-    //~ kf.transitionMatrix.at<double>(3, 0) = 0;
-    //~ kf.transitionMatrix.at<double>(3, 1) = 0;
-    //~ kf.transitionMatrix.at<double>(3, 2) = 0;
-    //~ kf.transitionMatrix.at<double>(3, 3) = 1;
-    
-    setIdentity(kf.transitionMatrix);
-    setIdentity(kf.measurementMatrix);
-    setIdentity(kf.processNoiseCov, Scalar::all(500));
-    setIdentity(kf.measurementNoiseCov, Scalar::all(500));
-    //~ setIdentity(kf.errorCovPre, Scalar::all(1000));
-    //~ setIdentity(kf.errorCovPost, Scalar::all(500));
-}
-
-/**
- * @brief This function predicts the line points.
- *
- * @todo Measured lines unnecessary beacause measLines = lines
- */
-
-void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& predLines)
-{
-    predLines.clear();
-
-    for (size_t i = 0; i < lines.size(); i++) {
-        Mat prediction = kf.predict();
-        Vec4i predictedPts(prediction.at<float>(0), prediction.at<float>(1), prediction.at<float>(2), prediction.at<float>(3));
-
-        Mat measurement = Mat::zeros(valueCnt, 1, CV_32F);
-        for (size_t j = 0; j < valueCnt; j++) {
-            measurement.at<float>(j) = lines[i][j];
+    for (size_t x = 0; x < roi.width; x++) {
+        int sum = 0;
+        for (size_t y = 0; y < roi.height; y++) {
+            sum += (int) image(roi).at<uchar>(y,x);
         }
-
-        Mat estimated = kf.correct(measurement);
-
-        Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
-        predLines.clear();
-        predLines.push_back(statePts);
+        hist.push_back(sum);
     }
 }
+
+void detectMarker (Mat image, vector<Point>& marker)
+{
+    vector<int> hist;
+    Rect roi = Rect(Point(0, image.rows/2-1), Point(image.cols-1, image.rows-1));
+    calcHistogramm(image, roi, hist);
+    
+    vector<int> peaks;
+    for (size_t i = 0; i < hist.size(); i++) {
+        if (hist[i] > 10000) {
+            peaks.push_back(i);
+        }
+    }
+    vector<int> locMaxPeaks;
+    for (size_t i = 0; i < (peaks.size()-2); i++) {
+        int lVal = hist[peaks[i]];
+        int mVal = hist[peaks[i+1]];
+        int rVal = hist[peaks[i+2]];
+        if ((lVal < mVal) || (mVal > rVal)) {
+            locMaxPeaks.push_back(peaks[i+1]);
+        }
+    }
+    cout << locMaxPeaks.size() << " peaks found" << endl;
+    
+    int widthCnt = 0;
+    for (size_t i = 0; i < locMaxPeaks.size()-1; i++) {
+        if ((locMaxPeaks[i]+5) >= locMaxPeaks[i+1]) {
+            widthCnt++;
+        }
+        else {
+            widthCnt = 0;
+        }
+        
+        if (widthCnt == 20) {
+            marker.push_back(Point(locMaxPeaks[i], 0));
+        }
+    }
+    
+    //~ for (size_t i = 0; i < locMaxPeaks.size()-1; i++) {
+        //~ marker.push_back(Point(locMaxPeaks[i], 0));
+    //~ }
+    //~ Rect roi = Rect(Point(0, image.rows/9-1), Point(image.cols-1, image.rows-1));
+    
+}
+
+void imageProcessing3 (Mat& image, vector<Point>& markers)
+{
+    autoAdjustImage(image);
+
+    Mat grayImage;
+    whiteColorFilter(image, grayImage);
+    //~ Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5), Point(2, 2));
+    //~ erode(grayImage, grayImage, kernel);
+    
+    //~ Mat yellowImage;
+    //~ yellowColorFilter(image, yellowImage);
+
+    // Merge images
+    //~ bitwise_or(image, yellowImage, grayImage);
+
+    // Blur image
+    GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
+    
+    // Detect lines
+    detectMarker(grayImage, markers);
+    cvtColor(grayImage, image, CV_GRAY2BGR);
+}
+
+void *laneDetection3 (void *arg)
+{
+    cout << "THREAD: Lane detection started." << endl;
+    
+    while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
+        Mat image, homography;
+        getInputImageData(image);
+        getExtr(homography);
+
+        if (!image.empty()) {
+            Mat warpedImage;
+            if (!homography.empty()) {
+                warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+            }
+            else {
+                image.copyTo(warpedImage);
+            }
+            
+            vector<Point> markers;
+            imageProcessing3(warpedImage, markers);
+            
+            for (size_t i = 0; i < markers.size(); i++) {
+                line(warpedImage, markers[i], Point(markers[i].x, warpedImage.rows-1), Scalar(0,0,255), 1);
+            }
+            
+            drawCenterLine(warpedImage, Scalar(0, 255, 0));
+            setOutputImageData(warpedImage);
+        }
+    }
+    
+    cout << "THREAD: Lane detection ended." << endl;
+    
+    return NULL;
+}
+
+
