@@ -35,11 +35,11 @@ void *cameraCapture (void *arg)
     }
 
     // Initalize image data
-    initInputData();
+    initInputImageData();
 
     // Caputre image
     while ((getModuleState() & MODULE_CAP_CAM_IMAGE) == MODULE_CAP_CAM_IMAGE) {
-        Mat image;
+        cv::Mat image;
         camera >> image;
         if (image.empty()) {
             cerr << "ERROR: Couldn't aquire image data!" << endl;
@@ -48,13 +48,13 @@ void *cameraCapture (void *arg)
         else {
             //! @note Do not undistort or warp image here!
             // Undistort captured image
-            //~ Mat cameraMatrix, diffCoeffs;
-            //~ getIntr(cameraMatrix, diffCoeffs);
-            //~ if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
-                //~ undistort(image, image, cameraMatrix, diffCoeffs);
+            //~ cv::Mat cameraMatrix, distCoeffs;
+            //~ getIntr(cameraMatrix, distCoeffs);
+            //~ if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+                //~ undistort(image, image, cameraMatrix, distCoeffs);
             //~ }
             //~ // Apply perspective transform
-            //~ Mat homography;
+            //~ cv::Mat homography;
             //~ getExtr(homography);
             //~ if (!homography.empty()) {
                 //~ inversePerspectiveTransform(image, image, homography);

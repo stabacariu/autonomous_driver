@@ -9,9 +9,9 @@
 <calibImageSize_width>640</calibImageSize_width>
 <calibImageSize_height>360</calibImageSize_height>
 <calibPattern>CHESSBOARD</calibPattern>
-<calibPatternDim_width>7</calibPatternDim_width>
-<calibPatternDim_height>5</calibPatternDim_height>
-<calibPatternSize>30.</calibPatternSize>
+<calibPatternSize_width>7</calibPatternSize_width>
+<calibPatternSize_height>5</calibPatternSize_height>
+<calibPatternMm>30.</calibPatternMm>
 <calibIntrDone>0</calibIntrDone>
 <calibExtrDone>0</calibExtrDone>
 <validData>0</validData>

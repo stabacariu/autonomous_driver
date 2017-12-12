@@ -1,7 +1,7 @@
 /**
  * @file autonomous_driver.hpp
  * @author Sergiu-Petru Tabacariu
- * @date 27.6.2017
+ * @date 6.12.2017
  * 
  * @brief This header describes the enums, structs 
  *        and function prototypes for the system state,
@@ -40,20 +40,20 @@ enum SystemMode {
 };
 
 /**
- * @brief A struct for the system state.
+ * @brief A struct for the system state
  * 
- * This structure describes the system state by its mode and restricted
- * access via a mutex lock.
+ * This structure describes the system state by its mode.
+ * It synchronises access via a mutex lock to be thread safe.
  */
 struct SystemState {
-    SystemMode mode; //< System mode
-    pthread_mutex_t lock; //< Mutex lock for concurrent access
+    SystemMode mode; //!< System mode
+    pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };
 
 /**
- * @brief  An enum for active module types
+ * @brief An enum for active module types
  * 
- * This enum describes all module types for module activation.
+ * This enum describes all available modules.
  */
 enum ModuleFlag {
     MODULE_NONE = 0x0,
@@ -87,17 +87,14 @@ enum ModuleFlag {
  * This structure holds the module state flags and a mutex lock.
  */
 struct ModuleState {
-    int state; //< Active modules state vector
-    pthread_mutex_t lock; //< Mutex lock for concurrent access
+    int state; //!< Active modules state vector
+    pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };
 
 /**
  * @brief A function for system state initialization
  * 
  * This function initializes the system state by initializing the mutex.
- * 
- * @param void
- * @return void
  */
 void initSystemState (void);
 
@@ -107,8 +104,7 @@ void initSystemState (void);
  * This function sets the system state by locking the state first and
  * then changing it.
  * 
- * @param state a system mode
- * @return void
+ * @param state A system state mode
  */
 void setSystemState (SystemMode state);
 
@@ -117,7 +113,6 @@ void setSystemState (SystemMode state);
  * 
  * This function gets the actual system state.
  * 
- * @param void
  * @return system mode
  */
 SystemMode getSystemState (void);
@@ -126,9 +121,6 @@ SystemMode getSystemState (void);
  * @brief A function for module state initialization
  * 
  * This function initializes the module state by initializing the mutex.
- * 
- * @param void
- * @return void
  */
 void initModuleState (void);
 
@@ -137,8 +129,7 @@ void initModuleState (void);
  * 
  * This function sets all modules that must be started.
  * 
- * @param modules that have to be active
- * @return void
+ * @param modules Modules that have to be active
  */
 void setModuleState (int modules);
 
@@ -147,7 +138,6 @@ void setModuleState (int modules);
  * 
  * This function gets all active module flags.
  * 
- * @param void
  * @return module flags
  */
 int getModuleState (void);
@@ -156,9 +146,6 @@ int getModuleState (void);
  * @brief A function for starting the autonomous driving platform
  * 
  * This function starts the autonomous driving platform.
- * 
- * @param void
- * @return void
  */
 void autonomousDriver (void);
 

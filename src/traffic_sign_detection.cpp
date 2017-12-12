@@ -22,34 +22,19 @@ void *trafficSignDetection (void *arg)
         cerr << "ERROR: Couldn't load classifier data!" << endl;
     }
     
-    //~ Mat prevImage;
-    //~ getInputImageData(prevImage);
-    
     while ((getModuleState() & MODULE_DETECT_TRAFFIC_SIGNS) == MODULE_DETECT_TRAFFIC_SIGNS) {
-        Mat inputImage, outputImage, homography;
+        cv::Mat inputImage, outputImage, homography;
         getInputImageData(inputImage);
         getOutputImageData(outputImage);
         
-        //~ bool procIm = false;
-        
-        //~ if ((!inputImage.empty()) && (!prevImage.empty())) {
-            //~ cv::Mat grayImage, grayPrevImage;
-            //~ cvtColor(inputImage, grayImage, CV_BGR2GRAY);
-            //~ cvtColor(prevImage, grayPrevImage, CV_BGR2GRAY);
-            //~ 
-            //~ if (!compareImage(grayImage, grayPrevImage)) {
-                //~ procIm = true;
-            //~ }
-        //~ }
-        
         vector<Rect> stopSigns;
-        //~ if (procIm && !inputImage.empty()) {
+        
         if (!inputImage.empty()) {
-            Mat grayImage, homography;
+            cv::Mat grayImage, homography;
             cvtColor(inputImage, grayImage, CV_BGR2GRAY);
             getExtr(homography);
 
-            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.5, 3, 0 | CASCADE_SCALE_IMAGE, Size(20, 20));
+            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.5, 3, 0 | CASCADE_SCALE_IMAGE, Size(15, 15));
 
             if ((stopSigns.size() > 0) && !outputImage.empty() && !homography.empty()) {
                 for (size_t i = 0; i < stopSigns.size(); i++) {

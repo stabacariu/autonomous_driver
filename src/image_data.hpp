@@ -11,18 +11,89 @@
 #include <opencv2/opencv.hpp>
 #include <pthread.h>
 
+/**
+ * @brief A struct to hold image data
+ * 
+ * This structure describes image with synchronised access.
+ */
 struct ImageData {
-    cv::Mat data;
-    std::queue<cv::Mat> dataQueue;
-    pthread_mutex_t lock;
+    cv::Mat data; //!< Image data as matrix
+    pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };
 
-void initInputData (void);
-void initOutputData (void);
+/**
+ * @brief A function to initialize input image data
+ * 
+ * This function initializes the input image data.
+ */
+void initInputImageData (void);
 
+/**
+ * @brief A function to initialize inter image data
+ * 
+ * This function initializes the inter image data.
+ */
+void initInterImageData (void);
+
+/**
+ * @brief A function to initialize output image data
+ * 
+ * This function initializes the output image data.
+ */
+void initOutputImageData (void);
+
+/**
+ * @brief A function to set input image data
+ * 
+ * This function sets the input image data.
+ * 
+ * @param image
+ */
 void setInputImageData (cv::Mat image);
+
+/**
+ * @brief A function to get input image data
+ * 
+ * This function gets the input image data.
+ * 
+ * @param image
+ */
 void getInputImageData (cv::Mat& image);
+
+/**
+ * @brief A function to set inter image data
+ * 
+ * This function sets the inter image data.
+ * 
+ * @param image
+ */
+void setInterImageData (cv::Mat image);
+
+/**
+ * @brief A function to get inter image data
+ * 
+ * This function gets the inter image data.
+ * 
+ * @param image
+ */
+void getInterImageData (cv::Mat& image);
+
+/**
+ * @brief A function to set output image data
+ * 
+ * This function sets the output image data.
+ * 
+ * @param image
+ */
 void setOutputImageData (cv::Mat image);
+
+/**
+ * @brief A function to get output image data
+ * 
+ * This function gets the output image data.
+ * 
+ * @param image
+ */
 void getOutputImageData (cv::Mat& image);
 
 #endif // IMAGE_DATA_HPP

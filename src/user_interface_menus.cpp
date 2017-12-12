@@ -1,5 +1,5 @@
 /**
- * @file user_inteface_menus.cpp
+ * @file user_interface_menus.cpp
  * @author Sergiu-Petru Tabacariu
  * @date 4.7.2017
  */
@@ -40,15 +40,15 @@ void getAutoStateList (vector<string>& stateList)
     //~ stateList.push_back(text.str());
     //~ text.str("");
     //~ text.clear();
-    text << "Steering: " << getSteering() << "rad";
+    text << "Steering: " << getSteering() << " rad";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
-    text << "Speed: " << getSpeed() << "m/s";
-    stateList.push_back(text.str());
-    text.str("");
-    text.clear();
-    text << "Acceleration: " << getAcceleration() << "%";
+    //~ text << "Speed: " << getSpeed() << " m/s";
+    //~ stateList.push_back(text.str());
+    //~ text.str("");
+    //~ text.clear();
+    text << "Acceleration: " << getAcceleration() << " %";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
@@ -64,8 +64,8 @@ void getAutoDetectList (vector<string>& detectList)
     
     text << "Lane: ";
     if (lane.size() > 0) {
-        text << "[" << lane[0][0] << ", " << lane[0][1] << ", " << lane[0][2] << ", " << lane[0][3] << "]\n";
-        text << "[" << lane[1][0] << ", " << lane[1][1] << ", " << lane[1][2] << ", " << lane[1][3] << "]";
+        text << "[" << lane[0][0] << "," << lane[0][1] << "," << lane[0][2] << "," << lane[0][3] << "]";
+        text << "[" << lane[1][0] << "," << lane[1][1] << "," << lane[1][2] << "," << lane[1][3] << "]";
     }
     else {
         text << "No lane found...";
@@ -181,7 +181,7 @@ void getAboutTextList (vector<string>& textList)
     
 }
 
-void drawMainMenu (Mat& image)
+void drawMainMenu (cv::Mat& image)
 {
     // Draw a side bar
     Point pt1(0, 0);
@@ -203,8 +203,8 @@ void drawMainMenu (Mat& image)
     
     vector<string> menuList;
     getMainMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -214,7 +214,7 @@ void drawMainMenu (Mat& image)
     }
 }
 
-void drawAutoMode (Mat& image)
+void drawAutoMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -234,8 +234,8 @@ void drawAutoMode (Mat& image)
     
     vector<string> menuList;
     getAutoMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -251,8 +251,8 @@ void drawAutoMode (Mat& image)
     
     vector<string> stateList;
     getAutoStateList(stateList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < stateList.size(); i++) {
         string text = stateList[i];
@@ -268,8 +268,8 @@ void drawAutoMode (Mat& image)
     
     vector<string> detectList;
     getAutoDetectList(detectList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < detectList.size(); i++) {
         string text = detectList[i];
@@ -279,7 +279,7 @@ void drawAutoMode (Mat& image)
     }
 }
 
-void drawRcCom (Mat& image, Point position)
+void drawRcCom (cv::Mat& image, Point position)
 {
     Rect controls(position, Size(120, 70));
     // Up arrow
@@ -287,28 +287,28 @@ void drawRcCom (Mat& image, Point position)
     Point pt2(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)-5);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     Point textOrg(pt1.x, pt2.y);
-    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
     // Down arrow
     pt1 = Point(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)+5);
     pt2 = Point(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)+35);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
     // Left arrow
     pt1 = Point(controls.x + (controls.width/2-1)-55, controls.y + (controls.height/2-1)-15);
     pt2 = Point(controls.x + (controls.width/2-1)-25, controls.y + (controls.height/2-1)+15);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
     // Right arrow
     pt1 = Point(controls.x + (controls.width/2-1)+25, controls.y + (controls.height/2-1)-15);
     pt2 = Point(controls.x + (controls.width/2-1)+55, controls.y + (controls.height/2-1)+15);
     rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
     textOrg = Point(pt1.x, pt2.y);
-    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 0.5, Scalar::all(0), 1);
+    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
 }
 
-void drawRcMode (Mat& image)
+void drawRcMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -328,8 +328,8 @@ void drawRcMode (Mat& image)
     
     vector<string> menuList;
     getRcMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -354,8 +354,8 @@ void drawRcMode (Mat& image)
     
     vector<string> stateList;
     getAutoStateList(stateList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < stateList.size(); i++) {
         string text = stateList[i];
@@ -365,7 +365,7 @@ void drawRcMode (Mat& image)
     }
 }
 
-void drawDevMode (Mat& image)
+void drawDevMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -384,8 +384,8 @@ void drawDevMode (Mat& image)
     
     vector<string> menuList;
     getDevMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -395,7 +395,7 @@ void drawDevMode (Mat& image)
     }
 }
 
-void drawConfigMode (Mat& image)
+void drawConfigMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -415,8 +415,8 @@ void drawConfigMode (Mat& image)
     
     vector<string> menuList;
     getConfigMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -432,8 +432,8 @@ void drawConfigMode (Mat& image)
     
     menuList;
     getConfigModeList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -443,7 +443,7 @@ void drawConfigMode (Mat& image)
     }
 }
 
-void drawCalibIntrinsics (Mat& image)
+void drawCalibIntrinsics (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -463,8 +463,8 @@ void drawCalibIntrinsics (Mat& image)
     
     vector<string> menuList;
     getCalibIntrinsicsMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -474,7 +474,7 @@ void drawCalibIntrinsics (Mat& image)
     }
 }
 
-void drawCalibExtrinsics (Mat& image)
+void drawCalibExtrinsics (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -494,8 +494,8 @@ void drawCalibExtrinsics (Mat& image)
     
     vector<string> menuList;
     getCalibExtrinsicsMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -505,7 +505,7 @@ void drawCalibExtrinsics (Mat& image)
     }
 }
 
-void drawPositionImage (Mat& image)
+void drawPositionImage (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -525,8 +525,8 @@ void drawPositionImage (Mat& image)
     
     vector<string> menuList;
     getPositionImageMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
-    fontScale = 0.5;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         string text = menuList[i];
@@ -538,7 +538,7 @@ void drawPositionImage (Mat& image)
 
 void drawAboutText (void)
 {
-    Mat image;
+    cv::Mat image;
     getOutputImageData(image);
     
     rectangle(image, Point(0, 0), Point(image.cols-1, image.rows-1), Scalar(218, 218, 218), -1);
@@ -570,7 +570,7 @@ void drawAboutText (void)
     setOutputImageData(image);
 }
 
-void drawAboutMode (Mat& image)
+void drawAboutMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));
@@ -589,7 +589,7 @@ void drawAboutMode (Mat& image)
     
     vector<string> menuList;
     getAboutMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_SIMPLEX;
+    fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 0.5;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
@@ -601,7 +601,7 @@ void drawAboutMode (Mat& image)
     drawAboutText();
 }
 
-void drawErrorMode (Mat& image)
+void drawErrorMode (cv::Mat& image)
 {
     Point pt1(0, 0);
     Point pt2(200, (image.size().height-1));

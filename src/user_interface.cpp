@@ -1,6 +1,6 @@
 
 /**
- * @file user_intefrace.cpp
+ * @file user_interface.cpp
  * @author Sergiu-Petru Tabacariu
  * @date 3.7.2017
  */
@@ -79,7 +79,7 @@ char getUiInputKey (void)
     return key;
 }
 
-void processUiInput (Mat& image, char key)
+void processUiInput (cv::Mat& image, char key)
 {
     UIMode state = getUiStatus();
     UIMode prevState = state;
@@ -190,7 +190,7 @@ void processUiInput (Mat& image, char key)
             else if (key == 'R') {
                 //! @todo reset configuration
                 cout << "Resetting config..." << endl;
-                Mat homography;
+                cv::Mat homography;
                 setExtr(homography);
             }
             else if (key == 'S') {
@@ -217,7 +217,7 @@ void processUiInput (Mat& image, char key)
             }
             else if (key == 'R') {
                 cout << "Resetting config..." << endl;
-                Mat homography;
+                cv::Mat homography;
                 setExtr(homography);
                 //! @todo reset configuration
             }
@@ -236,7 +236,7 @@ void processUiInput (Mat& image, char key)
             }
             else if (key == 'R') {
                 cout << "Resetting config..." << endl;
-                Mat homography;
+                cv::Mat homography;
                 setExtr(homography);
                 //! @todo reset configuration
             }

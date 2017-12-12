@@ -11,7 +11,6 @@ ConfigState configState;
 
 void initConfig (void)
 {
-    //! @todo Load config from file
     pthread_mutex_init(&config.lock, NULL);
     configState.mode = CONFIG_MODE_NONE;
     pthread_mutex_init(&configState.lock, NULL);
@@ -99,26 +98,9 @@ cv::Size getImageSize (void)
     return imageSize;
 }
 
-cv::Size getPatternDim (void)
+cv::Size getPatternSize (void)
 {
-    cv::Size calibPatternDim;
-
-    if (pthread_mutex_lock(&config.lock)) {
-        std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
-    }
-
-    calibPatternDim = config.calibPatternDim;
-
-    if (pthread_mutex_unlock(&config.lock)) {
-        std::cerr << "ERROR: Couldn't unlock config mutex!" << std::endl;
-    }
-
-    return calibPatternDim;
-}
-
-double getPatternSize (void)
-{
-    double calibPatternSize;
+    cv::Size calibPatternSize;
 
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
@@ -133,15 +115,32 @@ double getPatternSize (void)
     return calibPatternSize;
 }
 
-void setIntr (cv::Mat cameraMatrix, cv::Mat diffCoeffs)
+double getPatternMm (void)
+{
+    double calibPatternMm;
+
+    if (pthread_mutex_lock(&config.lock)) {
+        std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
+    }
+
+    calibPatternMm = config.calibPatternMm;
+
+    if (pthread_mutex_unlock(&config.lock)) {
+        std::cerr << "ERROR: Couldn't unlock config mutex!" << std::endl;
+    }
+
+    return calibPatternMm;
+}
+
+void setIntr (cv::Mat cameraMatrix, cv::Mat distCoeffs)
 {
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
     }
 
     config.cameraMatrix = cameraMatrix;
-    config.diffCoeffs = diffCoeffs;
-    if (!cameraMatrix.empty() || !diffCoeffs.empty()) {
+    config.distCoeffs = distCoeffs;
+    if (!cameraMatrix.empty() || !distCoeffs.empty()) {
         config.calibIntrDone = true;
     }
     else {
@@ -153,14 +152,14 @@ void setIntr (cv::Mat cameraMatrix, cv::Mat diffCoeffs)
     }
 }
 
-void getIntr (cv::Mat& cameraMatrix, cv::Mat& diffCoeffs)
+void getIntr (cv::Mat& cameraMatrix, cv::Mat& distCoeffs)
 {
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
     }
 
     cameraMatrix = config.cameraMatrix;
-    diffCoeffs = config.diffCoeffs;
+    distCoeffs = config.distCoeffs;
 
     if (pthread_mutex_unlock(&config.lock)) {
         std::cerr << "ERROR: Couldn't unlock config mutex!" << std::endl;
@@ -243,12 +242,12 @@ ConfigData getConfigData (void)
 
     c.calibImageSize = config.calibImageSize;
     c.calibPattern = config.calibPattern;
-    c.calibPatternDim = config.calibPatternDim;
     c.calibPatternSize = config.calibPatternSize;
+    c.calibPatternMm = config.calibPatternMm;
 
     c.calibIntrDone = config.calibIntrDone;
     c.cameraMatrix = config.cameraMatrix;
-    c.diffCoeffs = config.diffCoeffs;
+    c.distCoeffs = config.distCoeffs;
     c.calibExtrDone = config.calibExtrDone;
     c.homography = config.homography;
     c.transformation = config.transformation;
@@ -273,13 +272,13 @@ void setConfigData (ConfigData c)
 
     config.calibImageSize = c.calibImageSize;
     config.calibPattern = c.calibPattern;
-    config.calibPatternDim = c.calibPatternDim;
     config.calibPatternSize = c.calibPatternSize;
+    config.calibPatternMm = c.calibPatternMm;
     config.calibSampleCount = c.calibSampleCount;
 
     config.calibIntrDone = c.calibIntrDone;
     config.cameraMatrix = c.cameraMatrix;
-    config.diffCoeffs = c.diffCoeffs;
+    config.distCoeffs = c.distCoeffs;
 
     config.calibIntrDone = c.calibIntrDone;
     config.homography = c.homography;
@@ -333,8 +332,8 @@ void generateDefaultConfig (void)
     // Calibration config
     c.calibImageSize = c.cameraImageSize;
     c.calibPattern = "CHESSBOARD";
-    c.calibPatternDim = cv::Size(7, 5);
-    c.calibPatternSize = 30.0;
+    c.calibPatternSize = cv::Size(7, 5);
+    c.calibPatternMm = 30.0;
     c.calibSampleCount = 50;
     c.calibIntrDone = false;
     c.calibExtrDone = false;
@@ -356,9 +355,9 @@ void generateDefaultConfig (void)
     fs << "calibImageSize_width" << c.calibImageSize.width
     << "calibImageSize_height" << c.calibImageSize.height
     << "calibPattern" << c.calibPattern
-    << "calibPatternDim_width" << c.calibPatternDim.width
-    << "calibPatternDim_height" << c.calibPatternDim.height
-    << "calibPatternSize" << c.calibPatternSize
+    << "calibPatternSize_width" << c.calibPatternSize.width
+    << "calibPatternSize_height" << c.calibPatternSize.height
+    << "calibPatternMm" << c.calibPatternMm
     << "calibIntrDone" << c.calibIntrDone
     << "calibExtrDone" << c.calibExtrDone
     << "validData" << c.validData;
@@ -374,9 +373,9 @@ void loadDefaultConfig (cv::FileStorage fs, ConfigData& c)
     fs["calibImageSize_width"] >> c.calibImageSize.width;
     fs["calibImageSize_height"] >> c.calibImageSize.height;
     fs["calibPattern"] >> c.calibPattern;
-    fs["calibPatternDim_width"] >> c.calibPatternDim.width;
-    fs["calibPatternDim_height"] >> c.calibPatternDim.height;
-    fs["calibPatternSize"] >> c.calibPatternSize;
+    fs["calibPatternSize_width"] >> c.calibPatternSize.width;
+    fs["calibPatternSize_height"] >> c.calibPatternSize.height;
+    fs["calibPatternMm"] >> c.calibPatternMm;
     fs["calibSampleCount"] >> c.calibSampleCount;
 
     fs["calibIntrDone"] >> c.calibIntrDone;
@@ -395,14 +394,14 @@ void saveCalibConfig (cv::FileStorage& fs, ConfigData c)
     fs << "calibImageSize_width" << c.calibImageSize.width
     << "calibImageSize_height" << c.calibImageSize.height
     << "calibPattern" << c.calibPattern
-    << "calibPatternDim_width" << c.calibPatternDim.width
-    << "calibPatternDim_height" << c.calibPatternDim.height
-    << "calibPatternSize" << c.calibPatternSize;
+    << "calibPatternSize_width" << c.calibPatternSize.width
+    << "calibPatternSize_height" << c.calibPatternSize.height
+    << "calibPatternMm" << c.calibPatternMm;
 
     fs.writeComment("Calibration data");
     fs << "calibIntrDone" << c.calibIntrDone
     << "cameraMatrix" << c.cameraMatrix
-    << "diffCoeffs" << c.diffCoeffs
+    << "distCoeffs" << c.distCoeffs
     << "calibExtrDone" << c.calibExtrDone
     << "homography" << c.homography
     << "transformation" << c.transformation
@@ -418,13 +417,13 @@ void saveCalibConfig (cv::FileStorage& fs, ConfigData c)
     //~ << "calibImageSize_width" << c.calibImageSize.width  << std::endl
     //~ << "calibImageSize_height" << c.calibImageSize.height << std::endl
     //~ << "calibPattern" << c.calibPattern  << std::endl
-    //~ << "calibPatternDim_width" << c.calibPatternDim.width  << std::endl
-    //~ << "calibPatternDim_height" << c.calibPatternDim.height  << std::endl
-    //~ << "calibPatternSize" << c.calibPatternSize << std::endl
+    //~ << "calibPatternDim_width" << c.calibPatternSize.width  << std::endl
+    //~ << "calibPatternDim_height" << c.calibPatternSize.height  << std::endl
+    //~ << "calibPatternMm" << c.calibPatternMm << std::endl
     //~
     //~ << "calibIntrDone" << c.calibIntrDone << std::endl
     //~ << "cameraMatrix" << c.cameraMatrix << std::endl
-    //~ << "diffCoeffs" << c.diffCoeffs << std::endl
+    //~ << "distCoeffs" << c.distCoeffs << std::endl
     //~ << "calibExtrDone" << c.calibExtrDone << std::endl
     //~ << "homography" << c.homography << std::endl
     //~ << "transformation" << c.transformation << std::endl
@@ -450,13 +449,13 @@ void loadConfig (cv::FileStorage fs, ConfigData& c)
     fs["calibImageSize_width"] >> c.calibImageSize.width;
     fs["calibImageSize_height"] >> c.calibImageSize.height;
     fs["calibPattern"] >> c.calibPattern;
-    fs["calibPatternDim_width"] >> c.calibPatternDim.width;
-    fs["calibPatternDim_height"] >> c.calibPatternDim.height;
-    fs["calibPatternSize"] >> c.calibPatternSize;
+    fs["calibPatternSize_width"] >> c.calibPatternSize.width;
+    fs["calibPatternSize_height"] >> c.calibPatternSize.height;
+    fs["calibPatternMm"] >> c.calibPatternMm;
 
     fs["calibIntrDone"] >> c.calibIntrDone;
     fs["cameraMatrix"] >> c.cameraMatrix;
-    fs["diffCoeffs"] >> c.diffCoeffs;
+    fs["distCoeffs"] >> c.distCoeffs;
     fs["calibExtrDone"] >> c.calibExtrDone;
     fs["homography"] >> c.homography;
     fs["transformation"] >> c.transformation;
@@ -488,13 +487,13 @@ bool validateConfig (ConfigData& c)
         c.validData = false;
         std::cerr << "ERROR: Invalid calibration pattern " << c.calibPattern << std::endl;
     }
-    if (!(c.calibPatternDim.width > 2) || !(c.calibPatternDim.height > 2)) {
+    if (!(c.calibPatternSize.width > 2) || !(c.calibPatternSize.height > 2)) {
         c.validData = false;
-        std::cerr << "ERROR: Invalid calibration pattern dimension " << c.calibPatternDim << std::endl;
+        std::cerr << "ERROR: Invalid calibration pattern size " << c.calibPatternSize << std::endl;
     }
-    if (!(c.calibPatternSize > 0)) {
+    if (!(c.calibPatternMm > 0)) {
         c.validData = false;
-        std::cerr << "ERROR: Invalid calibration patter size " << c.calibPatternSize << std::endl;
+        std::cerr << "ERROR: Invalid calibration pattern element size mm " << c.calibPatternMm << std::endl;
     }
     if (c.calibIntrDone) {
         //! @todo intrinsic validation
@@ -502,7 +501,7 @@ bool validateConfig (ConfigData& c)
     if (c.cameraMatrix.empty()) {
         c.calibIntrDone = false;
     }
-    if (c.diffCoeffs.empty()) {
+    if (c.distCoeffs.empty()) {
         c.calibIntrDone = false;
     }
     if (c.calibExtrDone) {
@@ -525,21 +524,21 @@ void *configCalibIntr(void *arg)
     std::cout << "THREAD: cameraMatrix calibarion started." << std::endl;
 
     cv::Mat inputImage, undistorted;
-    cv::Mat cameraMatrix, diffCoeffs;
+    cv::Mat cameraMatrix, distCoeffs;
 
     while ((getModuleState() & MODULE_CONFIG_CALIB_INTR) == MODULE_CONFIG_CALIB_INTR) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
-            calibIntr(inputImage, cameraMatrix, diffCoeffs, getPatternDim(), 30.0, 50);
-            if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
-                setIntr(cameraMatrix, diffCoeffs);
+            calibIntr(inputImage, cameraMatrix, distCoeffs, getPatternSize(), 30.0, 50);
+            if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+                setIntr(cameraMatrix, distCoeffs);
             }
             else {
                 std::cout << "Camera not calibrated!" << std::endl;
             }
         }
-        if (!cameraMatrix.empty() && !diffCoeffs.empty()) {
-            undistort(inputImage, undistorted, cameraMatrix, diffCoeffs);
+        if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+            undistort(inputImage, undistorted, cameraMatrix, distCoeffs);
             cv::line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
             cv::line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
             setOutputImageData(undistorted);
@@ -561,7 +560,7 @@ void *configCalibExtr (void *arg)
     while ((getModuleState() & MODULE_CONFIG_CALIB_EXTR) == MODULE_CONFIG_CALIB_EXTR) {
         getInputImageData(inputImage);
         if (!inputImage.empty()) {
-            calibExtr(inputImage, homography, getPatternDim(), getPatternSize());
+            calibExtr(inputImage, homography, getPatternSize(), getPatternMm());
         }
         if (!homography.empty()) {
             //~ inversePerspectiveTransform(inputImage, warpedImage, homography);
@@ -579,7 +578,7 @@ void *configCalibExtr (void *arg)
 
     if (!homography.empty()) {
         setExtr(homography);
-        setPxPerMm(calcPixelPerMm(warpedImage, getPatternDim(), getPatternSize()));
+        setPxPerMm(calcPixelPerMm(warpedImage, getPatternSize(), getPatternMm()));
     }
     else {
         std::cout << "Homography couldn't be aquired!" << std::endl;
@@ -624,7 +623,7 @@ void *showChessBoard (void *arg)
         cv::Mat image;
         getInputImageData(image);
         if (!image.empty()) {
-            showChessBoardCorners(image, getPatternDim());
+            showChessBoardCorners(image, getPatternSize());
             setOutputImageData(image);
         }
     }

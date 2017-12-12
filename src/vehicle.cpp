@@ -45,7 +45,7 @@ double getAcceleration (void)
     return value;
 }
 
-void setDirection (int value)
+void setDirection (VehicleDirection value)
 {
     if (pthread_mutex_lock(&vehicle.lock)) {
         cerr << "ERROR: Couldn't lock vehicle mutex!" << endl;
@@ -58,9 +58,9 @@ void setDirection (int value)
     }
 }
 
-int getDirection (void)
+VehicleDirection getDirection (void)
 {
-    int value;
+    VehicleDirection value;
     
     if (pthread_mutex_lock(&vehicle.lock)) {
         cerr << "ERROR: Couldn't lock vehicle mutex!" << endl;
