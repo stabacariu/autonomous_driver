@@ -6,9 +6,6 @@
 
 #include "image_filter.hpp"
 
-using namespace std;
-using namespace cv;
-
 void autoAdjustBrightness (cv::Mat& image)
 {
     double minValue, maxValue;
@@ -32,7 +29,7 @@ void whiteColorFilter (cv::Mat image, cv::Mat& filteredImage)
 {
     //~ cv::Mat imageHLS;
     //~ cvtColor(image, imageHLS, CV_BGR2HLS);
-    //~ inRange(imageHLS, Scalar(175, 0, 0), Scalar(180, 255, 255), filteredImage);
+    //~ inRange(imageHLS, cv::Scalar(175, 0, 0), cv::Scalar(180, 255, 255), filteredImage);
     //~ cvtColor(filteredImage, filteredImage, CV_HLS2BGR);
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
@@ -43,5 +40,5 @@ void yellowColorFilter (cv::Mat image, cv::Mat& filteredImage)
 {
     cv::Mat imageHSV;
     cvtColor(image, imageHSV, CV_BGR2HSV);
-    inRange(imageHSV, Scalar(17, 76, 127), Scalar(30, 255, 255), filteredImage);
+    inRange(imageHSV, cv::Scalar(17, 76, 127), cv::Scalar(30, 255, 255), filteredImage);
 }

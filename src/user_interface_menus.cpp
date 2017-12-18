@@ -6,10 +6,7 @@
 
 #include "user_interface_menus.hpp"
 
-using namespace std;
-using namespace cv;
-
-void getMainMenuList (vector<string>& menuList)
+void getMainMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -21,51 +18,42 @@ void getMainMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getAutoMenuList (vector<string>& menuList)
+void getAutoMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
     menuList.push_back("(B)ack");
-    menuList.push_back("(S)top");
-    menuList.push_back("(S)tart");
     menuList.push_back("(Q)uit");
 }
 
-void getAutoStateList (vector<string>& stateList)
+void getAutoStateList (std::vector<std::string>& stateList)
 {
     stateList.clear();
-    ostringstream text;
+    std::ostringstream text;
     
-    //~ text << "Direction: " << getDirection();
-    //~ stateList.push_back(text.str());
-    //~ text.str("");
-    //~ text.clear();
     text << "Steering: " << getSteering() << " rad";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
-    //~ text << "Speed: " << getSpeed() << " m/s";
-    //~ stateList.push_back(text.str());
-    //~ text.str("");
-    //~ text.clear();
     text << "Acceleration: " << getAcceleration() << " %";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
 }
 
-void getAutoDetectList (vector<string>& detectList)
+void getAutoDetectList (std::vector<std::string>& detectList)
 {
     detectList.clear();
-    ostringstream text;
-    //! @todo Get lane
-    vector<Vec4i> lane;
+    std::ostringstream text;
+    std::vector<cv::Vec4i> lane;
     getActualLane(lane);
     
-    text << "Lane: ";
+    text << "Lane:";
+    detectList.push_back(text.str());
+    text.str("");
+    text.clear();
     if (lane.size() > 0) {
-        text << "[" << lane[0][0] << "," << lane[0][1] << "," << lane[0][2] << "," << lane[0][3] << "]";
-        text << "[" << lane[1][0] << "," << lane[1][1] << "," << lane[1][2] << "," << lane[1][3] << "]";
+        text << "L: [" << lane[0][0] << "," << lane[0][1] << "][" << lane[0][2] << "," << lane[0][3] << "]";
     }
     else {
         text << "No lane found...";
@@ -73,14 +61,32 @@ void getAutoDetectList (vector<string>& detectList)
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    text << "Obstacle: " << getDistance() << " cm";
+    if (lane.size() > 0) {
+        text << "R: [" << lane[1][0] << "," << lane[1][1] << "][" << lane[1][2] << "," << lane[1][3] << "]";
+    }
+    else {
+        text << "No lane found...";
+    }
+    detectList.push_back(text.str());
+    text.str("");
+    text.clear();
+    
+    text << "Obstacle: ";
+    if ((getModuleState() & MODULE_DETECT_OBSTACLE) == MODULE_DETECT_OBSTACLE) {
+        text << getDistance() << " cm";
+    }
+    else {
+        text << "No detection active!";
+    }
     detectList.push_back(text.str());
     text.str("");
     text.clear();
     detectList.push_back("Signs: ");
+    text.str("");
+    text.clear();
 }
 
-void getRcMenuList (vector<string>& menuList)
+void getRcMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -89,7 +95,7 @@ void getRcMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getDevMenuList (vector<string>& menuList)
+void getDevMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -100,7 +106,7 @@ void getDevMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getDevModeList (vector<string>& menuList)
+void getDevModeList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -111,7 +117,7 @@ void getDevModeList (vector<string>& menuList)
     menuList.push_back("(-) Exposure");
 }
 
-void getConfigMenuList (vector<string>& menuList)
+void getConfigMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -121,7 +127,7 @@ void getConfigMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getConfigModeList (vector<string>& menuList)
+void getConfigModeList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -130,7 +136,7 @@ void getConfigModeList (vector<string>& menuList)
     menuList.push_back("(P)osition image");
 }
 
-void getCalibIntrinsicsMenuList (vector<string>& menuList)
+void getCalibIntrinsicsMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -140,7 +146,7 @@ void getCalibIntrinsicsMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getCalibExtrinsicsMenuList (vector<string>& menuList)
+void getCalibExtrinsicsMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -150,7 +156,7 @@ void getCalibExtrinsicsMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getPositionImageMenuList (vector<string>& menuList)
+void getPositionImageMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -160,7 +166,7 @@ void getPositionImageMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getAboutMenuList (vector<string>& menuList)
+void getAboutMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -168,267 +174,267 @@ void getAboutMenuList (vector<string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getAboutTextList (vector<string>& textList)
+void getAboutTextList (std::vector<std::string>& textList)
 {
     textList.clear();
     
     textList.push_back("Master Thesis Project");
-    textList.push_back("Autonomous Driving Development Platform");
+    textList.push_back("Autonomous Driver");
+    textList.push_back("An Autonomous Driving Development Platform");
     textList.push_back("by Sergiu-Petru Tabacariu");
     textList.push_back("<sergiu.tabacariu@fh-campuswien.ac.at>");
-    textList.push_back("Date 29.9.2017");
-    textList.push_back("Version 0.1.0");
+    textList.push_back("Date 18.12.2017");
+    textList.push_back("Version 1.0.0");
     
 }
 
 void drawMainMenu (cv::Mat& image)
 {
     // Draw a side bar
-    Point pt1(0, 0);
-    Point pt2(200, image.size().height-1);
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, image.size().height-1);
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
     // Configure text
-    string titleText = "menu";
+    std::string titleText = "menu";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 1;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
-    thickness, &baseline);
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getMainMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
         textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawAutoMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Auto mode";
+    std::string titleText = "Auto mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getAutoMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     
-    textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    textOrg.y += 15;
+    pt1 = cv::Point(0, textOrg.y);
+    pt2 = cv::Point(200, pt1.y);
+    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
-    vector<string> stateList;
+    std::vector<std::string> stateList;
     getAutoStateList(stateList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < stateList.size(); i++) {
-        string text = stateList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = stateList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     
-    textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    textOrg.y += 15;
+    pt1 = cv::Point(0, textOrg.y);
+    pt2 = cv::Point(200, pt1.y);
+    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
-    vector<string> detectList;
+    std::vector<std::string> detectList;
     getAutoDetectList(detectList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < detectList.size(); i++) {
-        string text = detectList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = detectList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
-void drawRcCom (cv::Mat& image, Point position)
+void drawRcCom (cv::Mat& image, cv::Point position)
 {
-    Rect controls(position, Size(120, 70));
+    cv::Rect controls(position, cv::Size(120, 70));
     // Up arrow
-    Point pt1(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)-35);
-    Point pt2(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)-5);
-    rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
-    Point textOrg(pt1.x, pt2.y);
-    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
+    cv::Point pt1(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)-35);
+    cv::Point pt2(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)-5);
+    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
+    cv::Point textOrg(pt1.x, pt2.y);
+    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
     // Down arrow
-    pt1 = Point(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)+5);
-    pt2 = Point(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)+35);
-    rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
-    textOrg = Point(pt1.x, pt2.y);
-    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
+    pt1 = cv::Point(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)+5);
+    pt2 = cv::Point(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)+35);
+    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
+    textOrg = cv::Point(pt1.x, pt2.y);
+    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
     // Left arrow
-    pt1 = Point(controls.x + (controls.width/2-1)-55, controls.y + (controls.height/2-1)-15);
-    pt2 = Point(controls.x + (controls.width/2-1)-25, controls.y + (controls.height/2-1)+15);
-    rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
-    textOrg = Point(pt1.x, pt2.y);
-    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
+    pt1 = cv::Point(controls.x + (controls.width/2-1)-55, controls.y + (controls.height/2-1)-15);
+    pt2 = cv::Point(controls.x + (controls.width/2-1)-25, controls.y + (controls.height/2-1)+15);
+    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
+    textOrg = cv::Point(pt1.x, pt2.y);
+    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
     // Right arrow
-    pt1 = Point(controls.x + (controls.width/2-1)+25, controls.y + (controls.height/2-1)-15);
-    pt2 = Point(controls.x + (controls.width/2-1)+55, controls.y + (controls.height/2-1)+15);
-    rectangle(image, pt1, pt2, Scalar(180, 180, 180), -1);
-    textOrg = Point(pt1.x, pt2.y);
-    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, Scalar::all(0), 1);
+    pt1 = cv::Point(controls.x + (controls.width/2-1)+25, controls.y + (controls.height/2-1)-15);
+    pt2 = cv::Point(controls.x + (controls.width/2-1)+55, controls.y + (controls.height/2-1)+15);
+    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
+    textOrg = cv::Point(pt1.x, pt2.y);
+    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
 }
 
 void drawRcMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "RC mode";
+    std::string titleText = "RC mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getRcMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     
     textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    pt1 = cv::Point(0, textOrg.y);
+    pt2 = cv::Point(200, pt1.y);
+    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     pt1.y += 25;
     pt1.x = 200/2 - 120/2;
     drawRcCom(image, pt1);
     
     textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    pt1 = cv::Point(0, textOrg.y);
+    pt2 = cv::Point(200, pt1.y);
+    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
-    vector<string> stateList;
+    std::vector<std::string> stateList;
     getAutoStateList(stateList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < stateList.size(); i++) {
-        string text = stateList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = stateList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawDevMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Dev mode";
+    std::string titleText = "Dev mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getDevMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawConfigMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Config mode";
+    std::string titleText = "Config mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getConfigMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     
     textOrg.y += 20;
-    pt1 = Point(0, textOrg.y);
-    pt2 = Point(200, pt1.y);
-    line(image, pt1, pt2, Scalar(180, 180, 180), 1);
+    pt1 = cv::Point(0, textOrg.y);
+    pt2 = cv::Point(200, pt1.y);
+    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     menuList;
     getConfigModeList(menuList);
@@ -436,103 +442,103 @@ void drawConfigMode (cv::Mat& image)
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawCalibIntrinsics (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Calib Intr";
+    std::string titleText = "Calib Intr";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getCalibIntrinsicsMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawCalibExtrinsics (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Calib Extr";
+    std::string titleText = "Calib Extr";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getCalibExtrinsicsMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
 void drawPositionImage (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "Position image";
+    std::string titleText = "Position image";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, 
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
     thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getPositionImageMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
 
@@ -541,10 +547,10 @@ void drawAboutText (void)
     cv::Mat image;
     getOutputImageData(image);
     
-    rectangle(image, Point(0, 0), Point(image.cols-1, image.rows-1), Scalar(218, 218, 218), -1);
+    rectangle(image, cv::Point(0, 0), cv::Point(image.cols-1, image.rows-1), cv::Scalar(218, 218, 218), -1);
     
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
     
     pt1.y += 25;
     pt1.x = 200/2 - 120/2;
@@ -554,65 +560,65 @@ void drawAboutText (void)
     int thickness = 1;
     int baseline = 0;
     
-    vector<string> textList;
+    std::vector<std::string> textList;
     getAboutTextList(textList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
-    Point textOrg;
-    Size textSize;
+    cv::Point textOrg;
+    cv::Size textSize;
     textOrg.x = 10;
     for (size_t i = 0; i < textList.size(); i++) {
-        string text = textList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 10 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = textList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     setOutputImageData(image);
 }
 
 void drawAboutMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(218, 218, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
     
-    string titleText = "About";
+    std::string titleText = "About";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
     
     // Get center of the text
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
-    vector<string> menuList;
+    std::vector<std::string> menuList;
     getAboutMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 0.5;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
-        string text = menuList[i];
-        textSize = getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 20 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+        std::string text = menuList[i];
+        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+        textOrg.y = textOrg.y + 15 + textSize.height;
+        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
     drawAboutText();
 }
 
 void drawErrorMode (cv::Mat& image)
 {
-    Point pt1(0, 0);
-    Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, Scalar(0, 0, 218), -1);
+    cv::Point pt1(0, 0);
+    cv::Point pt2(200, (image.size().height-1));
+    rectangle(image, pt1, pt2, cv::Scalar(0, 0, 218), -1);
     
-    string titleText = "Error";
+    std::string titleText = "Error";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
     int baseline = 0;
-    Size textSize = getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
-    Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, Scalar::all(0), thickness);
+    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
+    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
+    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
 }

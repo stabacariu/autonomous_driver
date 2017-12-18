@@ -6,46 +6,43 @@
 
 #include "lane_detection.hpp"
 
-using namespace std;
-using namespace cv;
-
-float getEuclidDistance(Point pt1, Point pt2)
+float getEuclidDistance(cv::Point pt1, cv::Point pt2)
 {
-   Point diff = pt1 - pt2;
+   cv::Point diff = pt1 - pt2;
    return sqrt(pow(diff.x, 2) + pow(diff.y, 2));
    // or
    //~ return norm(pt1-pt2);
 }
 
-float getRho (Point pt1, Point pt2)
+float getRho (cv::Point pt1, cv::Point pt2)
 {
    return (pt1.y * pt2.x - pt2.y * pt1.x)/getEuclidDistance(pt1, pt2);
 }
 
-float getTheta (Point pt1, Point pt2)
+float getTheta (cv::Point pt1, cv::Point pt2)
 {
    return atan2((pt2.y - pt1.y), (pt2.x - pt1.x));
 }
 
-void cvtLinesToLinesPolar (vector<Vec4i> lines, vector<Vec2f>& linesPolar)
+void cvtLinesToLinesPolar (std::vector<cv::Vec4i> lines, std::vector<cv::Vec2f>& linesPolar)
 {
     linesPolar.clear();
     for (size_t i = 0; i < lines.size(); i++) {
-        float theta = getTheta(Point(lines[i][0], lines[i][1]), Point(lines[i][2], lines[i][3]));
-        float rho = getRho(Point(lines[i][0], lines[i][1]), Point(lines[i][2], lines[i][3]));
+        float theta = getTheta(cv::Point(lines[i][0], lines[i][1]), cv::Point(lines[i][2], lines[i][3]));
+        float rho = getRho(cv::Point(lines[i][0], lines[i][1]), cv::Point(lines[i][2], lines[i][3]));
 
-        linesPolar.push_back(Vec2f(rho, theta));
+        linesPolar.push_back(cv::Vec2f(rho, theta));
     }
 }
 
-void sortLineDirections (vector<Vec4i>& lines)
+void sortLineDirections (std::vector<cv::Vec4i>& lines)
 {
    for (size_t i = 0; i <  lines.size(); i++) {
-      Point pt1 = Point(lines[i][0], lines[i][1]);
-      Point pt2 = Point(lines[i][2], lines[i][3]);
+      cv::Point pt1 = cv::Point(lines[i][0], lines[i][1]);
+      cv::Point pt2 = cv::Point(lines[i][2], lines[i][3]);
 
       if (pt1.y > pt2.y) {
-         Point ptTmp = pt1;
+         cv::Point ptTmp = pt1;
          pt1 = pt2;
          pt2 = ptTmp;
       }
@@ -60,7 +57,7 @@ void sortLineDirections (vector<Vec4i>& lines)
  * @brief This function detects lines in an grayscale input image
  */
 
-void detectLines (cv::Mat grayImage, vector<Vec4i>& lines)
+void detectLines (cv::Mat grayImage, std::vector<cv::Vec4i>& lines)
 {
    lines.clear();
 
@@ -80,36 +77,36 @@ void detectLines (cv::Mat grayImage, vector<Vec4i>& lines)
    sortLineDirections(lines);
 }
 
-void drawLine (cv::Mat& image, Vec4i l, Scalar color)
+void drawLine (cv::Mat& image, cv::Vec4i l, cv::Scalar color)
 {
-    line(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+    line(image, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), color, 2);
 }
 
-void drawLines (cv::Mat& image, vector<Vec4i> lines, Scalar color)
+void drawLines (cv::Mat& image, std::vector<cv::Vec4i> lines, cv::Scalar color)
 {
     for (size_t i = 0; i < lines.size(); i++) {
-        Vec4i l = lines[i];
-        line(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+        cv::Vec4i l = lines[i];
+        line(image, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), color, 2);
     }
 }
 
-void drawArrowedLine (cv::Mat& image, Vec4i l, Scalar color)
+void drawArrowedLine (cv::Mat& image, cv::Vec4i l, cv::Scalar color)
 {
-    arrowedLine(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+    arrowedLine(image, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), color, 2);
 }
 
-void drawArrowedLines (cv::Mat& image, vector<Vec4i> lines, Scalar color)
+void drawArrowedLines (cv::Mat& image, std::vector<cv::Vec4i> lines, cv::Scalar color)
 {
     for (size_t i = 0; i < lines.size(); i++) {
-        Vec4i l = lines[i];
-        arrowedLine(image, Point(l[0], l[1]), Point(l[2], l[3]), color, 2);
+        cv::Vec4i l = lines[i];
+        arrowedLine(image, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), color, 2);
     }
 }
 
-void drawCenterLine (cv::Mat& image, Scalar color)
+void drawCenterLine (cv::Mat& image, cv::Scalar color)
 {
-    Point pt1((image.cols/2)-1, 0);
-    Point pt2(pt1.x, image.rows-1);
+    cv::Point pt1((image.cols/2)-1, 0);
+    cv::Point pt2(pt1.x, image.rows-1);
     line(image, pt1, pt2, color, 1);
 }
 
@@ -119,11 +116,11 @@ void drawCenterLine (cv::Mat& image, Scalar color)
  *          in the left image half.
  */
 
-void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines, vector<Vec4i>& rightLines, vector<Vec4i>& lane)
+void filterLines (std::vector<cv::Vec4i> lines, cv::Size imageSize, std::vector<cv::Vec4i>& leftLines, std::vector<cv::Vec4i>& rightLines, std::vector<cv::Vec4i>& lane)
 {
     lane.clear();
-    Vec4i leftLine = Vec4i(imageSize.width-1, imageSize.height-1, imageSize.width-1, 0);
-    Vec4i rightLine = Vec4i(0, imageSize.height-1, 0, 0);
+    cv::Vec4i leftLine = cv::Vec4i(imageSize.width-1, imageSize.height-1, imageSize.width-1, 0);
+    cv::Vec4i rightLine = cv::Vec4i(0, imageSize.height-1, 0, 0);
 
     for (size_t i = 0; i < lines.size(); i++) {
         if (lines[i][2] <= ((imageSize.width-1)/2)) {
@@ -148,7 +145,7 @@ void filterLines (vector<Vec4i> lines, Size imageSize, vector<Vec4i>& leftLines,
     lane.push_back(rightLine);
 }
 
-float distanceBetweenLines (Vec4i line1, Vec4i line2)
+float distanceBetweenLines (cv::Vec4i line1, cv::Vec4i line2)
 {
     float m1, m2, b1, b2;
     
@@ -176,14 +173,14 @@ float distanceBetweenLines (Vec4i line1, Vec4i line2)
  * @brief This function checks if 2 lines are parallel.
  */
 
-bool checkParallelLine (vector<Vec4i> lines)
+bool checkParallelLine (std::vector<cv::Vec4i> lines)
 {
-    float thetaLeft = getTheta(Point(lines[0][0], lines[0][1]), Point(lines[0][2],lines[0][3]));
-    float thetaRight = getTheta(Point(lines[1][0], lines[1][1]), Point(lines[1][2], lines[1][3]));
-    //~ cout << "Left line theta: " << thetaLeft << ", Right line theta " << thetaRight << endl;
+    float thetaLeft = getTheta(cv::Point(lines[0][0], lines[0][1]), cv::Point(lines[0][2],lines[0][3]));
+    float thetaRight = getTheta(cv::Point(lines[1][0], lines[1][1]), cv::Point(lines[1][2], lines[1][3]));
+    //~ std::cout << "Left line theta: " << thetaLeft << ", Right line theta " << thetaRight << std::endl;
     if (thetaLeft == thetaRight) {
-        cout << "Lines are parallel!" << endl;
-        cout << "Distance between lines is " << distanceBetweenLines(lines[0], lines[1])*getPxPerMm() << endl;
+        std::cout << "Lines are parallel!" << std::endl;
+        std::cout << "Distance between lines is " << distanceBetweenLines(lines[0], lines[1])*getPxPerMm() << std::endl;
         return true;
     }
     else {
@@ -191,29 +188,29 @@ bool checkParallelLine (vector<Vec4i> lines)
     }
 }
 
-bool checkForStopLine (vector<Vec4i> lines, Vec4i& stopLine)
+bool checkForStopLine (std::vector<cv::Vec4i> lines, cv::Vec4i& stopLine)
 {
     for (size_t i = 0; i < lines.size(); i++) {
-        float theta = getTheta(Point(lines[i][0], lines[i][1]), Point(lines[i][2],lines[i][3]));
+        float theta = getTheta(cv::Point(lines[i][0], lines[i][1]), cv::Point(lines[i][2],lines[i][3]));
         if ((theta < (CV_PI*0.2)) || (theta > (CV_PI*0.80))) {
             stopLine = lines[i];
-            cout << "Stop line detected!" << endl;
+            std::cout << "Stop line detected!" << std::endl;
             return true;
         }
     }
     return false;
 }
 
-Vec4i getLaneMid (vector<Vec4i> lane)
+cv::Vec4i getLaneMid (std::vector<cv::Vec4i> lane)
 {
-    Point ptl1 = Point(lane[0][0], lane[0][1]);
-    Point ptl2 = Point(lane[0][2], lane[0][3]);
-    Point ptr1 = Point(lane[1][0], lane[1][1]);
-    Point ptr2 = Point(lane[1][2], lane[1][3]);
+    cv::Point ptl1 = cv::Point(lane[0][0], lane[0][1]);
+    cv::Point ptl2 = cv::Point(lane[0][2], lane[0][3]);
+    cv::Point ptr1 = cv::Point(lane[1][0], lane[1][1]);
+    cv::Point ptr2 = cv::Point(lane[1][2], lane[1][3]);
     
-    Point ptmid1 = Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
-    Point ptmid2 = Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
-    Vec4i laneMid = Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
+    cv::Point ptmid1 = cv::Point(ptl1.x + (ptr1.x - ptl1.x)/2, ptl1.y + (ptr1.y - ptl1.y)/2);
+    cv::Point ptmid2 = cv::Point(ptl2.x + (ptr2.x - ptl2.x)/2, ptl2.y + (ptr2.y - ptl2.y)/2);
+    cv::Vec4i laneMid = cv::Vec4i(ptmid1.x, ptmid1.y, ptmid2.x, ptmid2.y);
     
     return laneMid;
 }
@@ -222,16 +219,16 @@ Vec4i getLaneMid (vector<Vec4i> lane)
  * @brief This function initializes the line prediction with a Kalman filter.
  */
 
-void initLinePrediction (KalmanFilter& kf, int valueCnt)
+void initLinePrediction (cv::KalmanFilter& kf, int valueCnt)
 {
     kf.statePre = cv::Mat::zeros(valueCnt, 1, CV_32F);
     
     setIdentity(kf.transitionMatrix);
     setIdentity(kf.measurementMatrix);
-    setIdentity(kf.processNoiseCov, Scalar::all(500));
-    setIdentity(kf.measurementNoiseCov, Scalar::all(500));
-    //~ setIdentity(kf.errorCovPre, Scalar::all(1000));
-    //~ setIdentity(kf.errorCovPost, Scalar::all(500));
+    setIdentity(kf.processNoiseCov, cv::Scalar::all(500));
+    setIdentity(kf.measurementNoiseCov, cv::Scalar::all(500));
+    //~ setIdentity(kf.errorCovPre, cv::Scalar::all(1000));
+    //~ setIdentity(kf.errorCovPost, cv::Scalar::all(500));
 }
 
 /**
@@ -240,13 +237,13 @@ void initLinePrediction (KalmanFilter& kf, int valueCnt)
  * @todo Measured lines unnecessary beacause measLines = lines
  */
 
-void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Vec4i>& predLines)
+void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueCnt, std::vector<cv::Vec4i>& predLines)
 {
     //~ predLines.clear();
 
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Mat prediction = kf.predict();
-        Vec4i predictedPts(prediction.at<float>(0), prediction.at<float>(1), prediction.at<float>(2), prediction.at<float>(3));
+        cv::Vec4i predictedPts(prediction.at<float>(0), prediction.at<float>(1), prediction.at<float>(2), prediction.at<float>(3));
 
         cv::Mat measurement = cv::Mat::zeros(valueCnt, 1, CV_32F);
         for (size_t j = 0; j < valueCnt; j++) {
@@ -255,23 +252,23 @@ void predictLine (vector<Vec4i> lines, KalmanFilter& kf, int valueCnt, vector<Ve
 
         cv::Mat estimated = kf.correct(measurement);
 
-        Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
+        cv::Vec4i statePts(estimated.at<float>(0), estimated.at<float>(1), estimated.at<float>(2), estimated.at<float>(3));
         predLines.clear();
         predLines.push_back(statePts);
     }
 }
 
-void imageProcessing (cv::Mat& image, vector<Vec4i>& lines)
+void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines)
 {
     autoAdjustBrightness(image);
     
     // Blur image
-    //~ GaussianBlur(image, image, Size(5, 5), 0);
+    //~ GaussianBlur(image, image, cv::Size(5, 5), 0);
 
     cv::Mat grayImage;
     whiteColorFilter(image, grayImage);
     
-    cv::Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5), Point(2, 2));
+    cv::Mat kernel = getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5), cv::Point(2, 2));
     erode(grayImage, grayImage, kernel);
 
     //~ cv::Mat yellowImage;
@@ -281,79 +278,79 @@ void imageProcessing (cv::Mat& image, vector<Vec4i>& lines)
     //~ bitwise_or(image, yellowImage, grayImage);
 
     // Blur image
-    GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
+    GaussianBlur(grayImage, grayImage, cv::Size(5, 5), 0);
 
     // Detect lines
     detectLines(grayImage, lines);
     cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
-void resetRois (Size imageSize)
+void resetRois (cv::Size imageSize)
 {
-    setRoiLeft(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
-    setRoiRight(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
+    setRoiLeft(cv::Rect(cv::Point(0, 0), cv::Point(imageSize.width-1, imageSize.height-1)));
+    setRoiRight(cv::Rect(cv::Point(0, 0), cv::Point(imageSize.width-1, imageSize.height-1)));
 }
 
-void roiOfLine (Vec4i line, Rect& roi, Size imageSize)
+void roiOfLine (cv::Vec4i line, cv::Rect& roi, cv::Size imageSize)
 {
     if (line[0] <= line[2]) {
-        roi = Rect(Point(line[0]-10, line[1]-10), Point(line[2]+10, line[3]+10));
+        roi = cv::Rect(cv::Point(line[0]-10, line[1]-10), cv::Point(line[2]+10, line[3]+10));
     }
     else {
-        roi = Rect(Point(line[0]+10, line[1]-10), Point(line[2]-10, line[3]+10));
+        roi = cv::Rect(cv::Point(line[0]+10, line[1]-10), cv::Point(line[2]-10, line[3]+10));
     }
     
     // Check if ROI in bound
     if (roi.tl().x < 0) {
-        roi = Rect(Point(0, roi.tl().y), roi.br());
+        roi = cv::Rect(cv::Point(0, roi.tl().y), roi.br());
     }
     else if (roi.tl().x > (imageSize.width-1)) {
-        roi = Rect(Point((imageSize.width-1), roi.tl().y), roi.br());
+        roi = cv::Rect(cv::Point((imageSize.width-1), roi.tl().y), roi.br());
     }
     
     if (roi.tl().y < 0) {
-        roi = Rect(Point(roi.tl().x, 0), roi.br());
+        roi = cv::Rect(cv::Point(roi.tl().x, 0), roi.br());
     }
     else if (roi.tl().y > (imageSize.height-1)) {
-        roi = Rect(Point(roi.tl().x, (imageSize.height-1)), roi.br());
+        roi = cv::Rect(cv::Point(roi.tl().x, (imageSize.height-1)), roi.br());
     }
     
     if (roi.br().x < 0) {
-        roi = Rect(roi.tl(), Point(0, roi.br().y));
+        roi = cv::Rect(roi.tl(), cv::Point(0, roi.br().y));
     }
     else if (roi.br().x > (imageSize.width-1)) {
-        roi = Rect(roi.tl(), Point((imageSize.width-1), roi.br().y));
+        roi = cv::Rect(roi.tl(), cv::Point((imageSize.width-1), roi.br().y));
     }
     
     if (roi.br().y < 0) {
-        roi = Rect(roi.tl(), Point(roi.br().x, 0));
+        roi = cv::Rect(roi.tl(), cv::Point(roi.br().x, 0));
     }
     else if (roi.br().y > (imageSize.height-1)) {
-        roi = Rect(roi.tl(), Point(roi.br().x, (imageSize.height-1)));
+        roi = cv::Rect(roi.tl(), cv::Point(roi.br().x, (imageSize.height-1)));
     }
 }
 
 void *laneDetection (void *arg)
 {
-    cout << "THREAD: Lane detection started." << endl;
+    std::cout << "THREAD: Lane detection started." << std::endl;
     
     initOutputImageData();
     //~ initInterImageData();
     
     // Initialize line prediction
-    KalmanFilter kfL(4, 4, 0);
-    KalmanFilter kfR(4, 4, 0);
-    KalmanFilter kfM(4, 4, 0);
+    cv::KalmanFilter kfL(4, 4, 0);
+    cv::KalmanFilter kfR(4, 4, 0);
+    cv::KalmanFilter kfM(4, 4, 0);
     initLinePrediction(kfL, 4);
     initLinePrediction(kfR, 4);
     initLinePrediction(kfM, 4);
-    vector<Vec4i> leftLinesPredicted;
-    vector<Vec4i> rightLinesPredicted;
-    vector<Vec4i> lanePredicted;
-    vector<Vec4i> predictedTrajectory;
+    std::vector<cv::Vec4i> leftLinesPredicted;
+    std::vector<cv::Vec4i> rightLinesPredicted;
+    std::vector<cv::Vec4i> lanePredicted;
+    std::vector<cv::Vec4i> predictedTrajectory;
     
-    vector<Vec4i> leftLine;
-    vector<Vec4i> rightLine;
+    std::vector<cv::Vec4i> leftLine;
+    std::vector<cv::Vec4i> rightLine;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         cv::Mat image, homography;
@@ -369,15 +366,15 @@ void *laneDetection (void *arg)
                 image.copyTo(warpedImage);
             }
 
-            vector<Vec4i> lines, someLines;
-            //~ Rect leftLineRoi = getRoiLeft();
-            //~ Rect rightLineRoi = getRoiRight();
+            std::vector<cv::Vec4i> lines, someLines;
+            //~ cv::Rect leftLineRoi = getRoiLeft();
+            //~ cv::Rect rightLineRoi = getRoiRight();
 
             imageProcessing(warpedImage, lines);
             //~ // Detect stop lines
-            //~ Vec4i stopLine;
+            //~ cv::Vec4i stopLine;
             //~ if (checkForStopLine(lines, stopLine)) {
-                //~ drawLine(warpedImage, stopLine, Scalar(0,0,255));
+                //~ drawLine(warpedImage, stopLine, cv::Scalar(0,0,255));
                 //~ setSteering(CV_PI/2);
                 //~ setAcceleration(50);
             //~ }
@@ -406,31 +403,31 @@ void *laneDetection (void *arg)
 
             if (lines.size() > 0) {
                 // Show lines
-                //~ drawArrowedLines(warpedImage, lines, Scalar(0,0,255));
+                //~ drawArrowedLines(warpedImage, lines, cv::Scalar(0,0,255));
 
                 // Filter lines
-                vector<Vec4i> leftLines;
-                vector<Vec4i> rightLines;
-                vector<Vec4i> lane;
+                std::vector<cv::Vec4i> leftLines;
+                std::vector<cv::Vec4i> rightLines;
+                std::vector<cv::Vec4i> lane;
                 filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
 
                 // Predict lane
                 //~ if (lane.size() == 2) {
-                    //~ //~ vector<Vec4i> leftLine;
+                    //~ //~ std::vector<cv::Vec4i> leftLine;
                     //~ leftLine.push_back(lane[0]);
                     //~ predictLine(leftLine, kfL, 4, leftLinesPredicted);
-                    //~ drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
-                    //~ //~ vector<Vec4i> rightLine;
+                    //~ drawArrowedLines(warpedImage, leftLinesPredicted, cv::Scalar(255, 0, 0));
+                    //~ //~ std::vector<cv::Vec4i> rightLine;
                     //~ rightLine.push_back(lane[1]);
                     //~ predictLine(rightLine, kfR, 4, rightLinesPredicted);
-                    //~ drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
+                    //~ drawArrowedLines(warpedImage, rightLinesPredicted, cv::Scalar(0, 0, 255));
                 //~ }
                 // Predict left line
                 if (leftLines.size() > 0) {
-                    vector<Vec4i> leftLine;
+                    std::vector<cv::Vec4i> leftLine;
                     leftLine.push_back(lane[0]);
                     predictLine(leftLine,  kfL, 4, leftLinesPredicted);
-                    drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
+                    drawArrowedLines(warpedImage, leftLinesPredicted, cv::Scalar(255, 0, 0));
                 }
                 //~ if (leftLinesPredicted.size() > 0) {
                 if (leftLinesPredicted.size() == 1) {
@@ -439,18 +436,18 @@ void *laneDetection (void *arg)
                     // Set left ROI with offset
                     //~ roiOfLine(leftLinesPredicted[0], leftLineRoi, warpedImage.size());
                     //~ setRoiLeft(leftLineRoi);
-                    //~ rectangle(warpedImage, leftLineRoi, Scalar(255, 0, 0), 1);
+                    //~ rectangle(warpedImage, leftLineRoi, cv::Scalar(255, 0, 0), 1);
                 }
                 else {
-                    lanePredicted.push_back(Vec4i(0, 0, 0, 0));
+                    lanePredicted.push_back(cv::Vec4i(0, 0, 0, 0));
                 }
                 
                 //Predict right line
                 if (rightLines.size() > 0) {
-                    vector<Vec4i> rightLine;
+                    std::vector<cv::Vec4i> rightLine;
                     rightLine.push_back(lane[1]);
                     predictLine(rightLine, kfR, 4, rightLinesPredicted);
-                    drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
+                    drawArrowedLines(warpedImage, rightLinesPredicted, cv::Scalar(0, 0, 255));
                 }
                 //~ if (rightLinesPredicted.size() > 0) {
                 if (rightLinesPredicted.size() == 1) {
@@ -459,21 +456,21 @@ void *laneDetection (void *arg)
                     // Set right ROI with offset
                     //~ roiOfLine(rightLinesPredicted[0], rightLineRoi, warpedImage.size());
                     //~ setRoiRight(rightLineRoi);
-                    //~ rectangle(warpedImage, rightLineRoi, Scalar(0, 0, 255), 1);
+                    //~ rectangle(warpedImage, rightLineRoi, cv::Scalar(0, 0, 255), 1);
                 }
                 else {
-                    lanePredicted.push_back(Vec4i(warpedImage.cols-1, 0, warpedImage.cols-1, 0));
+                    lanePredicted.push_back(cv::Vec4i(warpedImage.cols-1, 0, warpedImage.cols-1, 0));
                 }
                 
                 // Check if lines are parallel
                 if (lanePredicted.size() > 0) {
-                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), Scalar(200,200,0));
+                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
                     setActualLane(lanePredicted);
                     
                     //~ setActualLane(lane);
                     
                     //~ predictLine(lanePredicted, kfM, 4, predictedTrajectory);
-                    //~ drawArrowedLines(warpedImage, predictedTrajectory, Scalar(200,200,0));
+                    //~ drawArrowedLines(warpedImage, predictedTrajectory, cv::Scalar(200,200,0));
                     
                     //~ if (checkParallelLine(lanePredicted)) {
                         //~ // Save detected lane
@@ -486,29 +483,29 @@ void *laneDetection (void *arg)
                 }
             }
             else {
-                cout << "Lane detection: No lines found..." << endl;
+                std::cout << "Lane detection: No lines found..." << std::endl;
                 setActualLane(lanePredicted);
                 //~ resetRois(warpedImage.size());
             }
-            drawCenterLine(warpedImage, Scalar(0, 255, 0));
+            drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             setOutputImageData(warpedImage);
             //~ setInterImageData(warpedImage);
         }
     }
     
-    cout << "THREAD: Lane detection ended." << endl;
+    std::cout << "THREAD: Lane detection ended." << std::endl;
     
     return NULL;
 }
 
 
-void imageProcessing2 (cv::Mat& image, vector<Vec4i>& lines)
+void imageProcessing2 (cv::Mat& image, std::vector<cv::Vec4i>& lines)
 {
     autoAdjustBrightness(image);
 
     cv::Mat grayImage;
     whiteColorFilter(image, grayImage);
-    cv::Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5), Point(2, 2));
+    cv::Mat kernel = getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5), cv::Point(2, 2));
     erode(grayImage, grayImage, kernel);
     
     //~ cv::Mat yellowImage;
@@ -518,7 +515,7 @@ void imageProcessing2 (cv::Mat& image, vector<Vec4i>& lines)
     //~ bitwise_or(image, yellowImage, grayImage);
 
     // Blur image
-    GaussianBlur(grayImage, grayImage, Size(5, 5), 0);
+    GaussianBlur(grayImage, grayImage, cv::Size(5, 5), 0);
     
     // Detect lines
     detectLines(grayImage, lines);
@@ -527,25 +524,25 @@ void imageProcessing2 (cv::Mat& image, vector<Vec4i>& lines)
 
 void *laneDetection2 (void *arg)
 {
-    cout << "THREAD: Lane detection started." << endl;
+    std::cout << "THREAD: Lane detection started." << std::endl;
     
     //~ initOutputImageData();
     initInterImageData();
 
     // Initialize line prediction
-    KalmanFilter kfLT(4, 4, 0);
-    KalmanFilter kfLM(4, 4, 0);
-    KalmanFilter kfLB(4, 4, 0);
-    KalmanFilter kfRT(4, 4, 0);
-    KalmanFilter kfRM(4, 4, 0);
-    KalmanFilter kfRB(4, 4, 0);
+    cv::KalmanFilter kfLT(4, 4, 0);
+    cv::KalmanFilter kfLM(4, 4, 0);
+    cv::KalmanFilter kfLB(4, 4, 0);
+    cv::KalmanFilter kfRT(4, 4, 0);
+    cv::KalmanFilter kfRM(4, 4, 0);
+    cv::KalmanFilter kfRB(4, 4, 0);
     initLinePrediction(kfLT, 4);
     initLinePrediction(kfLM, 4);
     initLinePrediction(kfLB, 4);
     initLinePrediction(kfRT, 4);
     initLinePrediction(kfRM, 4);
     initLinePrediction(kfRB, 4);
-    vector<KalmanFilter> kf;
+    std::vector<cv::KalmanFilter> kf;
     kf.push_back(kfLT);
     kf.push_back(kfLM);
     kf.push_back(kfLB);
@@ -553,10 +550,10 @@ void *laneDetection2 (void *arg)
     kf.push_back(kfRM);
     kf.push_back(kfRB);
     
-    vector<Vec4i> leftLine;
-    vector<Vec4i> rightLine;
+    std::vector<cv::Vec4i> leftLine;
+    std::vector<cv::Vec4i> rightLine;
     
-    vector<Vec4i> lanePredicted;
+    std::vector<cv::Vec4i> lanePredicted;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         cv::Mat image, homography;
@@ -574,16 +571,16 @@ void *laneDetection2 (void *arg)
             
             int kfIt = 0;
             for (size_t i = 0; i < warpedImage.rows; i = i + warpedImage.rows/3 - 1) {
-                vector<Vec4i> lines;
-                vector<Vec4i> leftLinesPredicted;
-                vector<Vec4i> rightLinesPredicted;
+                std::vector<cv::Vec4i> lines;
+                std::vector<cv::Vec4i> leftLinesPredicted;
+                std::vector<cv::Vec4i> rightLinesPredicted;
                 // Set ROI
-                Rect rOI = Rect(Point(0, i), Point(warpedImage.cols-1, i + warpedImage.rows/3));
+                cv::Rect rOI = cv::Rect(cv::Point(0, i), cv::Point(warpedImage.cols-1, i + warpedImage.rows/3));
                 
                 cv::Mat windowedImage;
                 warpedImage(rOI).copyTo(windowedImage);
                 imageProcessing2(windowedImage, lines);
-                rectangle(warpedImage, rOI, Scalar(0, 255, 0), 1);
+                rectangle(warpedImage, rOI, cv::Scalar(0, 255, 0), 1);
                 windowedImage.copyTo(warpedImage(rOI));
                 
                 // If no lines where found, take predicted lines
@@ -593,56 +590,56 @@ void *laneDetection2 (void *arg)
         
                 if (lines.size() > 0) {
                     // Filter lines
-                    vector<Vec4i> leftLinesFiltered;
-                    vector<Vec4i> rightLinesFiltered;
-                    vector<Vec4i> laneSuggestion;
+                    std::vector<cv::Vec4i> leftLinesFiltered;
+                    std::vector<cv::Vec4i> rightLinesFiltered;
+                    std::vector<cv::Vec4i> laneSuggestion;
                     filterLines(lines, warpedImage.size(), leftLinesFiltered, rightLinesFiltered, laneSuggestion);
                     
                     // Check lane suggestion
                     // Check orientation
                     if (laneSuggestion[0][1] > laneSuggestion[0][3]) {
-                        cout << "Lane detection: Wrong left line orientation" << endl;
+                        std::cout << "Lane detection: Wrong left line orientation" << std::endl;
                     }
                     else if (laneSuggestion[1][1] > laneSuggestion[1][3]) {
-                        cout << "Lane detection: Wrong right line orientation!" << endl;
+                        std::cout << "Lane detection: Wrong right line orientation!" << std::endl;
                     }
                     else {
                         // Predict left line
                         if (leftLinesFiltered.size() > 0) {
-                            //~ vector<Vec4i> leftLine;
+                            //~ std::vector<cv::Vec4i> leftLine;
                             leftLine.push_back(laneSuggestion[0]);
                             predictLine(leftLine, kf[kfIt], 4, leftLinesPredicted);
                             leftLinesPredicted[0][1] = leftLinesPredicted[0][1]+i;
                             leftLinesPredicted[0][3] = leftLinesPredicted[0][3]+i;
-                            drawArrowedLines(warpedImage, leftLinesPredicted, Scalar(255, 0, 0));
+                            drawArrowedLines(warpedImage, leftLinesPredicted, cv::Scalar(255, 0, 0));
                         }
                         if (leftLinesPredicted.size() == 1) {
                             lanePredicted.push_back(leftLinesPredicted[0]);
                         }
                         else {
-                            lanePredicted.push_back(Vec4i(0, 0, 0, 0));
+                            lanePredicted.push_back(cv::Vec4i(0, 0, 0, 0));
                         }
                         
                         // Predict right line
                         if (rightLinesFiltered.size() > 0) {
-                            //~ vector<Vec4i> rightLine;
+                            //~ std::vector<cv::Vec4i> rightLine;
                             rightLine.push_back(laneSuggestion[1]);
                             predictLine(rightLine, kf[kfIt+3], 4, rightLinesPredicted);
                             rightLinesPredicted[0][1] = rightLinesPredicted[0][1]+i;
                             rightLinesPredicted[0][3] = rightLinesPredicted[0][3]+i;
-                            drawArrowedLines(warpedImage, rightLinesPredicted, Scalar(0, 0, 255));
+                            drawArrowedLines(warpedImage, rightLinesPredicted, cv::Scalar(0, 0, 255));
                         }
                         if (rightLinesPredicted.size() == 1) {
                             lanePredicted.push_back(rightLinesPredicted[0]);
                         }
                         else {
-                            lanePredicted.push_back(Vec4i(warpedImage.cols-1, 0, warpedImage.cols-1, 0));
+                            lanePredicted.push_back(cv::Vec4i(warpedImage.cols-1, 0, warpedImage.cols-1, 0));
                         }
                     }
                     
                 }
                 else {
-                    cout << "Lane detection: No lines found..." << endl;
+                    std::cout << "Lane detection: No lines found..." << std::endl;
                 }
                 
                 // Set actual lane only if all three segments have lines
@@ -657,31 +654,31 @@ void *laneDetection2 (void *arg)
             
             //! @todo Move this part to planning thread
             // Calculate trajectory
-            vector<Vec4i> foundLane;
-            vector<Point> leftLinePts, rightLinePts, midLinePts;
+            std::vector<cv::Vec4i> foundLane;
+            std::vector<cv::Point> leftLinePts, rightLinePts, midLinePts;
             getActualLane(foundLane);
             if (foundLane.size() != 6) {
-                cout << "Lane detection: Only part of lane detected. foundLane size " << foundLane.size() << endl;
+                std::cout << "Lane detection: Only part of lane detected. foundLane size " << foundLane.size() << std::endl;
             }
             for (size_t n = 0; n < foundLane.size(); n += 2) {
-                vector<Vec4i> lanePart;
+                std::vector<cv::Vec4i> lanePart;
                 lanePart.push_back(foundLane[n]);
                 lanePart.push_back(foundLane[n+1]);
-                Vec4i laneMid = getLaneMid(lanePart);
-                //~ drawArrowedLine(warpedImage, laneMid, Scalar(200,200,0));
-                midLinePts.push_back(Point(laneMid[0], laneMid[1]));
-                midLinePts.push_back(Point(laneMid[2], laneMid[3]));
+                cv::Vec4i laneMid = getLaneMid(lanePart);
+                //~ drawArrowedLine(warpedImage, laneMid, cv::Scalar(200,200,0));
+                midLinePts.push_back(cv::Point(laneMid[0], laneMid[1]));
+                midLinePts.push_back(cv::Point(laneMid[2], laneMid[3]));
             }
             // Draw trajectory
-            polylines(warpedImage, midLinePts, false, Scalar(200,200,0), 2);
+            polylines(warpedImage, midLinePts, false, cv::Scalar(200,200,0), 2);
             // Draw center line
-            drawCenterLine(warpedImage, Scalar(0, 255, 0));
+            drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             //~ setOutputImageData(warpedImage);
             setInterImageData(warpedImage);
         }
     }
     
-    cout << "THREAD: Lane detection ended." << endl;
+    std::cout << "THREAD: Lane detection ended." << std::endl;
     
     return NULL;
 }

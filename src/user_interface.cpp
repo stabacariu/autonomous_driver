@@ -9,9 +9,6 @@
 
 UIState uiState;
 
-using namespace std;
-using namespace cv;
-
 void initUiState (void)
 {
     pthread_mutex_init(&uiState.lock, NULL);
@@ -22,13 +19,13 @@ void initUiState (void)
 void setUiStatus (UIMode state)
 {
     if (pthread_mutex_lock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     uiState.mode = state;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
 }
 
@@ -36,13 +33,13 @@ UIMode getUiStatus (void)
 {
     UIMode state;
     if (pthread_mutex_lock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     state = uiState.mode;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
     
     return state;
@@ -51,13 +48,13 @@ UIMode getUiStatus (void)
 void setUiInputKey (char key)
 {
     if (pthread_mutex_lock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     uiState.key = key;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
 }
 
@@ -65,7 +62,7 @@ char getUiInputKey (void)
 {
     char key;
     if (pthread_mutex_lock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't lock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     key = uiState.key;
@@ -73,7 +70,7 @@ char getUiInputKey (void)
     //~ uiState.key = -1;
     
     if (pthread_mutex_unlock(&uiState.lock)) {
-        cerr << "ERROR: Couldn't unlock status mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
     
     return key;
@@ -161,7 +158,7 @@ void processUiInput (cv::Mat& image, char key)
             sysState = SYS_MODE_AUTO;
         }
         else if (key == 'S') {
-            cout << "Screenshot..." << endl;
+            std::cout << "Screenshot..." << std::endl;
         }
         else if (key == 'C') {
             state = UI_MODE_CONFIG;
@@ -189,12 +186,12 @@ void processUiInput (cv::Mat& image, char key)
             }
             else if (key == 'R') {
                 //! @todo reset configuration
-                cout << "Resetting config..." << endl;
+                std::cout << "Resetting config..." << std::endl;
                 cv::Mat homography;
                 setExtr(homography);
             }
             else if (key == 'S') {
-                cout << "Saving config..." << endl;
+                std::cout << "Saving config..." << std::endl;
                 saveCalibConfig();
                 //! @todo Save configuration
             }
@@ -216,13 +213,13 @@ void processUiInput (cv::Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                cout << "Resetting config..." << endl;
+                std::cout << "Resetting config..." << std::endl;
                 cv::Mat homography;
                 setExtr(homography);
                 //! @todo reset configuration
             }
             else if (key == 'S') {
-                cout << "Saving config..." << endl;
+                std::cout << "Saving config..." << std::endl;
                 saveCalibConfig();
                 //! @todo Save configuration
             }
@@ -235,13 +232,13 @@ void processUiInput (cv::Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                cout << "Resetting config..." << endl;
+                std::cout << "Resetting config..." << std::endl;
                 cv::Mat homography;
                 setExtr(homography);
                 //! @todo reset configuration
             }
             else if (key == 'S') {
-                cout << "Saving config..." << endl;
+                std::cout << "Saving config..." << std::endl;
                 saveCalibConfig();
                 //! @todo Save configuration
             }
@@ -254,11 +251,11 @@ void processUiInput (cv::Mat& image, char key)
                 configState = CONFIG_MODE_NONE;
             }
             else if (key == 'R') {
-                cout << "Resetting config..." << endl;
+                std::cout << "Resetting config..." << std::endl;
                 //! @todo reset configuration
             }
             else if (key == 'S') {
-                cout << "Saving config..." << endl;
+                std::cout << "Saving config..." << std::endl;
                 //! @todo Save configuration
             }
         }

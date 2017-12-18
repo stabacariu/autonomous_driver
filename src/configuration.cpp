@@ -539,8 +539,8 @@ void *configCalibIntr(void *arg)
         }
         if (!cameraMatrix.empty() && !distCoeffs.empty()) {
             undistort(inputImage, undistorted, cameraMatrix, distCoeffs);
-            cv::line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
-            cv::line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
+            line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
+            line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
             setOutputImageData(undistorted);
         }
     }
@@ -564,14 +564,14 @@ void *configCalibExtr (void *arg)
         }
         if (!homography.empty()) {
             //~ inversePerspectiveTransform(inputImage, warpedImage, homography);
-            cv::warpPerspective(inputImage, warpedImage, homography, inputImage.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
-            cv::line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
-            cv::line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
+            warpPerspective(inputImage, warpedImage, homography, inputImage.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+            line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
+            line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
             setOutputImageData(warpedImage);
         }
         else {
-            cv::line(inputImage, cv::Point(inputImage.cols/2, 0), cv::Point(inputImage.cols/2, inputImage.rows), cv::Scalar(0, 0, 255), 1);
-            cv::line(inputImage, cv::Point(0, inputImage.rows/2), cv::Point(inputImage.cols, inputImage.rows/2), cv::Scalar(0, 0, 255), 1);
+            line(inputImage, cv::Point(inputImage.cols/2, 0), cv::Point(inputImage.cols/2, inputImage.rows), cv::Scalar(0, 0, 255), 1);
+            line(inputImage, cv::Point(0, inputImage.rows/2), cv::Point(inputImage.cols, inputImage.rows/2), cv::Scalar(0, 0, 255), 1);
             setOutputImageData(inputImage);
         }
     }

@@ -6,36 +6,33 @@
 
 #include "camera_calibration.hpp"
 
-using namespace std;
-using namespace cv;
-
-void calcBoardCornerPosition (Size calibPatternSize, float calibPatternMm, vector<Point3f>& corners)
+void calcBoardCornerPosition (cv::Size calibPatternSize, float calibPatternMm, std::vector<cv::Point3f>& corners)
 {
     corners.clear();
     // Calculate corner position of chessboard squares
     for (int i = 0; i < calibPatternSize.height; i++) {
         for (int j = 0; j < calibPatternSize.width; j++) {
-            corners.push_back(Point3f(j*calibPatternMm, i*calibPatternMm, 0));
+            corners.push_back(cv::Point3f(j*calibPatternMm, i*calibPatternMm, 0));
         }
     }
 }
 
-void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Size calibPatternSize, double calibPatternMm, int sampleCnt)
+void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm, int sampleCnt)
 {
     double aspRatio = 1.0;
 
-    vector<vector<Point2f> >imagePoints;
+    std::vector<std::vector<cv::Point2f> >imagePoints;
 
     while (imagePoints.size() < sampleCnt) {
         cv::Mat grayImage;
         cvtColor(image, grayImage, CV_BGR2GRAY);
 
-        vector<Point2f> corners;
+        std::vector<cv::Point2f> corners;
 
         bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
         if (found) {
-            cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+            cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
             // Save corners
             imagePoints.push_back(corners);
         }
@@ -43,41 +40,41 @@ void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, Size 
 
     cameraMatrix = cv::Mat::eye(3, 3, CV_64F); //< Intrinsic camera matrix
     distCoeffs = cv::Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
-    vector<cv::Mat> rvecs; //< Rotation vectors
-    vector<cv::Mat> tvecs; //< Translation vectors
+    std::vector<cv::Mat> rvecs; //< Rotation vectors
+    std::vector<cv::Mat> tvecs; //< Translation vectors
 
     // Set aspect ratio
     cameraMatrix.at<double>(1, 1) = aspRatio;
     // Calculate cornerpoints
-    vector<vector<Point3f> > objectPoints(1);
+    std::vector<std::vector<cv::Point3f> > objectPoints(1);
     calcBoardCornerPosition(calibPatternSize, calibPatternMm, objectPoints[0]);
     objectPoints.resize(imagePoints.size(), objectPoints[0]);
 
     // Calibrate camera and get reprojection error rms
-    double rms = calibrateCamera(objectPoints, imagePoints, Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
+    double rms = calibrateCamera(objectPoints, imagePoints, cv::Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
 
 
-    //vector<double> reprojErrs;
+    //std::vector<double> reprojErrs;
     //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, cameraMatrix, distCoeffs, reprojErrs, 1);
 }
 
-void calibExtr (cv::Mat image, cv::Mat& homography, Size calibPatternSize, double calibPatternMm)
+void calibExtr (cv::Mat image, cv::Mat& homography, cv::Size calibPatternSize, double calibPatternMm)
 {
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
-    vector<Point2f> corners;
+    std::vector<cv::Point2f> corners;
     bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
-        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
-        Point2f objectPoints[4];
-        objectPoints[0] = Point2f(0, 0);
-        objectPoints[1] = Point2f((calibPatternSize.width-1)*calibPatternMm, 0);
-        objectPoints[2] = Point2f(0, (calibPatternSize.height-1)*calibPatternMm);
-        objectPoints[3] = Point2f((calibPatternSize.width-1)*calibPatternMm, (calibPatternSize.height-1)*calibPatternMm);
-        Point2f imagePoints[4];
+        cv::Point2f objectPoints[4];
+        objectPoints[0] = cv::Point2f(0, 0);
+        objectPoints[1] = cv::Point2f((calibPatternSize.width-1)*calibPatternMm, 0);
+        objectPoints[2] = cv::Point2f(0, (calibPatternSize.height-1)*calibPatternMm);
+        objectPoints[3] = cv::Point2f((calibPatternSize.width-1)*calibPatternMm, (calibPatternSize.height-1)*calibPatternMm);
+        cv::Point2f imagePoints[4];
         imagePoints[0] = corners[0];
         imagePoints[1] = corners[calibPatternSize.width-1];
         imagePoints[2] = corners[(calibPatternSize.height-1)*calibPatternSize.width];
@@ -95,13 +92,13 @@ void calibExtr (cv::Mat image, cv::Mat& homography, Size calibPatternSize, doubl
     }
 }
 
-float euclidDist (Point2f p1, Point2f p2)
+float euclidDist (cv::Point2f p1, cv::Point2f p2)
 {
-    Point2f diff = p1 - p2;
+    cv::Point2f diff = p1 - p2;
     return sqrt(diff.x*diff.x + diff.y*diff.y);
 }
 
-float calcPixelPerMm (cv::Mat image, Size calibPatternSize, float calibPatternMm)
+float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatternMm)
 {
     float pxDist;
     float avgPxDist = 0.0;
@@ -109,11 +106,11 @@ float calcPixelPerMm (cv::Mat image, Size calibPatternSize, float calibPatternMm
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
-    vector<Point2f> corners;
+    std::vector<cv::Point2f> corners;
     bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
-        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, calibPatternMm, 0.1));
+        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, calibPatternMm, 0.1));
 
         for (int i = 0; i < (corners.size()-1); i++) {
             if ((i%calibPatternSize.width) < (calibPatternSize.width-1)) {
@@ -126,22 +123,22 @@ float calcPixelPerMm (cv::Mat image, Size calibPatternSize, float calibPatternMm
             }
         }
         avgPxDist /= distCnt;
-        cout << "Avg distance in px " << avgPxDist << endl;
-        cout << "Px per mm " << avgPxDist/calibPatternMm << endl;
+        std::cout << "Avg distance in px " << avgPxDist << std::endl;
+        std::cout << "Px per mm " << avgPxDist/calibPatternMm << std::endl;
     }
     return avgPxDist/calibPatternMm;
 }
 
-void showChessBoardCorners (cv::Mat& image, Size calibPatternSize)
+void showChessBoardCorners (cv::Mat& image, cv::Size calibPatternSize)
 {
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
-    vector<Point2f> corners;
+    std::vector<cv::Point2f> corners;
     bool found = findChessboardCorners(grayImage, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
-        cornerSubPix(grayImage, corners, Size(11,11), Size(-1,-1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
         drawChessboardCorners(image, calibPatternSize, corners, found);
     }
 }

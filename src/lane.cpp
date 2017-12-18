@@ -10,162 +10,159 @@ LaneData actualLane;
 PositionData actualPosition;
 PositionData targetPosition;
 
-using namespace std;
-using namespace cv;
-
 void initLaneData (void)
 {
     pthread_mutex_init(&actualLane.lock, NULL);
     pthread_mutex_init(&actualPosition.lock, NULL);
     pthread_mutex_init(&targetPosition.lock, NULL);
     
-    Size imageSize = getImageSize();
-    setRoiLeft(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
-    setRoiRight(Rect(Point(0, 0), Point(imageSize.width-1, imageSize.height-1)));
+    cv::Size imageSize = getImageSize();
+    setRoiLeft(cv::Rect(cv::Point(0, 0), cv::Point(imageSize.width-1, imageSize.height-1)));
+    setRoiRight(cv::Rect(cv::Point(0, 0), cv::Point(imageSize.width-1, imageSize.height-1)));
 }
 
 
-void setActualLane (vector<Vec4i> lane)
+void setActualLane (std::vector<cv::Vec4i> lane)
 {
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     actualLane.lane = lane;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
 }
 
-void getActualLane (vector<Vec4i>& lane)
+void getActualLane (std::vector<cv::Vec4i>& lane)
 {
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     lane = actualLane.lane;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
 }
 
-void setActualPosition (Point position)
+void setActualPosition (cv::Point position)
 {
     if (pthread_mutex_lock(&actualPosition.lock)) {
-        cerr << "ERROR: Couldn't lock actual position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual position mutex!" << std::endl;
     }
     
     actualPosition.position = position;
     
     if (pthread_mutex_unlock(&actualPosition.lock)) {
-        cerr << "ERROR: Couldn't unlock actual position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual position mutex!" << std::endl;
     }
 }
 
-Point getActualPosition (void)
+cv::Point getActualPosition (void)
 {
-    Point position;
+    cv::Point position;
     
     if (pthread_mutex_lock(&actualPosition.lock)) {
-        cerr << "ERROR: Couldn't lock actual position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual position mutex!" << std::endl;
     }
     
     position = actualPosition.position;
     
     if (pthread_mutex_unlock(&actualPosition.lock)) {
-        cerr << "ERROR: Couldn't unlock actual position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual position mutex!" << std::endl;
     }
     
     return position;
 }
 
-void setTargetPosition (Point position)
+void setTargetPosition (cv::Point position)
 {
     if (pthread_mutex_lock(&targetPosition.lock)) {
-        cerr << "ERROR: Couldn't lock target position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock target position mutex!" << std::endl;
     }
     
     targetPosition.position = position;
     
     if (pthread_mutex_unlock(&targetPosition.lock)) {
-        cerr << "ERROR: Couldn't unlock target position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock target position mutex!" << std::endl;
     }
 }
 
-Point getTargetPosition (void)
+cv::Point getTargetPosition (void)
 {
-    Point position;
+    cv::Point position;
     
     if (pthread_mutex_lock(&targetPosition.lock)) {
-        cerr << "ERROR: Couldn't lock target position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock target position mutex!" << std::endl;
     }
     
     position = targetPosition.position;
     
     if (pthread_mutex_unlock(&targetPosition.lock)) {
-        cerr << "ERROR: Couldn't unlock target position mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock target position mutex!" << std::endl;
     }
     
     return position;
 }
 
-void setRoiLeft (Rect roi)
+void setRoiLeft (cv::Rect roi)
 {
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     actualLane.roiLeft = roi;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
 }
 
-Rect getRoiLeft (void)
+cv::Rect getRoiLeft (void)
 {
-    Rect roi;
+    cv::Rect roi;
     
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     roi = actualLane.roiLeft;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
     
     return roi;
 }
 
-void setRoiRight (Rect roi)
+void setRoiRight (cv::Rect roi)
 {
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     actualLane.roiRight = roi;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
 }
 
-Rect getRoiRight (void)
+cv::Rect getRoiRight (void)
 {
-    Rect roi;
+    cv::Rect roi;
     
     if (pthread_mutex_lock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't lock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't lock actual lane mutex!" << std::endl;
     }
     
     roi = actualLane.roiRight;
     
     if (pthread_mutex_unlock(&actualLane.lock)) {
-        cerr << "ERROR: Couldn't unlock actual lane mutex!" << endl;
+        std::cerr << "ERROR: Couldn't unlock actual lane mutex!" << std::endl;
     }
     
     return roi;

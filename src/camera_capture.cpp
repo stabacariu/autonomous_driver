@@ -6,9 +6,6 @@
 
 #include "camera_capture.hpp"
 
-using namespace std;
-using namespace cv;
-
 double calcExposure (int value)
 {
     const int minVal = 5; //!< 500 us or 0.0005 s
@@ -20,10 +17,10 @@ double calcExposure (int value)
 
 void *cameraCapture (void *arg)
 {
-    cout << "THREAD: Camera capture started." << endl;
+    std::cout << "THREAD: Camera capture started." << std::endl;
     // Initalize camera
-    //~ VideoCapture camera(getCameraID());
-    VideoCapture camera(CV_CAP_ANY);
+    //~ cv::VideoCapture camera(getCameraID());
+    cv::VideoCapture camera(CV_CAP_ANY);
     camera.set(CV_CAP_PROP_FRAME_WIDTH, getImageSize().width);
     camera.set(CV_CAP_PROP_FRAME_HEIGHT, getImageSize().height);
     camera.set(CV_CAP_PROP_FPS, getFPS());
@@ -31,7 +28,7 @@ void *cameraCapture (void *arg)
     //~ camera.set(CV_CAP_PROP_EXPOSURE, 156);
 
     if (!camera.isOpened()) {
-        cerr << "ERROR: Could not open camera!" << endl;
+        std::cerr << "ERROR: Could not open camera!" << std::endl;
     }
 
     // Initalize image data
@@ -42,7 +39,7 @@ void *cameraCapture (void *arg)
         cv::Mat image;
         camera >> image;
         if (image.empty()) {
-            cerr << "ERROR: Couldn't aquire image data!" << endl;
+            std::cerr << "ERROR: Couldn't aquire image data!" << std::endl;
             //~ setModuleState(MODULE_NONE);
         }
         else {
@@ -63,7 +60,7 @@ void *cameraCapture (void *arg)
         }
     }
 
-    cout << "THREAD: Camera capture ended." << endl;
+    std::cout << "THREAD: Camera capture ended." << std::endl;
 
     return NULL;
 }

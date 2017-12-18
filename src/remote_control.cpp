@@ -6,12 +6,9 @@
 
 #include "remote_control.hpp"
 
-using namespace std;
-using namespace cv;
-
 void *remoteControl (void *arg)
 {
-    cout << "THREAD: Remote control started." << endl;
+    std::cout << "THREAD: Remote control started." << std::endl;
     
     char key = -1;
     setAcceleration(50);
@@ -73,6 +70,6 @@ void *remoteControl (void *arg)
         }
     }
     
-    cout << "THREAD: Remote control ended." << endl;
+    std::cout << "THREAD: Remote control ended." << std::endl;
     return NULL;
 }
