@@ -87,14 +87,15 @@ enum ModuleFlag {
  * This structure holds the module state flags and a mutex lock.
  */
 struct ModuleState {
-    int state; //!< Active modules state vector
+    int state; //!< Module state vector with active module flags
     pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };
 
 /**
  * @brief A function for system state initialization
  * 
- * This function initializes the system state by initializing the mutex.
+ * This function initializes the system state by initializing the mutex
+ * and setting the system state to standby.
  */
 void initSystemState (void);
 
@@ -111,7 +112,8 @@ void setSystemState (SystemMode state);
 /**
  * @brief A function for getting the system state
  * 
- * This function gets the actual system state.
+ * This function gets the actual system state by locking the state first
+ * and then returning it.
  * 
  * @return system mode
  */
@@ -120,32 +122,36 @@ SystemMode getSystemState (void);
 /**
  * @brief A function for module state initialization
  * 
- * This function initializes the module state by initializing the mutex.
+ * This function initializes the module state by initializing the mutex
+ * and setting the module state to none.
  */
 void initModuleState (void);
 
 /**
  * @brief A function for setting the module state
  * 
- * This function sets all modules that must be started.
+ * This function sets a module state vector to start or stop corresponding
+ * modules. First it locks the access and then it changes the state.
  * 
- * @param modules Modules that have to be active
+ * @param modules Modules to activate or deactivate
  */
 void setModuleState (int modules);
 
 /**
  * @brief A function for getting the module state
  * 
- * This function gets all active module flags.
+ * This function gets the module state vector by locking it first and
+ * returning the state.
  * 
  * @return module flags
  */
 int getModuleState (void);
 
 /**
- * @brief A function for starting the autonomous driving platform
+ * @brief A function to execute the autonomous driving platform system states
  * 
- * This function starts the autonomous driving platform.
+ * This function executes the actual system state by reading the actual
+ * state and starting of the corresponding modules and execution threads.
  */
 void autonomousDriver (void);
 

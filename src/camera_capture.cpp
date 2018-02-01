@@ -58,6 +58,7 @@ void *cameraCapture (void *arg)
             //~ }
             setInputImageData(image);
         }
+        //~ std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(1000/getFPS())));
     }
 
     std::cout << "THREAD: Camera capture ended." << std::endl;

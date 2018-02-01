@@ -10,8 +10,8 @@ void calcBoardCornerPosition (cv::Size calibPatternSize, float calibPatternMm, s
 {
     corners.clear();
     // Calculate corner position of chessboard squares
-    for (int i = 0; i < calibPatternSize.height; i++) {
-        for (int j = 0; j < calibPatternSize.width; j++) {
+    for (auto i = 0; i < calibPatternSize.height; i++) {
+        for (auto j = 0; j < calibPatternSize.width; j++) {
             corners.push_back(cv::Point3f(j*calibPatternMm, i*calibPatternMm, 0));
         }
     }
@@ -112,7 +112,7 @@ float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatte
     if (found) {
         cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, calibPatternMm, 0.1));
 
-        for (int i = 0; i < (corners.size()-1); i++) {
+        for (auto i = 0; i < (corners.size()-1); i++) {
             if ((i%calibPatternSize.width) < (calibPatternSize.width-1)) {
                 pxDist = euclidDist(corners[i+1], corners[i]);
                 avgPxDist += pxDist;

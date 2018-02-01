@@ -8,9 +8,8 @@
 #define MOTOR_DRIVER_HPP
 
 #include <iostream>
-#include <ctime>
-#include <unistd.h>
-#include "timer_tools.hpp"
+#include <thread>
+#include <chrono>
 #include "../lib/PCA9685.h"
 
 //! @addtogroup motor_driver

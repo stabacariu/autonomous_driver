@@ -135,7 +135,7 @@ void *pathPlanning (void *arg)
             }
         }
         else {
-            safetyDistance = true; //!< @warning No safety distance can be measured if ultrasonic sensor is not plugged in!S
+            safetyDistance = true; //! @warning No safety distance can be measured if ultrasonic sensor is not plugged in!
         }
         
         if (safetyDistance && (actualLane.size() > 0) && (!inputImage.empty())) {

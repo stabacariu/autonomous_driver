@@ -15,7 +15,8 @@ void initMotorDriver (void)
     pwmModule.setPWM(ESC, ESC_N);
     // delay_ms(10000); //!< @todo delay function doesn't work!
     // usleep(3*USEC_PER_SEC);
-    sleep(3);
+    //~ sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 void setSteeringValue (int steering)

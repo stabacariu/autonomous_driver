@@ -236,7 +236,13 @@ void systemDevMode (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Development Mode" << std::endl;
     
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_DETECT_TRAFFIC_SIGNS + MODULE_DETECT_OBSTACLE + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + 
+                   MODULE_SHOW_OUT_IMAGE + 
+                   MODULE_DETECT_LANES + 
+                   MODULE_DETECT_TRAFFIC_SIGNS + 
+                   MODULE_DETECT_OBSTACLE + 
+                   MODULE_PLAN_PATH + 
+                   MODULE_CONTROL_VEHICLE);
     
     pthread_t cameraCaptureThread;
     pthread_t detectLaneThread;
@@ -378,7 +384,7 @@ void systemErrorMode (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Error Mode" << std::endl;
 
-    //! @todo ERROR mode
+    //! @todo Implement Error mode
     setModuleState(MODULE_NONE);
 
     while (getSystemState() == SYS_MODE_ERROR) {
@@ -390,7 +396,7 @@ void systemClosing (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Closing Mode" << std::endl;
 
-    //! @todo Closing mode
+    //! @todo Implement Closing mode
     setSystemState(SYS_MODE_CLOSING);
 }
 
