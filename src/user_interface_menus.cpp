@@ -596,7 +596,7 @@ void drawAboutMode (cv::Mat& image)
     std::vector<std::string> menuList;
     getAboutMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
-    fontScale = 0.5;
+    fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < menuList.size(); i++) {
         std::string text = menuList[i];

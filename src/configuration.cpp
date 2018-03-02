@@ -27,6 +27,7 @@ void initConfig (void)
         else {
             loadDefaultConfig(fs, c);
             if (validateConfig(c)) {
+                std::cerr << "Loading default config..." << std::endl;
                 setConfigData(c);
             }
             else {
@@ -37,10 +38,11 @@ void initConfig (void)
     else {
         loadConfig(fs, c);
         if (validateConfig(c)) {
+            std::cerr << "Loading config..." << std::endl;
             setConfigData(c);
         }
         else {
-            std::cerr << "Invalid config data! Loading default config..." << std::endl;
+            std::cerr << "Invalid config data! Abort..." << std::endl;
         }
     }
 
