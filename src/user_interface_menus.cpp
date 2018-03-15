@@ -545,7 +545,7 @@ void drawPositionImage (cv::Mat& image)
 void drawAboutText (void)
 {
     cv::Mat image;
-    getOutputImageData(image);
+    time_t ts = getOutputImageData(image);
     
     rectangle(image, cv::Point(0, 0), cv::Point(image.cols-1, image.rows-1), cv::Scalar(218, 218, 218), -1);
     
@@ -573,7 +573,7 @@ void drawAboutText (void)
         textOrg.y = textOrg.y + 15 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
-    setOutputImageData(image);
+    setOutputImageData(image, ts);
 }
 
 void drawAboutMode (cv::Mat& image)

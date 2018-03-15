@@ -4,7 +4,7 @@
 <cameraID>0</cameraID>
 <cameraImageSize_width>640</cameraImageSize_width>
 <cameraImageSize_height>360</cameraImageSize_height>
-<cameraFPS>7.5000000000000000e+00</cameraFPS>
+<cameraFPS>15</cameraFPS>
 <!-- Calibration config -->
 <calibImageSize_width>640</calibImageSize_width>
 <calibImageSize_height>360</calibImageSize_height>

@@ -8,6 +8,7 @@
 #define IMAGE_DATA_HPP
 
 #include <iostream>
+#include <ctime>
 #include <opencv2/opencv.hpp>
 #include <pthread.h>
 
@@ -18,6 +19,7 @@
  */
 struct ImageData {
     cv::Mat data; //!< Image data as matrix
+    time_t timeStamp; //!< Time of capture
     pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };
 
@@ -49,7 +51,7 @@ void initOutputImageData (void);
  * 
  * @param image
  */
-void setInputImageData (cv::Mat image);
+void setInputImageData (cv::Mat image, time_t t);
 
 /**
  * @brief A function to get input image data
@@ -58,7 +60,7 @@ void setInputImageData (cv::Mat image);
  * 
  * @param image
  */
-void getInputImageData (cv::Mat& image);
+time_t getInputImageData (cv::Mat& image);
 
 /**
  * @brief A function to set inter image data
@@ -67,7 +69,7 @@ void getInputImageData (cv::Mat& image);
  * 
  * @param image
  */
-void setInterImageData (cv::Mat image);
+void setInterImageData (cv::Mat image, time_t t);
 
 /**
  * @brief A function to get inter image data
@@ -76,7 +78,7 @@ void setInterImageData (cv::Mat image);
  * 
  * @param image
  */
-void getInterImageData (cv::Mat& image);
+time_t getInterImageData (cv::Mat& image);
 
 /**
  * @brief A function to set output image data
@@ -85,7 +87,7 @@ void getInterImageData (cv::Mat& image);
  * 
  * @param image
  */
-void setOutputImageData (cv::Mat image);
+void setOutputImageData (cv::Mat image, time_t t);
 
 /**
  * @brief A function to get output image data
@@ -94,7 +96,7 @@ void setOutputImageData (cv::Mat image);
  * 
  * @param image
  */
-void getOutputImageData (cv::Mat& image);
+time_t getOutputImageData (cv::Mat& image);
 
 #endif // IMAGE_DATA_HPP
 

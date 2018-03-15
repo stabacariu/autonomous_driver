@@ -61,8 +61,8 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv
 
     float theta = getTheta(cv::Point(laneMid[0], laneMid[1]), cv::Point(laneMid[2], laneMid[3]));
     
-    double acVal = 59;
-    double brVal = 50;
+    double acVal = 18; // 59% if 100% full forward and 0% full reverse
+    double brVal = 0; // 50% if 100% full forward and 0% full reverse
     
     if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.90))) {
         setAcceleration(brVal);
@@ -124,12 +124,13 @@ void *pathPlanning (void *arg)
         cv::Mat inputImage;
         getInputImageData(inputImage);
         
-        bool wObjectDetection = false;
+        // Obtacle Detection before trajectory calculation
+        bool wObtacleDetection = false;
         bool safetyDistance = false;
         if ((getModuleState() & MODULE_DETECT_OBSTACLE) == MODULE_DETECT_OBSTACLE) {
-            wObjectDetection = true;
+            wObtacleDetection = true;
         }
-        if (wObjectDetection) {
+        if (wObtacleDetection) {
             if (getDistance() > 25) {
                 safetyDistance = true;
             }
@@ -143,7 +144,7 @@ void *pathPlanning (void *arg)
         }
         else {
             setSteering(CV_PI/2);
-            setAcceleration(50);
+            setAcceleration(0);
         }
     }
 
@@ -183,7 +184,7 @@ void *pathPlanning2 (void *arg)
         }
         else {
             setSteering(CV_PI/2);
-            setAcceleration(50);
+            setAcceleration(0);
         }
     }
 

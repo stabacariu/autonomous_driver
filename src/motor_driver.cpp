@@ -19,18 +19,19 @@ void initMotorDriver (void)
     std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
-void setSteeringValue (int steering)
+void setSteeringMotorValue (int steering)
 {
     pwmModule.setPWM(STEERING, steering);
 }
 
-void setAccelerationValue (int acceleration)
+void setAccelerationMotorValue (int acceleration)
 {
     pwmModule.setPWM(ESC, acceleration);
 }
 
 void resetMotorDriver (void)
 {
+    
     pwmModule.setPWM(STEERING, 0);
     pwmModule.setPWM(ESC, 0);
     pwmModule.reset();

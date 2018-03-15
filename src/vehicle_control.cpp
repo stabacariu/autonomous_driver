@@ -17,12 +17,12 @@ void *vehicleControl (void* arg)
         // Calculate steering value from rad to a value from 0 to 4096
         double steering = getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
-        setSteeringValue(steeringValue);
+        setSteeringMotorValue(steeringValue);
 
         // Calculate acceleration value from percent to value from 0 to 4096
         double acceleration = getAcceleration();
-        int accelerationValue = (int) round(ESC_MIN + acceleration/((double) 100/(ESC_MAX - ESC_MIN)));
-        setAccelerationValue(accelerationValue);
+        int accelerationValue = (int) round(ESC_N + acceleration/((double) 100/(ESC_N - ESC_MIN)));
+        setAccelerationMotorValue(accelerationValue);
     }
 
     resetMotorDriver();

@@ -62,7 +62,7 @@ void *obstacleDetection (void *arg)
         
     while ((getModuleState() & MODULE_DETECT_OBSTACLE) == MODULE_DETECT_OBSTACLE) {
         //~ std::cout << "Obstacle detection: Distance is " << sonar.distance(1000) << " cm." << std::endl;
-        setDistance(sonar.distance(1000));
+        setDistance(sonar.distance(500));
         delay(500);
     }
 

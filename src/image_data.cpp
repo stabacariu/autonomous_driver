@@ -25,80 +25,98 @@ void initOutputImageData (void)
     pthread_mutex_init(&outputImage.lock, NULL);
 }
 
-void setInputImageData (cv::Mat data)
+void setInputImageData (cv::Mat data, time_t t)
 {
     if (pthread_mutex_lock(&inputImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     data.copyTo(inputImage.data);
+    inputImage.timeStamp = t;
     
     if (pthread_mutex_unlock(&inputImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
 }
 
-void getInputImageData (cv::Mat& image)
+time_t getInputImageData (cv::Mat& image)
 {
+    time_t t;
+    
     if (pthread_mutex_lock(&inputImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     inputImage.data.copyTo(image);
+    t = inputImage.timeStamp;
     
     if (pthread_mutex_unlock(&inputImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
+    
+    return t;
 }
 
-void setInterImageData (cv::Mat data)
+void setInterImageData (cv::Mat data, time_t t)
 {
     if (pthread_mutex_lock(&interImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     data.copyTo(interImage.data);
+    interImage.timeStamp = t;
     
     if (pthread_mutex_unlock(&interImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
 }
 
-void getInterImageData (cv::Mat& image)
+time_t getInterImageData (cv::Mat& image)
 {
+    time_t t;
+    
     if (pthread_mutex_lock(&interImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     interImage.data.copyTo(image);
+    t = interImage.timeStamp;
     
     if (pthread_mutex_unlock(&interImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
+    
+    return t;
 }
 
-void setOutputImageData (cv::Mat data)
+void setOutputImageData (cv::Mat data, time_t t)
 {
     if (pthread_mutex_lock(&outputImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     data.copyTo(outputImage.data);
+    outputImage.timeStamp = t;
     
     if (pthread_mutex_unlock(&outputImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
 }
 
-void getOutputImageData (cv::Mat& image)
+time_t getOutputImageData (cv::Mat& image)
 {
+    time_t t;
+    
     if (pthread_mutex_lock(&outputImage.lock)) {
         std::cerr << "ERROR: Couldn't lock status mutex!" << std::endl;
     }
     
     outputImage.data.copyTo(image);
+    t = outputImage.timeStamp;
     
     if (pthread_mutex_unlock(&outputImage.lock)) {
         std::cerr << "ERROR: Couldn't unlock status mutex!" << std::endl;
     }
+    
+    return t;
 }

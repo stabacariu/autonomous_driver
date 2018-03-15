@@ -92,19 +92,21 @@ void systemStandbyMode (void)
     std::cout << "SYSTEM: Standby Mode" << std::endl;
 
     // Start modules for standby mode
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + 
+                   MODULE_SHOW_IN_IMAGE + 
+                   MODULE_SHOW_OUT_IMAGE);
 
     pthread_t cameraCaptureThread;
-    pthread_t showInputImageThread;
+    //~ pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
 
     // Create threads
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         std::cerr << "ERROR: Couldn't create camera capture thread!" << std::endl;
     }
-    if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
-        std::cerr << "ERROR: Couldn't create show input image thread!" << std::endl;
-    }
+    //~ if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
+        //~ std::cerr << "ERROR: Couldn't create show input image thread!" << std::endl;
+    //~ }
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         std::cerr << "ERROR: Couldn't create show output image thread!" << std::endl;
     }
@@ -113,9 +115,9 @@ void systemStandbyMode (void)
     if (pthread_join(cameraCaptureThread, NULL)) {
         std::cerr << "ERROR: Couldn't join thread!" << std::endl;
     }
-    if (pthread_join(showInputImageThread, NULL)) {
-        std::cerr << "ERROR: Couldn't join thread!" << std::endl;
-    }
+    //~ if (pthread_join(showInputImageThread, NULL)) {
+        //~ std::cerr << "ERROR: Couldn't join thread!" << std::endl;
+    //~ }
     if (pthread_join(showOutputImageThread, NULL)) {
         std::cerr << "ERROR: Couldn't join thread!" << std::endl;
     }
@@ -126,7 +128,13 @@ void systemAutoMode (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Autonomous Driving Mode" << std::endl;
 
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_DETECT_LANES + MODULE_DETECT_OBSTACLE + MODULE_DETECT_TRAFFIC_SIGNS + MODULE_PLAN_PATH + MODULE_CONTROL_VEHICLE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + 
+                   MODULE_SHOW_OUT_IMAGE + 
+                   MODULE_DETECT_LANES + 
+                   MODULE_DETECT_OBSTACLE + 
+                   MODULE_DETECT_TRAFFIC_SIGNS + 
+                   MODULE_PLAN_PATH + 
+                   MODULE_CONTROL_VEHICLE);
 
     pthread_t cameraCaptureThread;
     pthread_t detectLaneThread;
@@ -188,10 +196,14 @@ void systemRCMode (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Remote Control Mode" << std::endl;
     
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_IN_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONTROL_VEHICLE + MODULE_CONTROL_REMOTE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + 
+                   MODULE_SHOW_IN_IMAGE + 
+                   MODULE_SHOW_OUT_IMAGE + 
+                   MODULE_CONTROL_VEHICLE + 
+                   MODULE_CONTROL_REMOTE);
     
     pthread_t cameraCaptureThread;
-    pthread_t showInputImageThread;
+    //~ pthread_t showInputImageThread;
     pthread_t showOutputImageThread;
     pthread_t remoteControlThread;
     pthread_t vehicleControlThread;
@@ -200,9 +212,9 @@ void systemRCMode (void)
     if (pthread_create(&cameraCaptureThread, NULL, cameraCapture, NULL)) {
         std::cerr << "ERROR: Couldn't create camera capture thread!" << std::endl;
     }
-    if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
-        std::cerr << "ERROR: Couldn't create show input image thread!" << std::endl;
-    }
+    //~ if (pthread_create(&showInputImageThread, NULL, showInputImage, NULL)) {
+        //~ std::cerr << "ERROR: Couldn't create show input image thread!" << std::endl;
+    //~ }
     if (pthread_create(&showOutputImageThread, NULL, showOutputImage, NULL)) {
         std::cerr << "ERROR: Couldn't create show output image thread!" << std::endl;
     }
@@ -217,9 +229,9 @@ void systemRCMode (void)
     if (pthread_join(cameraCaptureThread, NULL)) {
         std::cerr << "ERROR: Couldn't join thread!" << std::endl;
     }
-    if (pthread_join(showInputImageThread, NULL)) {
-        std::cerr << "ERROR: Couldn't join thread!" << std::endl;
-    }
+    //~ if (pthread_join(showInputImageThread, NULL)) {
+        //~ std::cerr << "ERROR: Couldn't join thread!" << std::endl;
+    //~ }
     if (pthread_join(showOutputImageThread, NULL)) {
         std::cerr << "ERROR: Couldn't join thread!" << std::endl;
     }
@@ -305,7 +317,8 @@ void systemConfigMode (void)
     std::cout << "SYSTEM: Config Mode" << std::endl;
     
     ConfigMode mode = getConfigState();
-    setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE);
+    setModuleState(MODULE_CAP_CAM_IMAGE + 
+                   MODULE_SHOW_OUT_IMAGE);
 
     pthread_t cameraCaptureThread;
     pthread_t configThread;
@@ -322,9 +335,9 @@ void systemConfigMode (void)
         // Start modules and threads for configuration
         if (mode == CONFIG_MODE_NONE) {
             setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_SHOW_IN_IMAGE);
-            if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
-                std::cerr << "ERROR: Couldn't create config thread!" << std::endl;
-            }
+            //~ if (pthread_create(&configThread, NULL, showInputImage, NULL)) {
+                //~ std::cerr << "ERROR: Couldn't create config thread!" << std::endl;
+            //~ }
         }
         else if (mode == CONFIG_MODE_CALIB_INTRINSICS) {
             setModuleState(MODULE_CAP_CAM_IMAGE + MODULE_SHOW_OUT_IMAGE + MODULE_CONFIG_CALIB_INTR);
@@ -349,9 +362,9 @@ void systemConfigMode (void)
         }
 
         // Join threads
-        if (pthread_join(cameraCaptureThread, NULL)) {
-            std::cerr << "ERROR: Couldn't join thread!" << std::endl;
-        }
+        //~ if (pthread_join(cameraCaptureThread, NULL)) {
+            //~ std::cerr << "ERROR: Couldn't join thread!" << std::endl;
+        //~ }
         if (pthread_join(configThread, NULL)) {
             std::cerr << "ERROR: Couldn't join thread!" << std::endl;
         }

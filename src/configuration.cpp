@@ -529,7 +529,7 @@ void *configCalibIntr(void *arg)
     cv::Mat cameraMatrix, distCoeffs;
 
     while ((getModuleState() & MODULE_CONFIG_CALIB_INTR) == MODULE_CONFIG_CALIB_INTR) {
-        getInputImageData(inputImage);
+        time_t ts = getInputImageData(inputImage);
         if (!inputImage.empty()) {
             calibIntr(inputImage, cameraMatrix, distCoeffs, getPatternSize(), 30.0, 50);
             if (!cameraMatrix.empty() && !distCoeffs.empty()) {
@@ -543,7 +543,7 @@ void *configCalibIntr(void *arg)
             undistort(inputImage, undistorted, cameraMatrix, distCoeffs);
             line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
             line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
-            setOutputImageData(undistorted);
+            setOutputImageData(undistorted, ts);
         }
     }
 
@@ -560,7 +560,8 @@ void *configCalibExtr (void *arg)
     cv::Mat homography;
 
     while ((getModuleState() & MODULE_CONFIG_CALIB_EXTR) == MODULE_CONFIG_CALIB_EXTR) {
-        getInputImageData(inputImage);
+        time_t ts = getInputImageData(inputImage);
+        
         if (!inputImage.empty()) {
             calibExtr(inputImage, homography, getPatternSize(), getPatternMm());
         }
@@ -569,12 +570,12 @@ void *configCalibExtr (void *arg)
             warpPerspective(inputImage, warpedImage, homography, inputImage.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
             line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
-            setOutputImageData(warpedImage);
+            setOutputImageData(warpedImage, ts);
         }
         else {
             line(inputImage, cv::Point(inputImage.cols/2, 0), cv::Point(inputImage.cols/2, inputImage.rows), cv::Scalar(0, 0, 255), 1);
             line(inputImage, cv::Point(0, inputImage.rows/2), cv::Point(inputImage.cols, inputImage.rows/2), cv::Scalar(0, 0, 255), 1);
-            setOutputImageData(inputImage);
+            setOutputImageData(inputImage, ts);
         }
     }
 
@@ -601,14 +602,14 @@ void *configImagePos (void *arg)
     getInputImageData(inputImage);
 
     while ((getModuleState() & MODULE_CONFIG_IMAGE_POSITION) == MODULE_CONFIG_IMAGE_POSITION) {
-        getInputImageData(inputImage);
+        time_t ts = getInputImageData(inputImage);
         getExtr(homography);
 
         if (!inputImage.empty()) {
             char key = getUiInputKey();
             adjustImagePosition(inputImage, adjustedImage, key, homography);
             setExtr(homography);
-            setOutputImageData(adjustedImage);
+            setOutputImageData(adjustedImage, ts);
         }
     }
 
@@ -623,10 +624,10 @@ void *showChessBoard (void *arg)
 
     while ((getModuleState() & MODULE_SHOW_CHESSBOARD) == MODULE_SHOW_CHESSBOARD) {
         cv::Mat image;
-        getInputImageData(image);
+        time_t ts = getInputImageData(image);
         if (!image.empty()) {
             showChessBoardCorners(image, getPatternSize());
-            setOutputImageData(image);
+            setOutputImageData(image, ts);
         }
     }
 

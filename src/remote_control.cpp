@@ -11,21 +11,20 @@ void *remoteControl (void *arg)
     std::cout << "THREAD: Remote control started." << std::endl;
     
     char key = -1;
-    setAcceleration(50);
+    setAcceleration(0);
     setSteering(CV_PI/2);
     
     while ((getModuleState() & MODULE_CONTROL_REMOTE) == MODULE_CONTROL_REMOTE) {
         char prevKey = key;
         key = getUiInputKey();
         
-        double acceleration = getAcceleration();
-        double steering = getSteering();
-        
-        if (acceleration == 0) {
-            acceleration = 50;
-        }
+        double prevAcceleration = getAcceleration();
+        double prevSteering = getSteering();
         
         if (prevKey != key) {
+            double acceleration = prevAcceleration;
+            double steering = prevSteering;
+            
             // Set acceleration from 0 to 100 %
             if (key == 'w') {
                 acceleration += 0.5;
@@ -35,38 +34,40 @@ void *remoteControl (void *arg)
             }
             // Stop vehicle
             else if (key == ' ') {
-                acceleration = getAcceleration();
-                if (acceleration >= 60) {
-                    acceleration = 0;
-                }
-                else {
-                    acceleration = 50;
-                }
-            }
-            if (acceleration < 0) {
-                acceleration = 25;
-            }
-            else if (acceleration > 100) {
-                acceleration = 75;
+                acceleration = 0;
             }
             
-            // Set steering from 0 to CV_PI rad
+            if (acceleration < (-30)) {
+                acceleration = -30;
+            }
+            else if (acceleration > 30) {
+                acceleration = 30;
+            }
+            
+            // Set steering from 0 to pi
             if (key == 'a') {
-                steering -= CV_PI/4;
+                steering -= CV_PI/8;
             }
             else if (key == 'd') {
-                steering += CV_PI/4;
+                steering += CV_PI/8;
             }
             
-            if (steering < 0) {
-                steering = 0;
+            if (steering < (CV_PI/4)) {
+                steering = (CV_PI/4);
             }
-            else if (steering > CV_PI) {
-                steering = CV_PI;
+            else if (steering > (3*CV_PI/4)) {
+                steering = (3*CV_PI/4);
             }
             
-            setAcceleration(acceleration);
-            setSteering(steering);
+            if (prevAcceleration != acceleration) {
+                std::cout << "Actual acceleration: " << acceleration << " %" << std::endl;
+                setAcceleration(acceleration);
+            }
+            if (prevSteering != steering) {
+                if (prevSteering != steering) 
+                std::cout << "Actual steering angle: " << steering << " rad" << std::endl;
+                setSteering(steering);
+            }
         }
     }
     

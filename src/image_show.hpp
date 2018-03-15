@@ -9,12 +9,16 @@
 
 #include <iostream>
 #include <pthread.h>
+#include <ctime>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include "autonomous_driver.hpp"
 #include "image_data.hpp"
 #include "camera_capture.hpp"
 #include "user_interface.hpp"
+
+//! @addtogroup user_interface
+//! @{
 
 /**
  * @brief A thread to show the input image
@@ -33,5 +37,7 @@ void *showInputImage (void *arg);
  * @param arg Input arguments
  */
 void *showOutputImage (void *arg);
+
+//! @} user_interface
 
 #endif // IMAGE_SHOW_HPP

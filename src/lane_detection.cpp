@@ -351,10 +351,11 @@ void *laneDetection (void *arg)
     
     std::vector<cv::Vec4i> leftLine;
     std::vector<cv::Vec4i> rightLine;
+    time_t prevTs = 0;
     
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         cv::Mat image, homography;
-        getInputImageData(image);
+        time_t ts = getInputImageData(image);
         getExtr(homography);
 
         if (!image.empty()) {
@@ -488,8 +489,9 @@ void *laneDetection (void *arg)
                 //~ resetRois(warpedImage.size());
             }
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
-            setOutputImageData(warpedImage);
-            //~ setInterImageData(warpedImage);
+            setOutputImageData(warpedImage, ts);
+            //~ setInterImageData(warpedImage, ts);
+            prevTs = ts;
         }
     }
     
@@ -555,9 +557,11 @@ void *laneDetection2 (void *arg)
     
     std::vector<cv::Vec4i> lanePredicted;
     
+    time_t prevTs = 0;
+    
     while ((getModuleState() & MODULE_DETECT_LANES) == MODULE_DETECT_LANES) {
         cv::Mat image, homography;
-        getInputImageData(image);
+        time_t ts = getInputImageData(image);
         getExtr(homography);
 
         if (!image.empty()) {
@@ -674,7 +678,8 @@ void *laneDetection2 (void *arg)
             // Draw center line
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             //~ setOutputImageData(warpedImage);
-            setInterImageData(warpedImage);
+            setInterImageData(warpedImage, ts);
+            prevTs = ts;
         }
     }
     

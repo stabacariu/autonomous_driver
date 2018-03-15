@@ -193,7 +193,6 @@ void processUiInput (cv::Mat& image, char key)
             else if (key == 'S') {
                 std::cout << "Saving config..." << std::endl;
                 saveCalibConfig();
-                //! @todo Save configuration
             }
             else if (key == 'I') {
                 configState = CONFIG_MODE_CALIB_INTRINSICS;

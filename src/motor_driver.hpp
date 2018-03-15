@@ -10,6 +10,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <wiringPi.h>
 #include "../lib/PCA9685.h"
 
 //! @addtogroup motor_driver
@@ -76,22 +77,22 @@ struct MotorDriver {
 void initMotorDriver (void);
 
 /**
- * @brief A function to set the steering value
+ * @brief A function to set the steering motor value
  * 
  * This function sets the steering value from 0 to 4095.
  * 
  * @param steering Steering value from 0 to 4095
  */
-void setSteeringValue (int steering);
+void setSteeringMotorValue (int steering);
 
 /**
- * @brief A function to set the acceleration value
+ * @brief A function to set the acceleration motor value
  * 
  * This function sets the acceleration value from 0 to 4095.
  * 
  * @param acceleration Acceleration value from 0 to 4095
  */
-void setAccelerationValue (int acceleration);
+void setAccelerationMotorValue (int acceleration);
 
 /**
  * @brief A function to reset the motor driver
