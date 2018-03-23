@@ -68,6 +68,7 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv
         setAcceleration(brVal);
     }
     else if (drv) {
+        // Set steering angle
         if ((theta > 0) && (theta < CV_PI/2*0.9)) {
             setDirection(VEHICLE_LEFT);
             setSteering(theta-CV_PI/8);
@@ -81,6 +82,7 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv
             setSteering(theta);
         }
         
+        // Set acceleration percentage
         // Vehicle is too much to the left
         // Counter steer to the right
         if ((diffX2 > 10) && (diffX1 > 10)) {
@@ -94,15 +96,16 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv
             setAcceleration(acVal-0.5);
         }
         else {
-            if (diffX1 > 10) {
-                setAcceleration(acVal);
-            }
-            else if (diffX1 < -10) {
-                setAcceleration(acVal);
-            }
-            else {
-                setAcceleration(acVal);
-            }
+            setAcceleration(acVal);
+            //~ if (diffX1 > 10) {
+                //~ setAcceleration(acVal);
+            //~ }
+            //~ else if (diffX1 < -10) {
+                //~ setAcceleration(acVal);
+            //~ }
+            //~ else {
+                //~ setAcceleration(acVal);
+            //~ }
         }
     }
 }

@@ -531,12 +531,12 @@ void *configCalibIntr(void *arg)
     while ((getModuleState() & MODULE_CONFIG_CALIB_INTR) == MODULE_CONFIG_CALIB_INTR) {
         time_t ts = getInputImageData(inputImage);
         if (!inputImage.empty()) {
-            calibIntr(inputImage, cameraMatrix, distCoeffs, getPatternSize(), 30.0, 50);
+            calibIntr(inputImage, cameraMatrix, distCoeffs, getPatternSize(), 30.0);
             if (!cameraMatrix.empty() && !distCoeffs.empty()) {
                 setIntr(cameraMatrix, distCoeffs);
             }
             else {
-                std::cout << "Camera not calibrated!" << std::endl;
+                std::cerr << "Camera not calibrated!" << std::endl;
             }
         }
         if (!cameraMatrix.empty() && !distCoeffs.empty()) {
@@ -584,7 +584,7 @@ void *configCalibExtr (void *arg)
         setPxPerMm(calcPixelPerMm(warpedImage, getPatternSize(), getPatternMm()));
     }
     else {
-        std::cout << "Homography couldn't be aquired!" << std::endl;
+        std::cerr << "Homography couldn't be aquired!" << std::endl;
     }
 
     setConfigState(CONFIG_MODE_NONE);

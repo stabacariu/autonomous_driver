@@ -27,8 +27,8 @@ void *cameraCapture (void *arg)
     camera.set(CV_CAP_PROP_FPS, getFPS());
     //~ camera.set(CV_CAP_PROP_AUTO_EXPOSURE, 3); //! Doesn't work!
     //~ camera.set(CV_CAP_PROP_EXPOSURE, calcExposure(12));
-    camera.set(CV_CAP_PROP_EXPOSURE, calcExposure(7));
-
+    //~ camera.set(CV_CAP_PROP_EXPOSURE, calcExposure(7));
+    
     if (!camera.isOpened()) {
         std::cerr << "ERROR: Could not open camera!" << std::endl;
     }
@@ -38,6 +38,8 @@ void *cameraCapture (void *arg)
     
     // FPS measurement
     time_t frameStart, frameEnd;
+    int timeTick = 0;
+    long frameTotal = 0;
     long frameCnt = 0;
     
     // Caputre image
@@ -75,8 +77,11 @@ void *cameraCapture (void *arg)
             
             
             // FPS measurement
-            if (difftime(frameEnd, frameStart) >= 1) {
-                std::cout << "Captured FPS: " << frameCnt << std::endl;
+            if (difftime(frameEnd, frameStart) >= 3) {
+                timeTick++;
+                frameTotal += frameCnt;
+                //~ std::cout << "Captured FPS: " << frameTotal/timeTick << std::endl;
+                std::cout << "Captured FPS: " << frameCnt/3 << std::endl;
                 frameCnt = 0;
             }
             

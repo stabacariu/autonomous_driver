@@ -17,27 +17,24 @@ void calcBoardCornerPosition (cv::Size calibPatternSize, float calibPatternMm, s
     }
 }
 
-void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm, int sampleCnt)
+void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm)
 {
     double aspRatio = 1.0;
 
     std::vector<std::vector<cv::Point2f> >imagePoints;
+    cv::Mat grayImage;
+    cvtColor(image, grayImage, CV_BGR2GRAY);
 
-    while (imagePoints.size() < sampleCnt) {
-        cv::Mat grayImage;
-        cvtColor(image, grayImage, CV_BGR2GRAY);
+    std::vector<cv::Point2f> corners;
 
-        std::vector<cv::Point2f> corners;
+    bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
-        bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-
-        if (found) {
-            cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-            // Save corners
-            imagePoints.push_back(corners);
-        }
+    if (found) {
+        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+        // Save corners
+        imagePoints.push_back(corners);
     }
-
+    
     cameraMatrix = cv::Mat::eye(3, 3, CV_64F); //< Intrinsic camera matrix
     distCoeffs = cv::Mat::zeros(8, 1, CV_64F); //!< Distorion coefficients
     std::vector<cv::Mat> rvecs; //< Rotation vectors
@@ -52,7 +49,8 @@ void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::S
 
     // Calibrate camera and get reprojection error rms
     double rms = calibrateCamera(objectPoints, imagePoints, cv::Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
-
+    
+    // Wait to reposition chessboard
 
     //std::vector<double> reprojErrs;
     //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, cameraMatrix, distCoeffs, reprojErrs, 1);

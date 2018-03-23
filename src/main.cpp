@@ -19,10 +19,25 @@
  */
 
 #include <iostream>
+#include <csignal>
 #include "configuration.hpp"
 #include "autonomous_driver.hpp"
 #include "user_interface.hpp"
 #include "motor_driver.hpp"
+
+void signalHandler (int signal)
+{
+    std::cout << "WARNING: Signal caught: " << signal << std::endl;
+    setModuleState(MODULE_NONE);
+    setSystemState(SYS_MODE_CLOSING);
+}
+
+void exceptionHandler (const char* errMsg)
+{
+    std::cerr << "WARNING: Exception caught: " << errMsg << std::endl;
+    setModuleState(MODULE_NONE);
+    setSystemState(SYS_MODE_CLOSING);
+}
 
 /**
  * @brief The main function is the programs starting point
@@ -36,6 +51,10 @@
  */
 int main (int argc, char *argv[])
 {
+    
+    std::signal(SIGINT, signalHandler);
+    std::signal(SIGTERM, signalHandler);
+    
     // Startup
     initConfig();
     
@@ -43,8 +62,14 @@ int main (int argc, char *argv[])
     initSystemState();
     initUiState();
     
-    // Start system
-    autonomousDriver();
+    try {
+        // Start system
+        autonomousDriver();
+    }
+    catch (cv::Exception& e) {
+        exceptionHandler(e.what());
+    }
+    
     
     return 0;
 }

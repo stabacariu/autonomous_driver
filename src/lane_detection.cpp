@@ -282,7 +282,7 @@ void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines)
 
     // Detect lines
     detectLines(grayImage, lines);
-    cvtColor(grayImage, image, CV_GRAY2BGR);
+    //~ cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
 void resetRois (cv::Size imageSize)

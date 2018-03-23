@@ -409,8 +409,11 @@ void systemClosing (void)
     std::cout << "---------------------------------" << std::endl;
     std::cout << "SYSTEM: Closing Mode" << std::endl;
 
-    //! @todo Implement Closing mode
-    setSystemState(SYS_MODE_CLOSING);
+    setModuleState(MODULE_NONE);
+    
+    resetMotorDriver();
+    
+    //~ setSystemState(SYS_MODE_CLOSING);
 }
 
 void autonomousDriver (void)

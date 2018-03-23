@@ -33,6 +33,7 @@ void *remoteControl (void *arg)
                 acceleration -= 0.5;
             }
             // Stop vehicle
+            //!< @note Add proper braking function
             else if (key == ' ') {
                 acceleration = 0;
             }

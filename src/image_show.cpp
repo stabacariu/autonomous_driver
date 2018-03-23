@@ -54,6 +54,7 @@ void *showOutputImage (void *arg)
     // FPS measurement
     time_t frameStartTime, frameEndTime;
     int timeTick = 0;
+    long frameTotal = 0;
     long frameCnt = 0;
     
     cv::namedWindow("Autonomous Driver", CV_WINDOW_AUTOSIZE);
@@ -83,8 +84,11 @@ void *showOutputImage (void *arg)
         frameCnt++;
         time(&frameEndTime);
         
-        if (difftime(frameEndTime, frameStartTime) >= 1) {
-            std::cout << "Output FPS: " << frameCnt << std::endl;
+        if (difftime(frameEndTime, frameStartTime) >= 3) {
+            timeTick++;
+            frameTotal += frameCnt;
+            //~ std::cout << "Output FPS: " << frameTotal/timeTick << std::endl;
+            std::cout << "Output FPS: " << frameCnt/3 << std::endl;
             frameCnt = 0;
         }
 
@@ -100,7 +104,8 @@ void *showOutputImage (void *arg)
             image.copyTo(outputImage(insert));
 
             imshow("Autonomous Driver", outputImage);
-            key = cv::waitKey(60);
+            //~ key = cv::waitKey(20);
+            key = cv::waitKey(1000/(getFPS()*2));
             setUiInputKey(key);
             prevTs = ts;
         }

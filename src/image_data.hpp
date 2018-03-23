@@ -19,6 +19,7 @@
  */
 struct ImageData {
     cv::Mat data; //!< Image data as matrix
+    //~ std::queue<cv::Mat> buffer; //!< Image data buffer
     time_t timeStamp; //!< Time of capture
     pthread_mutex_t lock; //!< Mutex lock for synchronized access
 };

@@ -27,7 +27,7 @@
  * @param calibPatternMm Calibration pattern size in mm
  * @param sampleCnt Sample capturing counter
  */
-void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm, int sampleCnt);
+void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm);
 
 /**
  * @brief A function calibrate extrinsic camera parameters
