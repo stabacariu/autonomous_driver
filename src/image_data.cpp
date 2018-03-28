@@ -10,6 +10,16 @@ ImageData inputImage;  //!< Holds input image
 ImageData interImage;  //!< Holds intermidiate image
 ImageData outputImage; //!< Holds output image
 
+void ImageDataClass::setData (cv::Mat data)
+{
+    this->data = data;
+    
+}
+cv::Mat ImageDataClass::getData ()
+{
+    return data;
+}
+
 void initInputImageData (void)
 {
     pthread_mutex_init(&inputImage.lock, NULL);

@@ -8,9 +8,35 @@
 #define IMAGE_DATA_HPP
 
 #include <iostream>
-#include <ctime>
+#include <ctime> // change functions to chrono
+#include <chrono>
 #include <opencv2/opencv.hpp>
-#include <pthread.h>
+#include <pthread.h> // change to c++ thread class
+#include <mutex>
+
+
+/**
+ * @brief A image data class
+ * 
+ * This class describes the image data which holds the image data as
+ * an OpenCV Matrix and a mutex lock for synchronised accses.
+ */
+class ImageDataClass {
+public:
+    ImageDataClass();
+    ImageDataClass(const ImageDataClass &imageData);
+    virtual ~ImageDataClass();
+    
+    void setData(cv::Mat);
+    cv::Mat getData();
+
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::nanoseconds> timeStamp;
+    cv::Mat data;
+    std::queue<cv::Mat> buffer;
+    std::mutex lock;
+    
+};
 
 /**
  * @brief A struct to hold image data

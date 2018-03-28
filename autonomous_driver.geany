@@ -23,16 +23,16 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=24
+current_page=6
 FILE_NAME_0=0;None;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fautonomous_driver.geanyprj;0;4
 FILE_NAME_1=2007;None;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fautonomous_driver.geany;0;4
-FILE_NAME_2=11414;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.cpp;0;4
-FILE_NAME_3=1431;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.hpp;0;4
+FILE_NAME_2=268;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.cpp;0;4
+FILE_NAME_3=709;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.hpp;0;4
 FILE_NAME_4=817;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_calibration.cpp;0;4
-FILE_NAME_5=965;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_calibration.hpp;0;4
-FILE_NAME_6=90;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_capture.hpp;0;4
-FILE_NAME_7=3063;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_data.cpp;0;4
-FILE_NAME_8=421;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_data.hpp;0;4
+FILE_NAME_5=155;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_calibration.hpp;0;4
+FILE_NAME_6=1302;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_capture.hpp;0;4
+FILE_NAME_7=370;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_data.cpp;0;4
+FILE_NAME_8=433;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_data.hpp;0;4
 FILE_NAME_9=728;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_filter.cpp;0;4
 FILE_NAME_10=158;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_filter.hpp;0;4
 FILE_NAME_11=2665;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_show.cpp;0;4
@@ -63,12 +63,13 @@ FILE_NAME_35=786;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driv
 FILE_NAME_36=959;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fcamera_capture.cpp;0;4
 FILE_NAME_37=1491;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fobstacle_detection.hpp;0;4
 FILE_NAME_38=1682;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fobstacle_detection.cpp;0;4
-FILE_NAME_39=8454;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fconfiguration.hpp;0;4
+FILE_NAME_39=370;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fconfiguration.hpp;0;4
 FILE_NAME_40=15705;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fconfiguration.cpp;0;4
 FILE_NAME_41=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fplanning.hpp;0;4
 FILE_NAME_42=1063;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fplanning.cpp;0;4
 FILE_NAME_43=280;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Flib%2FlibSonar.cpp;0;4
 FILE_NAME_44=360;C;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Flib%2FlibSonar.h;0;4
+FILE_NAME_45=967;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fimage_acquisitor.hpp;0;4
 
 [VTE]
 last_dir=/home/pi/Development/autonomous_driver/build

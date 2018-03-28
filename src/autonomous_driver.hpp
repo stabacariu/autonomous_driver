@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <pthread.h>
+#include <thread>
+#include <mutex>
 #include "image_show.hpp"
 #include "lane_detection.hpp"
 #include "traffic_sign_detection.hpp"
@@ -21,7 +23,6 @@
 #include "vehicle_control.hpp"
 #include "remote_control.hpp"
 #include "configuration.hpp"
-
 
 /**
  * @brief An enum for system modes
@@ -89,6 +90,52 @@ enum ModuleFlag {
 struct ModuleState {
     int state; //!< Module state vector with active module flags
     pthread_mutex_t lock; //!< Mutex lock for synchronized access
+};
+
+/**
+ * @brief A system state class
+ * 
+ * This class describes the system state of the autonomous driver.
+ */
+class SystemStateClass {
+public:
+    SystemStateClass(); //!< Default constructor
+    virtual ~SystemStateClass(); //!< Default destructor
+    
+    /**
+     * @brief Set the system state
+     * 
+     * This function sets the system state. First it locks the state
+     * information resource.
+     * 
+     * @param state New system state to be set
+     */
+    void setState(SystemMode state);
+    
+    /**
+     * @brief Get the system state
+     * 
+     * This function gets the actual system state. First it locks the
+     * state information resource.
+     * 
+     * @return The system state
+     */
+    SystemMode getState() const;
+    
+    /**
+     * @brief Get all active modules
+     * 
+     * This function gets all active modules. They are activated by the
+     * system state with also is the actual mode.
+     * 
+     * @return Active modules
+     */
+    ModuleFlag getActiveModules() const;
+    
+private:
+    SystemMode state;
+    ModuleFlag activeModules;
+    std::mutex lock;
 };
 
 /**

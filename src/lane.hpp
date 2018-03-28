@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <mutex>
 #include "configuration.hpp"
 
 //! @addtogroup lane_detection
@@ -58,6 +59,103 @@ struct LaneData {
 struct PositionData {
     cv::Point position; //!< Position data
     pthread_mutex_t lock; //!< Mutex lock for synchronized access
+};
+
+/**
+ * @brief A enum for road marking type
+ */
+enum MarkingType {
+    MARKING_NONE,           //!< No road marking
+    MARKING_SOLID,          //!< Single solid marking
+    MARKING_DASHED,         //!< Single dashed marking 
+    MARKING_SOLIDDASHED,    //!< Double marking, left solid, right dashed
+    MARKING_DASHEDSOLID,    //!< Double marking, left dashed, right solid
+    MARKING_DOUBLEDASHED    //!< Double dashed marking
+};
+
+/**
+ * @brief A struct for road marking
+ */
+struct RoadMarking {
+    std::vector<cv::Point> points; //!< Points describing road marking course in an image
+    MarkingType type; //!< Type of road marking
+};
+
+/**
+ * @brief A lane data class
+ * 
+ * This class defines the lane data and synchronises the access to it.
+ */
+class LaneDataClass {
+public:
+    /**
+     * @brief Set left road marking line
+     * 
+     * This function sets a left road marking line to the lane.
+     * 
+     * @param line Road marking line
+     */
+    void setLeftLine(RoadMarking line);
+    
+    /**
+     * @brief Get left road marking line
+     * 
+     * This function gets the left road marking line.
+     * 
+     * @param Road marking line
+     */
+    RoadMarking getLeftLine(void);
+    
+    /**
+     * @brief Set right road marking line
+     * 
+     * This function sets a right road marking line to the lane.
+     * 
+     * @param line Road marking line
+     */
+    void setRightLine(RoadMarking line);
+    
+    /**
+     * @brief Get right road marking line
+     * 
+     * This function gets the right road marking line.
+     * 
+     * @param Road marking line
+     */
+    RoadMarking getRightLine(void);
+    
+    /**
+     * @brief Push a left road marking line point
+     * 
+     * This function pushes a left road marking line point to the lane
+     * 
+     * @param point The point 2D coordinates
+     */
+    void pushLeftLinePoint(cv::Point point);
+    
+    /**
+     * @brief Push a right road marking line point
+     * 
+     * This function pushes a right road marking line point to the lane
+     * 
+     * @param point The point 2D coordinates
+     */
+    void pushRightLinePoint(cv::Point point);
+    
+private:
+    RoadMarking leftLine; //!< Left lane marking
+    RoadMarking rightLine; //!< Right lane marking
+    cv::Rect roiLeft; //!< Region of interest of left lane marking
+    cv::Rect roiRight; //!< Region of interest of right lane marking
+    std::mutex lock; //!< Mutex lock for synchronised access
+};
+
+/**
+ * @brief A struct for the detected road data
+ * @note Only for future implementation. Not implemented in this version!
+ */
+struct RoadData {
+    std::vector<LaneDataClass> lane;
 };
 
 /**
