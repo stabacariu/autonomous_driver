@@ -6,27 +6,35 @@
 
 #include "vehicle_control.hpp"
 
-void *vehicleControl (void* arg)
+void VehicleControler::start (VehicleData& vehicle)
 {
     std::cout << "THREAD: Vehicle control started." << std::endl;
-
-    initVehicle();
-    initMotorDriver();
-
-    while ((getModuleState() & MODULE_CONTROL_VEHICLE) == MODULE_CONTROL_VEHICLE) {
+    
+    MotorDriver motor;
+    
+    while (running) {
         // Calculate steering value from rad to a value from 0 to 4096
-        double steering = getSteering();
+        double steering = vehicle.getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));
-        setSteeringMotorValue(steeringValue);
+        motor.setSteering(steeringValue);
 
         // Calculate acceleration value from percent to value from 0 to 4096
-        double acceleration = getAcceleration();
+        double acceleration = vehicle.getAcceleration();
         int accelerationValue = (int) round(ESC_N + acceleration/((double) 100/(ESC_N - ESC_MIN)));
-        setAccelerationMotorValue(accelerationValue);
+        motor.setAcceleration(accelerationValue);
     }
 
-    resetMotorDriver();
+    motor.reset();
 
     std::cout << "THREAD: Vehicle control ended." << std::endl;
-    return NULL;
+}
+
+void VehicleControler::stop ()
+{
+    running = false;
+}
+
+bool VehicleControler::isRunning ()
+{
+    return running;
 }

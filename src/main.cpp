@@ -6,8 +6,8 @@
  * @mainpage An autonomous driving development platform
  * 
  * This program is an autonomous driving development platform for a model
- * car. It offers a ready to go autonomous system and functions to develop
- * a custom system.
+ * car. It offers a ready to go autonomous driving system and
+ * functions for custom system development.
  * 
  * The autonomous driver system is designed to work with a generic USB
  * webcam, a Raspberry Pi 2/3, a PWM-servo-module and an ultrasonic sensor.
@@ -20,23 +20,23 @@
 
 #include <iostream>
 #include <csignal>
-#include "configuration.hpp"
+#include <opencv2/opencv.hpp>
 #include "autonomous_driver.hpp"
-#include "user_interface.hpp"
-#include "motor_driver.hpp"
+
+AutonomousDriver app;
 
 void signalHandler (int signal)
 {
-    std::cout << "WARNING: Signal caught: " << signal << std::endl;
-    setModuleState(MODULE_NONE);
-    setSystemState(SYS_MODE_CLOSING);
+    std::cout << "ERROR: Signal caught: " << signal << std::endl;
+    //! @todo Change state to error
+    app.quit();
 }
 
 void exceptionHandler (const char* errMsg)
 {
-    std::cerr << "WARNING: Exception caught: " << errMsg << std::endl;
-    setModuleState(MODULE_NONE);
-    setSystemState(SYS_MODE_CLOSING);
+    std::cerr << "ERROR: Exception caught: " << errMsg << std::endl;
+    //! @todo Change state to error
+    app.quit();
 }
 
 /**
@@ -51,20 +51,13 @@ void exceptionHandler (const char* errMsg)
  */
 int main (int argc, char *argv[])
 {
-    
+    //! @todo Load config from file
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
     
-    // Startup
-    initConfig();
-    
-    // Init system state
-    initSystemState();
-    initUiState();
-    
     try {
         // Start system
-        autonomousDriver();
+        app.exec();
     }
     catch (cv::Exception& e) {
         exceptionHandler(e.what());

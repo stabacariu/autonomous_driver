@@ -7,7 +7,7 @@
 /**
  * @defgroup vehicle_control Vehicle Control
  * @{
- *     @defgroup vehicle Vehicle
+ *     @defgroup vehicle_data Vehicle Data
  *     @defgroup motor_driver Motor driver
  * @}
  */
@@ -17,22 +17,46 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "autonomous_driver.hpp"
-#include "vehicle.hpp"
+#include "vehicle_data.hpp"
 #include "motor_driver.hpp"
 
 //! @addtogroup vehicle_control
 //! @{
 
-/**
- * @brief A thread to control the vehicle
- * 
- * This thread controls the vehicle by converting given values and
- * sending them to the motor driver.
- * 
- * @param arg Input arguments
- */
-void *vehicleControl (void* arg);
+class VehicleControler {
+public:
+    ~VehicleControler() = default;
+    
+    /**
+     * @brief Start vehicle control
+     * 
+     * This function starts the vehicle control thread.
+     * This thread controls the vehicle by converting given values and
+     * sending them to the motor driver.
+     * 
+     * @param vehicle Vehicle to control
+     */
+    void start (VehicleData& vehicle);
+    
+    /**
+     * @brief Stop vehicle control
+     * 
+     * This function stops the vehicle control thread.
+     */
+    void stop (void);
+    
+    /**
+     * @brief Check if vehicle control is running
+     * 
+     * This function checks if the vehicle control is running…
+     * 
+     * @return True if vehicle control is running, else false.
+     */
+    bool isRunning (void);
+    
+private:
+    bool running {false}; //!< Thread running flag
+};
 
 //! @} vehicle_control
 

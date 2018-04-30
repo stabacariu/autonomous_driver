@@ -8,6 +8,7 @@
 #define MOTOR_DRIVER_HPP
 
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <chrono>
 #include <wiringPi.h>
@@ -23,7 +24,6 @@ enum SteeringPWM {
     STEERING = 0,
     STEERING_MIN = 204,
     STEERING_MAX = 409,
-    STEERING_MID = 307,
     STEERING_LEFT = STEERING_MIN,
     STEERING_RIGHT = STEERING_MAX,
     STEERING_STRAIGHT = (STEERING_MIN+(STEERING_MAX-STEERING_MIN)/2)
@@ -61,45 +61,62 @@ enum MotorDriverSteering {
 };
 
 /**
- * @brief A struct for the motor driver direction and acceleration
+ * @brief A class for the motor driver direction and acceleration
  */
-struct MotorDriver {
-    int direction;      //!< Direction from 0 to 4095
-    int acceleration;   //!< Accerelration from 0 to 4095
-    pthread_mutex_t lock; //!< Mutex lock for synchronized access
+class MotorDriver {
+public:
+    MotorDriver();
+    ~MotorDriver() = default;
+    
+    /**
+     * @brief Set steering motor value
+     * 
+     * This function sets the steering motor value.
+     * 
+     * @param value Steering value from 0 to 4095
+     */
+    void setSteering (int value);
+    
+    /**
+     * @brief Get steering motor value
+     * 
+     * This function gets the steering motor value.
+     * 
+     * @return Steering value beween 0 to 4095
+     */
+    int getSteering (void);
+    
+    /**
+     * @brief Set acceleration motor value
+     * 
+     * This function sets the acceleration motor value.
+     * 
+     * @param value Acceleration value from 0 to 4095
+     */
+    void setAcceleration (int value);
+    
+    /**
+     * @brief Get acceleration motor value
+     * 
+     * This function gets the acceleration motor value.
+     * 
+     * @return acceleration value beween 0 to 4095
+     */
+    int getAcceleration (void);
+    
+    /**
+     * @brief A function to reset the motor driver
+     * 
+     * This function resets the motordriver.
+     */
+    void reset (void);
+    
+private:
+    PCA9685 pwmModule; //!< PWM Motor driver
+    int steering {STEERING_STRAIGHT}; //!< Direction from 0 to 4095
+    int acceleration {ESC_N}; //!< Accerelration from 0 to 4095
+    //~ std::mutex lock; //!< Mutex lock for synchronized access
 };
-
-/**
- * @brief A function to initialize motor driver
- * 
- * This function initializes the motor driver
- */
-void initMotorDriver (void);
-
-/**
- * @brief A function to set the steering motor value
- * 
- * This function sets the steering value from 0 to 4095.
- * 
- * @param steering Steering value from 0 to 4095
- */
-void setSteeringMotorValue (int steering);
-
-/**
- * @brief A function to set the acceleration motor value
- * 
- * This function sets the acceleration value from 0 to 4095.
- * 
- * @param acceleration Acceleration value from 0 to 4095
- */
-void setAccelerationMotorValue (int acceleration);
-
-/**
- * @brief A function to reset the motor driver
- * 
- * This function resets the motordriver.
- */
-void resetMotorDriver (void);
 
 //! @} motor_driver
 

@@ -8,22 +8,26 @@
  * @defgroup image_acquisition Image Acquisition
  * @brief A module for image acquisition.
  * @{
- *     @defgroup image_acquisitor Image Acquisiton Interface
  *     @defgroup camera_image_acquisitor Camera Image Acquisitor
+ *     @brief A module for camera image acquisition
  *     @{
  *         @defgroup camera_calibration Camera Calibration
+ *         @brief A module for camera calibration
  *     @}
  *     @defgroup image_sequence_acquisitor Image Sequence Acquisitor
+ *     @brief A module for image sequence acquisiton from a file
  *     @defgroup video_file_image_acquisitor Video File Image Acquisitor
+ *     @brief A module for image aquisition from a video file
  * @}
  */
  
 #ifndef IMAGE_ACQUISITOR_HPP
 #define IMAGE_ACQUISITOR_HPP
 
+#include <opencv2/opencv.hpp>
 #include "image_data.hpp"
 
-//! @addtogroup image_acquisitor
+//! @addtogroup image_acquisition
 //! @brief A module to acquisit images
 //! @{
 
@@ -34,23 +38,37 @@
  */
 class ImageAcquisitor {
 public:
-    //~ virtual ImageAcquisitor();
-    //~ virtual ImageAcquisitor(int id, ImageDataClass image, cv::Size size);
-    virtual ~ImageAcquisitor();
+    ~ImageAcquisitor() = default;
     
-    virtual ImageDataClass read();
-    virtual void write (ImageDataClass image);
-    virtual bool start();
-    virtual bool stop();
+    virtual cv::Mat read (void) = 0;
+    virtual void write (cv::Mat image) = 0;
     
-private:
+    virtual void start (ImageData& image) = 0;
+    
+    /**
+     * @brief Stop image acquisition
+     * 
+     * This function stops the image acquisition thread.
+     */
+    virtual void stop (void) { running = false; };
+    
+    /**
+     * @brief Checks if image aquisition is running
+     * 
+     * This function checks if the image aquisition is running.
+     * 
+     * @return True if acquisition is running, else false-.
+     */
+    virtual bool isRunning (void) { return running; };
+    
+protected:
     int id;
-    ImageDataClass image;
+    ImageData image;
     int width;
     int height;
     bool running;
 };
 
-//! @} image_acquisitor
+//! @} image_acquisition
 
 #endif // IMAGE_ACQUISITOR_HPP

@@ -12,7 +12,6 @@ void getMainMenuList (std::vector<std::string>& menuList)
     
     menuList.push_back("(A)utonomous");
     menuList.push_back("(R)emote Control");
-    menuList.push_back("(D)evelop");
     menuList.push_back("(C)onfigure");
     menuList.push_back("(S)About");
     menuList.push_back("(Q)uit");
@@ -26,58 +25,61 @@ void getAutoMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void getAutoStateList (std::vector<std::string>& stateList)
+void getAutoStateList (std::vector<std::string>& stateList, VehicleData& vehicle)
 {
     stateList.clear();
     std::ostringstream text;
     
-    text << "Steering: " << getSteering() << " rad";
+    text << "Steering: " << vehicle.getSteering() << " rad";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
-    text << "Acceleration: " << getAcceleration() << " %";
+    text << "Acceleration: " << vehicle.getAcceleration() << " %";
     stateList.push_back(text.str());
     text.str("");
     text.clear();
 }
 
-void getAutoDetectList (std::vector<std::string>& detectList)
+void getAutoDetectList (std::vector<std::string>& detectList, LaneData& lane, ObstacleData& obstacle)
 {
     detectList.clear();
     std::ostringstream text;
-    std::vector<cv::Vec4i> lane;
-    getActualLane(lane);
+    cv::Vec4i leftLine = cvtRoadMarkingToVec4i(lane.getLeftLine());
+    cv::Vec4i rightLine = cvtRoadMarkingToVec4i(lane.getRightLine());
     
     text << "Lane:";
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    if (lane.size() > 0) {
-        text << "L: [" << lane[0][0] << "," << lane[0][1] << "][" << lane[0][2] << "," << lane[0][3] << "]";
-    }
-    else {
-        text << "No lane found...";
-    }
+    //~ if (lane.size() > 0) {
+        //~ text << "L: [" << leftLine[0] << "," << leftLine[1] << "][" << leftLine[2] << "," << leftLine[3] << "]";
+    //~ }
+    //~ else {
+        //~ text << "No lane found...";
+    //~ }
+    text << "L: [" << leftLine[0] << "," << leftLine[1] << "][" << leftLine[2] << "," << leftLine[3] << "]";
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    if (lane.size() > 0) {
-        text << "R: [" << lane[1][0] << "," << lane[1][1] << "][" << lane[1][2] << "," << lane[1][3] << "]";
-    }
-    else {
-        text << "No lane found...";
-    }
+    //~ if (lane.size() > 0) {
+        //~ text << "R: [" << rightLine[0] << "," << rightLine[1] << "][" << rightLine[2] << "," << rightLine[3] << "]";
+    //~ }
+    //~ else {
+        //~ text << "No lane found...";
+    //~ }
+    text << "R: [" << rightLine[0] << "," << rightLine[1] << "][" << rightLine[2] << "," << rightLine[3] << "]";
     detectList.push_back(text.str());
     text.str("");
     text.clear();
     
     text << "Obstacle: ";
-    if ((getModuleState() & MODULE_DETECT_OBSTACLE) == MODULE_DETECT_OBSTACLE) {
-        text << getDistance() << " cm";
+    if (obstacle.getDistance() > (-1)) {
+        text << obstacle.getDistance() << " cm";
     }
     else {
         text << "No detection active!";
     }
+    
     detectList.push_back(text.str());
     text.str("");
     text.clear();
@@ -93,28 +95,6 @@ void getRcMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(B)ack");
     menuList.push_back("(A)utonomous");
     menuList.push_back("(Q)uit");
-}
-
-void getDevMenuList (std::vector<std::string>& menuList)
-{
-    menuList.clear();
-    
-    menuList.push_back("(B)ack");
-    menuList.push_back("(A)utonomous");
-    menuList.push_back("(S)creenshot");
-    menuList.push_back("(C)alibrate");
-    menuList.push_back("(Q)uit");
-}
-
-void getDevModeList (std::vector<std::string>& menuList)
-{
-    menuList.clear();
-    
-    menuList.push_back("(1) B/W");
-    menuList.push_back("(2) Canny");
-    menuList.push_back("(3) Warp");
-    menuList.push_back("(+) Exposure");
-    menuList.push_back("(-) Exposure");
 }
 
 void getConfigMenuList (std::vector<std::string>& menuList)
@@ -183,7 +163,7 @@ void getAboutTextList (std::vector<std::string>& textList)
     textList.push_back("An Autonomous Driving Development Platform");
     textList.push_back("by Sergiu-Petru Tabacariu");
     textList.push_back("<sergiu.tabacariu@fh-campuswien.ac.at>");
-    textList.push_back("Date 18.12.2017");
+    textList.push_back("Date 1.5.2018");
     textList.push_back("Version 1.0.0");
     
 }
@@ -220,7 +200,7 @@ void drawMainMenu (cv::Mat& image)
     }
 }
 
-void drawAutoMode (cv::Mat& image)
+void drawAutoMode (cv::Mat& image, VehicleData& vehicle, LaneData& lane, ObstacleData& obstacle)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, (image.size().height-1));
@@ -256,7 +236,7 @@ void drawAutoMode (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> stateList;
-    getAutoStateList(stateList);
+    getAutoStateList(stateList, vehicle);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -273,7 +253,7 @@ void drawAutoMode (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> detectList;
-    getAutoDetectList(detectList);
+    getAutoDetectList(detectList, lane, obstacle);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -314,7 +294,7 @@ void drawRcCom (cv::Mat& image, cv::Point position)
     putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
 }
 
-void drawRcMode (cv::Mat& image)
+void drawRcMode (cv::Mat& image, VehicleData& vehicle)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, (image.size().height-1));
@@ -359,42 +339,12 @@ void drawRcMode (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> stateList;
-    getAutoStateList(stateList);
+    getAutoStateList(stateList, vehicle);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
     for (size_t i = 0; i < stateList.size(); i++) {
         std::string text = stateList[i];
-        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 15 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
-    }
-}
-
-void drawDevMode (cv::Mat& image)
-{
-    cv::Point pt1(0, 0);
-    cv::Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
-    
-    std::string titleText = "Dev mode";
-    int fontFace = CV_FONT_HERSHEY_DUPLEX;
-    double fontScale = 0.7;
-    int thickness = 1;
-    int baseline = 0;
-    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, thickness, &baseline);
-    
-    // Get center of the text
-    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
-    
-    std::vector<std::string> menuList;
-    getDevMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_PLAIN;
-    fontScale = 1;
-    textOrg.x = 10;
-    for (size_t i = 0; i < menuList.size(); i++) {
-        std::string text = menuList[i];
         textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
         textOrg.y = textOrg.y + 15 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
@@ -542,11 +492,8 @@ void drawPositionImage (cv::Mat& image)
     }
 }
 
-void drawAboutText (void)
+void drawAboutText (cv::Mat& image)
 {
-    cv::Mat image;
-    time_t ts = getOutputImageData(image);
-    
     rectangle(image, cv::Point(0, 0), cv::Point(image.cols-1, image.rows-1), cv::Scalar(218, 218, 218), -1);
     
     cv::Point pt1(0, 0);
@@ -573,7 +520,6 @@ void drawAboutText (void)
         textOrg.y = textOrg.y + 15 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
-    setOutputImageData(image, ts);
 }
 
 void drawAboutMode (cv::Mat& image)
@@ -604,7 +550,7 @@ void drawAboutMode (cv::Mat& image)
         textOrg.y = textOrg.y + 15 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
-    drawAboutText();
+    drawAboutText(image);
 }
 
 void drawErrorMode (cv::Mat& image)

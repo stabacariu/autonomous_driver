@@ -6,20 +6,20 @@
 
 #include "remote_control.hpp"
 
-void *remoteControl (void *arg)
+void RemoteControler::start (VehicleData& vehicle, UserInterfaceData& uiData)
 {
     std::cout << "THREAD: Remote control started." << std::endl;
     
-    char key = -1;
-    setAcceleration(0);
-    setSteering(CV_PI/2);
+    char key = (char)(-1);
+    vehicle.setAcceleration(0);
+    vehicle.setSteering(CV_PI/2);
     
-    while ((getModuleState() & MODULE_CONTROL_REMOTE) == MODULE_CONTROL_REMOTE) {
+    while (running) {
         char prevKey = key;
-        key = getUiInputKey();
+        key = uiData.getKey();
         
-        double prevAcceleration = getAcceleration();
-        double prevSteering = getSteering();
+        double prevAcceleration = vehicle.getAcceleration();
+        double prevSteering = vehicle.getSteering();
         
         if (prevKey != key) {
             double acceleration = prevAcceleration;
@@ -62,16 +62,25 @@ void *remoteControl (void *arg)
             
             if (prevAcceleration != acceleration) {
                 std::cout << "Actual acceleration: " << acceleration << " %" << std::endl;
-                setAcceleration(acceleration);
+                vehicle.setAcceleration(acceleration);
             }
             if (prevSteering != steering) {
                 if (prevSteering != steering) 
                 std::cout << "Actual steering angle: " << steering << " rad" << std::endl;
-                setSteering(steering);
+                vehicle.setSteering(steering);
             }
         }
     }
     
     std::cout << "THREAD: Remote control ended." << std::endl;
-    return NULL;
+}
+
+void RemoteControler::stop ()
+{
+    running = false;
+}
+
+bool RemoteControler::isRunning ()
+{
+    return running;
 }

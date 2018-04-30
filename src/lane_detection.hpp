@@ -3,58 +3,71 @@
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
  */
- 
-/**
- * @defgroup lane_detection Lane Detection
- * @{
- * 
- * @}
- */
 
 #ifndef LANE_DETECTION_HPP
 #define LANE_DETECTION_HPP
 
 #include <iostream>
 #include <fstream>
-#include <pthread.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking.hpp>
-#include "autonomous_driver.hpp"
 #include "image_data.hpp"
 #include "image_filter.hpp"
-#include "camera_calibration.hpp"
-#include "lane.hpp"
+#include "lane_data.hpp"
 
-//! @addtogroup lane_detection Lane Detection
+//! @addtogroup lane_detection
 //! @{
 
 /**
- * @brief A function to initialize a Kalman filter for line prediction
+ * @brief A lane detection class
  * 
- * This function initializes a Kalman filter to predict lines found in
- * an input image.
- * 
- * @param kf Kalman filter
- * @param valueCnt Values to predict
+ * This class describes a lane detector 
  */
-void initLinePrediction (cv::KalmanFilter& kf, int valueCnt);
+class LaneDetector {
+public:
+    ~LaneDetector() = default;
+    
+    /**
+     * @brief Start lane detection
+     * 
+     * This function starts the lane detection thread.
+     * 
+     * @param inputImage Input image captured by image acquisitor
+     * @param outputImage Output image with result for showing on user interface
+     * @param actualLane Actual detected lane
+     */
+    void start(ImageData& inputImage, ImageData& outputImage, LaneData& actualLane);
+    
+    /**
+     * @brief Stop lane detection
+     * 
+     * This function stops the lane detection thread.
+     */
+    void stop(void);
+    
+    /**
+     * @brief Check if lane detection is running
+     * 
+     * This function checks if the lane detection is running…
+     * 
+     * @return True if lane detection is running, else false.
+     */
+    bool isRunning(void);
+    
+private:
+    bool running{false}; //!< Thread running flag
+};
+/**
+ * @brief Get euclidian distance between two points
+ * 
+ * This function calculates the euclidian distance between two points.
+ * 
+ * @param pt1 First point
+ * @param pt2 Second point
+ */
+float getEuclidDistance(cv::Point pt1, cv::Point pt2);
 
 /**
- * @brief A function to predict position of lines
- * 
- * This function predicts the line positions found in an input image.
- * It corrects the prediction by considering vector of found/measured
- * lines.
- * 
- * @param lines Vector of lines describet by starting and and ending point
- * @param kf Kalman filter
- * @param valueCnt Values to predict
- * @param predLines Vector of predicted lines
- */
-void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueCnt, std::vector<cv::Vec4i>& predLines);
-
-/**
- * @brief A function to calculate the distance &rho; of a line to the origin
+ * @brief Get distance &rho; of a line to the origin
  * 
  * This function calculates the distance &rho; of a line to the origin in
  * polar form (&rho;, &theta;).
@@ -66,8 +79,7 @@ void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int valueC
 float getRho (cv::Point pt1, cv::Point pt2);
 
 /**
- * @brief A function to calculate the orthogonal angle &theta; of the
- * slope of a line in relation to the origin 
+ * @brief Get the orthogonal angle &theta; of the slope of a line to the origin
  * 
  * This function calculates the orthogonal angle &theta; of the slope 
  * of a line in in relation to the origin for the polar form
@@ -80,7 +92,7 @@ float getRho (cv::Point pt1, cv::Point pt2);
 float getTheta (cv::Point pt1, cv::Point pt2);
 
 /**
- * @brief A function to get the middle line of a lane
+ * @brief Get the middle line of a lane
  * 
  * This function gets the middle line of a lane as starting and ending
  * point.
@@ -88,45 +100,208 @@ float getTheta (cv::Point pt1, cv::Point pt2);
  * @param lane Lane as vector of zwo lines with starting and ending point
  * @return Middle line as starting and ending point
  */
-cv::Vec4i getLaneMid (std::vector<cv::Vec4i> lane);
+cv::Vec4i getLaneMid (std::vector<cv::Point> lane);
 
 /**
- * @brief A function to draw an arrowed line
+ * @brief Convert lines as Vec4i to polar coordinates (&rho;, &theta;)
+ * 
+ * This function converts a line vector containing lines as Vec4i to polar
+ * coordinates (&rho;, &theta;).
+ * 
+ * @param lines Lines to convert
+ * @param linesPolar Result as (&rho;, &theta;)
+ */
+void cvtLinesToLinesPolar (std::vector<cv::Vec4i> lines, std::vector<cv::Vec2f>& linesPolar);
+
+/**
+ * @brief Sort line direction
+ * 
+ * This function sorts a vector of lines and changes their direction so
+ * that all lines have the same direction.
+ * 
+ * @param lines Lines to sort 
+ */
+void sortLineDirections (std::vector<cv::Vec4i>& lines);
+
+/**
+ * @brief Detect lines in a gray scale image
+ * 
+ * This function detects lines in a gray scale image with a Canny filter.
+ * 
+ * @param grayImage Gray scale input image
+ * @param lines Detected lines
+ */
+void detectLines (cv::Mat grayImage, std::vector<cv::Vec4i>& lines);
+
+/**
+ * @brief Draw line
+ * 
+ * This function draws a line on to an image.
+ * 
+ * @param image Image to draw on
+ * @param l Line to draw
+ * @param color Color of line to draw
+ */
+void drawLine (cv::Mat& image, cv::Vec4i l, cv::Scalar color);
+
+/**
+ * @brief Draw lines
+ * 
+ * This function draws lines on to an image.
+ * 
+ * @param image Image to draw on
+ * @param lines Lines to draw
+ * @param color Color of lines to draw
+ */
+void drawLines (cv::Mat& image, std::vector<cv::Vec4i> lines, cv::Scalar color);
+
+/**
+ * @brief Draw an arrowed line
  * 
  * This function draws an arrowed line on an input image with a color.
  * 
  * @param image Image matrix
- * @param l Line vector with starting and ending point
+ * @param line Line
  * @param color Line color as RGB scalar value
  */
-void drawArrowedLine (cv::Mat& image, cv::Vec4i l, cv::Scalar color);
+void drawArrowedLine (cv::Mat& image, cv::Vec4i line, cv::Scalar color);
 
 /**
- * @brief A thread to detect a lane
+ * @brief Draw an arrowed line
  * 
- * This thread detects a lane in an input image.
+ * This function draws an arrowed line on an input image with a color.
  * 
- * @param arg Input argument
+ * @param image Image matrix
+ * @param lines Line vector
+ * @param color Line color as RGB scalar value
  */
-void *laneDetection (void *arg);
+void drawArrowedLines (cv::Mat& image, std::vector<cv::Vec4i> lines, cv::Scalar color);
 
 /**
- * @brief A thread to detect a lane
+ * @brief Draw image center line
  * 
- * @note This function is experimental
+ * This function draws a centered line in an input image.
  * 
- * @param arg Input argument
+ * @param image Image matrix
+ * @param color Color of center line
  */
-void *laneDetection2 (void *arg);
+void drawCenterLine (cv::Mat& image, cv::Scalar color);
 
 /**
- * @brief A thread to detect a lane
+ * @brief Filter detected lines in left and right image part
  * 
- * @note This function is experimental
+ * This function filters left and right lines. It also filters the most
+ * left line in right image half and the most right line in the left
+ * image half.
  * 
- * @param arg Input argument
+ * @param lines Lines to filter
+ * @param imageSize Image size of input image
+ * @param leftLines All filtered left lines
+ * @param rightLines All filtered right lines
+ * @param lane Lane composed of one left and one right line
  */
-void *laneDetection3 (void *arg);
+void filterLines (std::vector<cv::Vec4i> lines, cv::Size imageSize, std::vector<cv::Vec4i>& leftLines, std::vector<cv::Vec4i>& rightLines, std::vector<cv::Vec4i>& lane);
+
+/**
+ * @brief Calculate distance between two lines
+ * 
+ * This function calculates the distance between two lines.
+ * 
+ * @param line1 First line
+ * @param line2 Second line
+ * @param Distance between lines
+ */
+float distanceBetweenLines (cv::Vec4i line1, cv::Vec4i line2);
+
+/**
+ * @brief Check if lines are parallel
+ * 
+ * This function checks if two lines are parallel.
+ * 
+ * @param lines Lines to check
+ * @return True if lines are parallel, else false
+ */
+bool checkParallelLine (std::vector<cv::Vec4i> lines);
+
+/**
+ * @brief Check one of the detected lines is a stop road marking line
+ * 
+ * This function checks if one of the detected lines is a stop road
+ * marking line.
+ * 
+ * @param lines Lines to check
+ * @param stopLine Detected stop line
+ * @return True if stop line detected, else false
+ */
+bool checkForStopLine (std::vector<cv::Vec4i> lines, cv::Vec4i& stopLine);
+
+/**
+ * @brief Get lane middle line
+ * 
+ * This function gets the middle line of a lane. It calculates the half
+ * of the distance between the two starting and ending points. These are
+ * the starting and ending points of the middle line.
+ * 
+ * @param lane
+ * @return Middle line
+ */
+cv::Vec4i getLaneMid (std::vector<cv::Vec4i> lane);
+
+/**
+ * @brief Initialize a Kalman filter for line prediction
+ * 
+ * This function initializes a Kalman filter to predict lines found in
+ * an input image.
+ * 
+ * @param kf Kalman filter
+ * @param numValues Values to predict
+ */
+void initLinePrediction (cv::KalmanFilter& kf, int numValues);
+
+/**
+ * @brief Predict position of line
+ * 
+ * This function predicts the line positions found in an input image.
+ * It corrects the prediction by considering vector of found/measured
+ * lines.
+ * 
+ * @param lines Vector of lines describet by starting and and ending point
+ * @param kf Kalman filter
+ * @param numValues Values to predict
+ * @param predLines Vector of predicted lines
+ */
+void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numValues, std::vector<cv::Vec4i>& predLines);
+
+/**
+ * @brief Process image
+ * 
+ * This function process a image. It applies the necessare filters for
+ * line detection.
+ * 
+ * @param image Image matrix
+ * @param lines Detected lines
+ */
+void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines);
+
+/**
+ * @brief Rest ROI
+ * 
+ * This function resets the region of interest of the detected lines
+ * 
+ * @param imageSize
+ */
+void resetRois (cv::Size imageSize);
+
+/**
+ * @brief Get ROI of a line
+ * 
+ * This function gets the region of interest of a line.
+ * 
+ * @param line
+ * @param roi
+ * @param imageSize
+ */
+void roiOfLine (cv::Vec4i line, cv::Rect& roi, cv::Size imageSize);
 
 //! @} lane_detection
 

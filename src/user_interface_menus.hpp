@@ -10,9 +10,9 @@
 #include <iostream>
 //~ #incldue <sstream>
 #include <opencv2/opencv.hpp>
-#include "vehicle.hpp"
-#include "lane_detection.hpp"
-#include "obstacle_detection.hpp"
+#include "vehicle_data.hpp"
+#include "lane_data.hpp"
+#include "obstacle_data.hpp"
 
 //! @addtogroup user_interface
 //! @{
@@ -33,7 +33,7 @@ void drawMainMenu (cv::Mat& image);
  * 
  * @param image Image matrix
  */
-void drawAutoMode (cv::Mat& image);
+void drawAutoMode (cv::Mat& image, VehicleData& vehicle, LaneData& lane, ObstacleData& obstacle);
 
 /**
  * @brief A function to draw the remote control mode menu to an image
@@ -52,16 +52,7 @@ void drawRcCom (cv::Mat& image, cv::Point position);
  * 
  * @param image Image matrix
  */
-void drawRcMode (cv::Mat& image);
-
-/**
- * @brief A function to draw the development mode menu to an image
- * 
- * This function draws a 200 px wide development mode menu on the left side of an image.
- * 
- * @param image Image matrix
- */
-void drawDevMode (cv::Mat& image);
+void drawRcMode (cv::Mat& image, VehicleData& vehicle);
 
 /**
  * @brief A function to draw the configuration mode menu to an image

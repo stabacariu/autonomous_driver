@@ -14,108 +14,97 @@
 #define USER_INTERFACE_HPP
 
 #include <iostream>
-#include <pthread.h>
-#include "autonomous_driver.hpp"
-#include "configuration.hpp"
+#include <mutex>
+#include "system_state.hpp"
+#include "image_data.hpp"
+#include "user_interface_data.hpp"
+//~ #include "configuration.hpp"
 #include "user_interface_menus.hpp"
 
 //! @addtogroup user_interface
 //! @{
 
 /**
- * @brief A enum to describe all user interface modes
+ * @brief A user interface class
  */
-enum UIMode {
-    UI_MODE_STANDBY,
-    UI_MODE_AUTO,
-    UI_MODE_RC,
-    UI_MODE_DEV,
-    UI_MODE_CONFIG,
-    UI_MODE_ABOUT,
-    UI_MODE_CLOSING
+class UserInterface {
+public:
+    ~UserInterface() = default;
+    
+    /**
+     * @brief Run user interface thread
+     * 
+     * This function runs the user interface thread.
+     * 
+     * @param imageData Image data to show on user interface
+     * @param uiData User interface input data
+     */
+    void start (ImageData& imageData, UserInterfaceData& uiData);
+    
+    /**
+     * @brief Quit user interface thread
+     * 
+     * This function quits the user interface thread. It does that by
+     * by setting a flag.
+     */
+    void stop (void);
+    
+    /**
+     * @brief Check if user interface thread is running
+     * 
+     * This function checks if the user interface thread is running.
+     * 
+     * @return True if user interface is running, else false
+     */
+    bool isRunning (void);
+    
+    /**
+     * @brief Get user input from console thread
+     * 
+     * This function gets the user input from the console in an detached
+     * thread.
+     * 
+     * @param uiData User interface input data
+     */
+    void consoleInput (UserInterfaceData& uiData);
+    
+    /**
+     * @brief A function to process the user interface input
+     * 
+     * This function processes the user interface input and drawing a
+     * user interface.
+     * 
+     * @param image Image matrix for output image
+     * @param key User input key
+     */
+    void processUiInput (cv::Mat& image, char key);
+    
+    /**
+     * @brief Set user keyboard input
+     * 
+     * This function sets the user keyboard input.
+     * 
+     * @param c Input key
+     */
+    void setUserInput(char c);
+    
+    /**
+     * @brief Get user keyboard input
+     * 
+     * This function gets the user keyboard input.
+     * 
+     * @return Input key
+     */
+    char getUserInput(void);
+    
+private:
+    bool running {false};
+    cv::Mat image;
+    //~ UserInterfaceState state;
+    char guiInputKey {(char)(-1)};
+    char consoleInputKey {(char)(-1)};
+    std::mutex lock;
 };
-
-/**
- * @brief A struct to describe the user interface state
- */
-struct UIState {
-    UIMode mode;
-    char key;
-    pthread_mutex_t lock;
-};
-
-/**
- * @brief A function to initialize the user interface state
- * 
- * This function initializes the user interface state by setting the
- * a default starting state and initializing the mutex for synchronized
- * access.
- */
-void initUiState (void);
-
-/**
- * @brief A function to set the user interface status
- * 
- * This function sets the user interface status by locking the user interface state.
- * 
- * @param state User interface mode
- */
-void setUiStatus (UIMode state);
-
-/**
- * @brief A function to get the user interface status
- * 
- * This function gets the user interface status by locking the user interface state.
- * 
- * @return User interface mode
- */
-UIMode getUiStatus (void);
-
-/**
- * @brief A function to set the user interface input key
- * 
- * This function sets an input key pressed by the user throw the 
- * user interface.
- * 
- * @note If no key is pressed OpenCVs HighGUI returns -1.
- * 
- * @param key User interface input key
- */
-void setUiInputKey (char key);
-
-/**
- * @brief A function to get the user interface input key
- * 
- * This function gets an input key pressed by the user throw the 
- * user interface.
- * 
- * @note If no key is pressed OpenCVs HighGUI returns -1.
- * 
- * @return Input character key
- */
-char getUiInputKey (void);
-
-/**
- * @brief A function to process the user interface input
- * 
- * This function processes the user interface input and drawing a
- * user interface.
- * 
- * @param image Image matrix for output image
- * @param key User input key
- */
-void processUiInput (cv::Mat& image, char key);
-
-/**
- * @brief A thread to process the user input from terminal
- * 
- * @note This function is stil in development!
- * 
- * This thread process the user input from a console.
- * 
- * @param arg Input argument
- */
-void *userInput (void *arg);
 
 //! @} user_interface
 

@@ -1,5 +1,5 @@
 [project]
-name=autonomous_driver
+name=system_state
 description=
 base_path=src
 run_cmd=
