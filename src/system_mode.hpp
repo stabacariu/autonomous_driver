@@ -20,6 +20,7 @@
 #ifndef SYSTEM_MODE_HPP
 #define SYSTEM_MODE_HPP
 
+#include <atomic>
 #include "system_state.hpp"
 
 //! @addtogroup system_modes
@@ -33,14 +34,14 @@
  */
 class SystemMode {
 public:
-    ~SystemMode () = default;
+    virtual ~SystemMode () = default;
     
     virtual void start (SystemState* s) = 0;
     virtual void stop (void) = 0;
     virtual bool isRunning (void) { return running; };
 
 protected:
-    bool running {false};
+    std::atomic_bool running {false};
 };
 
 //! @} system_modes

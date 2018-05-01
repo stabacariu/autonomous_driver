@@ -14,6 +14,7 @@
 #define PATH_PLANNING_HPP
 
 #include <iostream>
+#include <atomic>
 #include <opencv2/opencv.hpp>
 #include "lane_data.hpp"
 #include "lane_detection.hpp"
@@ -59,7 +60,7 @@ public:
     bool isRunning(void);
     
 private:
-    bool running{false}; //!< Path planning running flag
+    std::atomic_bool running{false}; //!< Path planning running flag
 };
 
 /**

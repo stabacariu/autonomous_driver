@@ -17,6 +17,8 @@
 #ifndef DETECTOR_HPP
 #define DETECTOR_HPP
 
+#include <atomic>
+
 //! @addtogroup perception
 //! @{
 
@@ -51,7 +53,7 @@ public:
     virtual bool isRunning (void) const = 0;
     
 private:
-    bool running {false}; //!< Detection running flag
+    std::atomic_bool running {false}; //!< Detection running flag
 };
 
 //! @} perception

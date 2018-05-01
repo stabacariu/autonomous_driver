@@ -9,6 +9,7 @@
 void ObstacleDetector::start (ObstacleData& obstacleData)
 {
     std::cout << "THREAD: Obstacle detection started." << std::endl;
+    running = true;
     
     int trigger = 0; //!< WiringPi lib pin number 
     int echo = 2; //!< Wirring Pi lib pin number

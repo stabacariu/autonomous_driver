@@ -6,9 +6,10 @@
 
 #include "remote_control.hpp"
 
-void RemoteControler::start (VehicleData& vehicle, UserInterfaceData& uiData)
+void RemoteControler::start (VehicleData& vehicle, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: Remote control started." << std::endl;
+    running = true;
     
     char key = (char)(-1);
     vehicle.setAcceleration(0);
@@ -16,7 +17,7 @@ void RemoteControler::start (VehicleData& vehicle, UserInterfaceData& uiData)
     
     while (running) {
         char prevKey = key;
-        key = uiData.getKey();
+        key = uiState.getKey();
         
         double prevAcceleration = vehicle.getAcceleration();
         double prevSteering = vehicle.getSteering();

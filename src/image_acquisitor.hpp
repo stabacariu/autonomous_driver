@@ -24,6 +24,7 @@
 #ifndef IMAGE_ACQUISITOR_HPP
 #define IMAGE_ACQUISITOR_HPP
 
+#include <atomic>
 #include <opencv2/opencv.hpp>
 #include "image_data.hpp"
 
@@ -66,7 +67,7 @@ protected:
     ImageData image;
     int width;
     int height;
-    bool running;
+    std::atomic_bool running;
 };
 
 //! @} image_acquisition

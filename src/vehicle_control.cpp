@@ -9,6 +9,7 @@
 void VehicleControler::start (VehicleData& vehicle)
 {
     std::cout << "THREAD: Vehicle control started." << std::endl;
+    running = true;
     
     MotorDriver motor;
     

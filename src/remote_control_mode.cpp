@@ -7,6 +7,7 @@
 #include "remote_control_mode.hpp"
 #include "closing_mode.hpp"
 #include "standby_mode.hpp"
+#include "ui_remote_control_mode.hpp"
 
 void RemoteControlMode::start (SystemState* s)
 {
@@ -14,16 +15,17 @@ void RemoteControlMode::start (SystemState* s)
     std::cout << "Remote Control System Mode started." << std::endl;
     running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIRemoteControlMode(vehicle));
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
-    std::thread remoteControlThread(&RemoteControler::start, &remoteControl, std::ref(vehicle), std::ref(uiData));
+    std::thread remoteControlThread(&RemoteControler::start, &remoteControl, std::ref(vehicle), std::ref(uiState));
     
     char key = (char)(-1);
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'a') ||

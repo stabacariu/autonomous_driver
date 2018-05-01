@@ -7,6 +7,7 @@
 #include "autonomous_mode.hpp"
 #include "closing_mode.hpp"
 #include "standby_mode.hpp"
+#include "ui_autonomous_mode.hpp"
 
 void AutonomousMode::start (SystemState* s)
 {
@@ -14,19 +15,20 @@ void AutonomousMode::start (SystemState* s)
     std::cout << "MODE: Autonomous Driving Mode started" << std::endl;
     running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIAutonomousMode(vehicle, lane, obstacle));
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
-    std::thread laneDetectonThread(&LaneDetector::start, &laneDetetor, std::ref(inputImage), std::ref(outputImage), std::ref(laneData));
-    std::thread trafficSignDetectionThread(&TrafficSignDetector::start, &trafficSignDetector, std::ref(inputImage), std::ref(outputImage));
-    std::thread objectDetectionThread(&ObstacleDetector::start, &obstacleDetector, std::ref(obstacleData));
-    std::thread pathPlanningThread(&PathPlanner::start, &pathPlanner, std::ref(inputImage), std::ref(laneData), std::ref(obstacleData), std::ref(vehicle));
+    std::thread laneDetectonThread(&LaneDetector::start, &laneDetetor, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
+    //~ std::thread trafficSignDetectionThread(&TrafficSignDetector::start, &trafficSignDetector, std::ref(inputImage), std::ref(outputImage));
+    //~ std::thread objectDetectionThread(&ObstacleDetector::start, &obstacleDetector, std::ref(obstacle));
+    std::thread pathPlanningThread(&PathPlanner::start, &pathPlanner, std::ref(inputImage), std::ref(lane), std::ref(obstacle), std::ref(vehicle));
     std::thread vehicleControlThread(&VehicleControler::start, &vehicleControler, std::ref(vehicle));
     
     char key = (char)(-1);
     
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'b')) {
@@ -39,8 +41,8 @@ void AutonomousMode::start (SystemState* s)
     uiInputThread.join();
     imageAcquisitionThread.join();
     laneDetectonThread.join();
-    trafficSignDetectionThread.join();
-    objectDetectionThread.join();
+    //~ trafficSignDetectionThread.join();
+    //~ objectDetectionThread.join();
     pathPlanningThread.join();
     vehicleControlThread.join();
     

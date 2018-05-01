@@ -12,15 +12,16 @@ void AboutMode::start (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: About Mode started." << std::endl;
+    running = true;
     
-    std::thread uiShow(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiData));
-    std::thread uiInput(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    std::thread uiShow(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
+    std::thread uiInput(&UserInterface::consoleInput, &ui, std::ref(uiState));
     
     char key = (char)(-1);
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'b')) {

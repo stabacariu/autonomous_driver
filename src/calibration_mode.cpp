@@ -9,6 +9,7 @@
 #include "autonomous_mode.hpp"
 #include "remote_control_mode.hpp"
 #include "configuration_mode.hpp"
+#include "ui_calibration_mode.hpp"
 
 void IntrinsicsCalibrationMode::start (SystemState* s)
 {
@@ -16,8 +17,9 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
     std::cout << "MODE: Intrinsics Calibration Mode started." << std::endl;
     running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIIntrinsicsCalibrationMode());
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runIntrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage));
     
@@ -25,7 +27,7 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'b') ||
@@ -72,8 +74,9 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
     std::cout << "MODE: Extrinsics Calibration Mode started." << std::endl;
     running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIExtrinsicsCalibrationMode());
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runIntrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage));
         
@@ -81,7 +84,7 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'b') ||

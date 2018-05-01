@@ -11,7 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include "image_acquisitor.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 
 //! @addtogroup camera_image_acquisitor
 //! @brief A module to caputure a camera image
@@ -126,7 +126,7 @@ public:
      * This function changes horizontal and vertical image position in a
      * frame
      */
-    void changeImagePosition (ImageData& inputImage, ImageData& outputData, UserInterfaceData& uiData);
+    void changeImagePosition (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
     
     void showChessBoard (ImageData& inputImage, ImageData& outputImage);
     

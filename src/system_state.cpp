@@ -10,21 +10,18 @@
 
 void SystemState::setMode (SystemMode* m)
 {
-    std::lock_guard<std::mutex> guard(lock);
     mode = m;
     std::cout << "System state changed." << std::endl;
 }
 
 SystemMode* SystemState::getMode ()
 {
-    std::lock_guard<std::mutex> guard(lock);
     return mode;
 }
 
 void SystemState::start ()
 {
     std::cout << "SYSTEM: Starting..." << std::endl;
-    std::lock_guard<std::mutex> guard(lock);
     running = true;
     mode->start(this);
 }
@@ -32,7 +29,6 @@ void SystemState::start ()
 void SystemState::stop ()
 {
     std::cout << "SYSTEM: Stopping..." << std::endl;
-    std::lock_guard<std::mutex> guard(lock);
     running = false;
     if (mode->isRunning()) {
         mode->stop();
@@ -41,6 +37,5 @@ void SystemState::stop ()
 
 bool SystemState::isRunning ()
 {
-    std::lock_guard<std::mutex> guard(lock);
     return running;
 }

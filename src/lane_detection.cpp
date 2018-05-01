@@ -9,6 +9,7 @@
 void LaneDetector::start (ImageData& inputImage, ImageData& outputImage, LaneData& actualLane)
 {
     std::cout << "THREAD: Lane detection started." << std::endl;
+    running = true;
     
     // Initialize line prediction
     cv::KalmanFilter kfL(4, 4, 0);

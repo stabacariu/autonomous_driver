@@ -14,8 +14,8 @@
 #define REMOTE_CONTROL_HPP
 
 #include <iostream>
+#include <atomic>
 #include <opencv2/opencv.hpp>
-#include <pthread.h>
 #include "user_interface.hpp"
 #include "vehicle_data.hpp"
 
@@ -39,7 +39,7 @@ public:
      * @param ui User interface
      * @param vehicle Vehicle data
      */
-    void start (VehicleData& vehicle, UserInterfaceData& uiData);
+    void start (VehicleData& vehicle, UserInterfaceState& uiState);
     
     /**
      * @brief Stop remote control the system
@@ -58,7 +58,7 @@ public:
     bool isRunning (void);
     
 private:
-    bool running {false}; //!< Thread running flag
+    std::atomic_bool running {false}; //!< Thread running flag
 };
 
 //! @} remote_control

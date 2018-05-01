@@ -8,21 +8,24 @@
 #include "closing_mode.hpp"
 #include "standby_mode.hpp"
 #include "calibration_mode.hpp"
+#include "ui_configuration_mode.hpp"
 
 void ConfigurationMode::start (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Configuration Mode started." << std::endl;
+    running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIConfigurationMode());
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
     
     char key = (char)(-1);
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'b') ||

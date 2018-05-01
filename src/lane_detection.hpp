@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <atomic>
 #include <opencv2/opencv.hpp>
 #include "image_data.hpp"
 #include "image_filter.hpp"
@@ -54,8 +55,9 @@ public:
     bool isRunning(void);
     
 private:
-    bool running{false}; //!< Thread running flag
+    std::atomic_bool running{false}; //!< Thread running flag
 };
+
 /**
  * @brief Get euclidian distance between two points
  * 

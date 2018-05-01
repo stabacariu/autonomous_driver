@@ -14,10 +14,11 @@
 #define USER_INTERFACE_HPP
 
 #include <iostream>
+#include <atomic>
 #include <mutex>
 #include "system_state.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 //~ #include "configuration.hpp"
 #include "user_interface_menus.hpp"
 
@@ -37,9 +38,9 @@ public:
      * This function runs the user interface thread.
      * 
      * @param imageData Image data to show on user interface
-     * @param uiData User interface input data
+     * @param uiState User interface input data
      */
-    void start (ImageData& imageData, UserInterfaceData& uiData);
+    void start (ImageData& imageData, UserInterfaceState& uiState);
     
     /**
      * @brief Quit user interface thread
@@ -64,9 +65,9 @@ public:
      * This function gets the user input from the console in an detached
      * thread.
      * 
-     * @param uiData User interface input data
+     * @param uiState User interface input data
      */
-    void consoleInput (UserInterfaceData& uiData);
+    void consoleInput (UserInterfaceState& uiState);
     
     /**
      * @brief A function to process the user interface input
@@ -98,11 +99,11 @@ public:
     char getUserInput(void);
     
 private:
-    bool running {false};
+    std::atomic_bool running {false};
     cv::Mat image;
     //~ UserInterfaceState state;
-    char guiInputKey {(char)(-1)};
-    char consoleInputKey {(char)(-1)};
+    std::atomic_char guiInputKey {(char)(-1)};
+    std::atomic_char consoleInputKey {(char)(-1)};
     std::mutex lock;
 };
 

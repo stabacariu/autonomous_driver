@@ -11,7 +11,7 @@
 #include "system_mode.hpp"
 #include "system_state.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 #include "user_interface.hpp"
 #include "camera_image_acquisitor.hpp"
 
@@ -29,7 +29,7 @@ public:
 
 private:
     ImageData inputImage; //!< Input image captured by an image acquisitor
-    UserInterfaceData uiData; //!< User inderface input data
+    UserInterfaceState uiState; //!< User inderface input data
     UserInterface ui; //!< User interface
     CameraImageAcquisitor camera; //!< Camera image acquisitor
 };

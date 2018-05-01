@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <thread>
-#include <mutex>
+#include <atomic>
 
 class SystemMode; //!< Forward declaration
 
@@ -70,8 +70,7 @@ public:
     
 private:
     SystemMode* mode; //!< Actual system mode
-    bool running {false}; //!< Running flag
-    std::mutex lock; //! Synchronisation mutex
+    std::atomic_bool running {false}; //!< Running flag
 };
 
 #endif // SYSTEM_STATE_HPP

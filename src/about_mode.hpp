@@ -13,7 +13,7 @@
 #include "system_mode.hpp"
 #include "system_state.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 #include "user_interface.hpp"
 
 //! @addtogroup about_mode
@@ -30,7 +30,7 @@ public:
 
 private:
     ImageData outputImage;
-    UserInterfaceData uiData;
+    UserInterfaceState uiState;
     UserInterface ui;
 };
 

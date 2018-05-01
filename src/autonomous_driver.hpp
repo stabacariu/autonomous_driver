@@ -8,9 +8,15 @@
 #define AUTONOMOUS_DRIVER_HPP
 
 #include <iostream>
+#include <atomic>
 #include "system_state.hpp"
 #include "standby_mode.hpp"
 
+/**
+ * @brief An autonomous driving appilcation class
+ * 
+ * This class defines an autonomous driving application.
+ */
 class AutonomousDriver {
 public:
     ~AutonomousDriver() = default;
@@ -31,8 +37,8 @@ public:
     void quit (void);
     
 private:
-    bool running {false}; //!< Running flag
-    SystemState state {new StandbyMode()}; //!< Current System State
+    std::atomic_bool running {false}; //!< Running flag
+    SystemState state {new StandbyMode()}; //!< Current system state
 };
 
 #endif // AUTONOMOUS_DRIVER_HPP

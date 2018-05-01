@@ -11,7 +11,7 @@
 #include "system_mode.hpp"
 #include "system_state.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 #include "user_interface.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "lane_data.hpp"
@@ -55,19 +55,19 @@ public:
 
 private:
     ImageData outputImage; //!< Output image data to show on user interface
-    UserInterfaceData uiData; //!< User interface user input data
+    UserInterfaceState uiState; //!< User interface user input data
     UserInterface ui; //!< User interface
     
     ImageData inputImage; //!< Input image data from an image acquisitor
     CameraImageAcquisitor camera; //!< Camera image acquisitor
     
-    LaneData laneData; //!< Lane data of actual detected lane
+    LaneData lane; //!< Lane data of actual detected lane
     LaneDetector laneDetetor; //!< Lane detector
     
     TrafficSignData trafficSignData; //!< Traffic sign data of detected traffic sign
     TrafficSignDetector trafficSignDetector; //!< Traffic sign detector
     
-    ObstacleData obstacleData; //!< Obstacle data
+    ObstacleData obstacle; //!< Obstacle data
     ObstacleDetector obstacleDetector; //!< Obstacle detector
     
     PathPlanner pathPlanner; //!< Path planner

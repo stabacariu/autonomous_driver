@@ -9,6 +9,8 @@
 void TrafficSignDetector::start (ImageData& inputImageData, ImageData& outputImageData)
 {
     std::cout << "THREAD: Traffic sign detection started." << std::endl;
+    running = true;
+    
     cv::CascadeClassifier stopSignCascade;
     
     if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {

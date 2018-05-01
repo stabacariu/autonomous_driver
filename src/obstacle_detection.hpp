@@ -14,7 +14,7 @@
 #define OBSTACLE_DETECTION_HPP
 
 #include <iostream>
-#include <pthread.h>
+#include <atomic>
 #include <wiringPi.h>
 #include <opencv2/opencv.hpp>
 #include "../lib/libSonar.h"
@@ -54,7 +54,7 @@ public:
     bool isRunning(void);
     
 private:
-    bool running{false};
+    std::atomic_bool running{false};
 };
 
 //! @} obstacle_detection

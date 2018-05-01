@@ -10,6 +10,7 @@
 #include "remote_control_mode.hpp"
 #include "configuration_mode.hpp"
 #include "about_mode.hpp"
+#include "ui_standby_mode.hpp"
 
 void StandbyMode::start (SystemState* s)
 {
@@ -17,15 +18,16 @@ void StandbyMode::start (SystemState* s)
     std::cout << "MODE: Standby Mode started." << std::endl;
     running = true;
     
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiData));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiData));
+    uiState.setMode(new UIStandbyMode());
+    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
     
     char key = (char)(-1);
     
     // Process user input
     while (running) {
-        key = uiData.getKey();
+        key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'a') ||

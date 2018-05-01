@@ -16,6 +16,7 @@
 #define VEHICLE_CONTROL_HPP
 
 #include <iostream>
+#include <atomic>
 #include <opencv2/opencv.hpp>
 #include "vehicle_data.hpp"
 #include "motor_driver.hpp"
@@ -55,7 +56,7 @@ public:
     bool isRunning (void);
     
 private:
-    bool running {false}; //!< Thread running flag
+    std::atomic_bool running {false}; //!< Thread running flag
 };
 
 //! @} vehicle_control

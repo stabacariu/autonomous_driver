@@ -94,6 +94,7 @@ void CameraImageAcquisitor::start (ImageData& imageData)
 void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, ImageData& outputImage)
 {
     std::cout << "THREAD: Intrinsics calibarion started." << std::endl;
+    running = true;
 
     cv::Mat image, warpedImage;
     //~ cv::Mat homography;
@@ -133,6 +134,7 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
 void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, ImageData& outputImage) 
 {
     std::cout << "THREAD: Extrinsics calibarion started." << std::endl;
+    running = true;
 
     cv::Mat image, warpedImage;
     //~ cv::Mat homography;
@@ -170,9 +172,10 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     std::cout << "THREAD: Extrinsics calibarion ended." << std::endl;
 }
 
-void CameraImageAcquisitor::changeImagePosition (ImageData& inputImage, ImageData& outputImage, UserInterfaceData& uiData)
+void CameraImageAcquisitor::changeImagePosition (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: Image position configuration started." << std::endl;
+    running = true;
 
     cv::Mat image, adjustedImage;
     
@@ -180,7 +183,7 @@ void CameraImageAcquisitor::changeImagePosition (ImageData& inputImage, ImageDat
         image = inputImage.read();
         
         if (!image.empty() && !homography.empty()) {
-            char key = uiData.getKey();
+            char key = uiState.getKey();
             adjustImagePosition(image, adjustedImage, key, homography);
             outputImage.write(adjustedImage);
         }
@@ -192,6 +195,7 @@ void CameraImageAcquisitor::changeImagePosition (ImageData& inputImage, ImageDat
 void CameraImageAcquisitor::showChessBoard (ImageData& inputImage, ImageData& outputImage)
 {
     std::cout << "THREAD: Show chessboard started." << std::endl;
+    running = true;
     
     cv::Mat image;
     

@@ -10,7 +10,7 @@
 #include <iostream>
 #include "system_mode.hpp"
 #include "image_data.hpp"
-#include "user_interface_data.hpp"
+#include "user_interface_state.hpp"
 #include "user_interface.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "vehicle_data.hpp"
@@ -50,7 +50,7 @@ public:
 private:
     ImageData inputImage; //!< Input image data from an image acquisitor
     ImageData outputImage; //!< Output image data from an image acquisitor
-    UserInterfaceData uiData; //!< User inderface user input data
+    UserInterfaceState uiState; //!< User inderface user input data
     UserInterface ui; //!< User interface
     CameraImageAcquisitor camera; //!< Camera image acquisitor
     VehicleData vehicle; //!< Vehicle data

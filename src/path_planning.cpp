@@ -10,6 +10,7 @@
 void PathPlanner::start (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
+    running = true;
     
     cv::KalmanFilter kfT(4, 4, 0);
     initLinePrediction(kfT, 4);

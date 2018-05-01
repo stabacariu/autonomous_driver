@@ -8,7 +8,7 @@
 #define TRAFFIC_SIGN_DETECTION_HPP
 
 #include <iostream>
-#include <mutex>
+#include <atomic>
 #include <thread>
 #include <opencv2/opencv.hpp>
 #include "image_data.hpp"
@@ -52,7 +52,7 @@ public:
     bool isRunning(void);
     
 private:
-    bool running{false};
+    std::atomic_bool running{false};
 };
 
 /**
