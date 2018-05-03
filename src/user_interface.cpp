@@ -21,10 +21,10 @@ void UserInterface::start (ImageData& imageData, UserInterfaceState& uiState)
         }
         // Create output image composition from UI menu and output image
         cv::Mat outputImage = cv::Mat(image.rows, image.cols + 200, CV_8UC3, cv::Scalar::all(0));
-        uiState.draw(outputImage);
-        
         cv::Rect insert = cv::Rect(200, 0, image.cols, image.rows);
         image.copyTo(outputImage(insert));
+        
+        uiState.draw(outputImage);
         
         imshow("Autonomous Driver 1.0", outputImage);
         guiInputKey = cv::waitKey(1000/30);

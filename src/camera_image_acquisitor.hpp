@@ -131,35 +131,40 @@ public:
     void showChessBoard (ImageData& inputImage, ImageData& outputImage);
     
     /**
+     * @brief Camera data structure
+     */
+    struct CameraData {
+        int id {0}; //!< Camera ID initialized with 0
+        cv::Size imageSize {640, 360}; //!< Camera image size
+        double fps {15.}; //!< Frames per second caputred by the camera
+        double exposure {0.}; //!< Camera exposure value
+     };
+    
+    /**
      * @brief Calibration data structure
      */
     struct CalibrationData {
         // Calibration configuration
         std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
-        cv::Size imageSize; //!< Calibration image size
-        std::string pattern; //!< Calibration pattern
-        cv::Size patternSize; //!< Calibration Pattern size
-        double patternMm; //! Size of one pattern element in mm
-        int numSamples; //! Number of samples to use for calibration
+        cv::Size imageSize {640, 360}; //!< Calibration image size
+        std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
+        cv::Size patternSize {5, 7}; //!< Calibration Pattern size
+        double patternMm {30.}; //! Size of one pattern element in mm
+        int numSamples {50}; //! Number of samples to use for calibration
         // Calibration data
-        bool intrinsicsCalibDone; //! Calibration done flag
-        bool extrinsicsCalibDone; //! Calibration done flag
+        cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
+        cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
+        bool intrCalibDone {false}; //! Calibration done flag
+        cv::Mat homography; //!< Homography for perspective transform
+        bool extrCalibDone {false}; //! Calibration done flag
         cv::Mat transformation; //!< Transformation matrix for image position
-        float pixelPerMm; //!< Average mm per pixel
+        float pixelPerMm {0.f}; //!< Average mm per pixel
     };
     
 private:
-    int id {0}; //!< Camera ID initialized with 0
-    cv::Size dimensions {640, 360}; //!< Camera image dimensions
-    double fps {15.}; //!< Frames per second caputred by the camera
-    double exposure {0.}; //!< Camera exposure value
-    cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
-    cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
-    cv::Mat homography; //!< Homography for perspective transform
-    
     cv::Mat capturedImage; //!< Captured image
-    
-    CalibrationData calibData;
+    CameraData cameraData; //!< Camera data
+    CalibrationData calibData; //!< Calibration data
     
     /**
      * @brief Calibrate intrinsic camera parameters
@@ -202,11 +207,12 @@ double calcExposure(int exposureStep);
  * @param image Image captured by the camera
  * @param cameraMatrix Pointer to camera matrix where result is stored
  * @param distCoeffs Pointer to matrix where distortion coefficents are stored
+ * @param imagePoints Pointer to matrix where distortion coefficents are stored
  * @param calibPatternSize Calibration pattern dimensions
  * @param calibPatternMm Calibration pattern size in mm
  * @param sampleCnt Sample capturing counter
  */
-void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm);
+bool calibIntr (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, std::vector<std::vector<cv::Point2f> > imagePoints, cv::Size calibPatternSize, double calibPatternMm);
 
 /**
  * @brief A function calibrate extrinsic camera parameters
@@ -218,7 +224,7 @@ void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::S
  * @param calibPatternSize Calibration pattern dimensions
  * @param calibPatternMm Calibration pattern size in mm
  */
-void calibExtr (cv::Mat image, cv::Mat& homography, cv::Size calibPatternSize, double calibPatternMm);
+void calibExtr (cv::Mat& image, cv::Mat& homography, cv::Size calibPatternSize, double calibPatternMm);
 
 /**
  * @brief A function to calculate how many pixels are in 1 mm.

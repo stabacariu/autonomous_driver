@@ -6,6 +6,7 @@
 
 #include "camera_image_acquisitor.hpp"
 #include <ctime>
+#include <thread>
 
 cv::Mat CameraImageAcquisitor::read ()
 {
@@ -24,10 +25,10 @@ void CameraImageAcquisitor::start (ImageData& imageData)
     
     // Initalize camera
     //~ cv::VideoCapture camera(getCameraID());
-    cv::VideoCapture camera(id);
-    camera.set(CV_CAP_PROP_FRAME_WIDTH, dimensions.width);
-    camera.set(CV_CAP_PROP_FRAME_HEIGHT, dimensions.height);
-    camera.set(CV_CAP_PROP_FPS, fps);
+    cv::VideoCapture camera(cameraData.id);
+    camera.set(CV_CAP_PROP_FRAME_WIDTH, cameraData.imageSize.width);
+    camera.set(CV_CAP_PROP_FRAME_HEIGHT, cameraData.imageSize.height);
+    camera.set(CV_CAP_PROP_FPS, cameraData.fps);
     //~ camera.set(CV_CAP_PROP_AUTO_EXPOSURE, 3); //! Doesn't work!
     //~ camera.set(CV_CAP_PROP_EXPOSURE, calcExposure(12));
     //~ camera.set(CV_CAP_PROP_EXPOSURE, calcExposure(7));
@@ -68,10 +69,10 @@ void CameraImageAcquisitor::start (ImageData& imageData)
                 //~ undistort(image, image, cameraMatrix, distCoeffs);
             //~ }
             //~ // Apply perspective transform
-            //~ cv::Mat homography;
-            //~ getExtr(homography);
-            //~ if (!homography.empty()) {
-                //~ inversePerspectiveTransform(image, image, homography);
+            //~ cv::Mat calibData.homography;
+            //~ getExtr(calibData.homography);
+            //~ if (!calibData.homography.empty()) {
+                //~ inversePerspectiveTransform(image, image, calibData.homography);
             //~ }
             
             
@@ -96,36 +97,39 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
     std::cout << "THREAD: Intrinsics calibarion started." << std::endl;
     running = true;
 
-    cv::Mat image, warpedImage;
-    //~ cv::Mat homography;
+    cv::Mat image, undistorted;
+    //~ cv::Mat calibData.homography;
+    
+    int sampleCnt = 0;
+    
+    std::vector<std::vector<cv::Point2f> > imagePoints;
 
     while (running) {
         image = inputImage.read();
         
-        if (!image.empty()) {
-            calibExtr(image, homography, calibData.patternSize, calibData.patternMm);
+        if (!image.empty() && (sampleCnt <= calibData.numSamples)) {
+            bool ok = calibIntr(image, calibData.cameraMatrix, calibData.distCoeffs, imagePoints, calibData.patternSize, calibData.patternMm);
+            //~ std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            if (ok) {
+                sampleCnt++;
+            }
         }
-        if (!homography.empty()) {
-            //~ inversePerspectiveTransform(image, warpedImage, homography);
-            warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
-            line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
-            line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
-            outputImage.write(image);
+        
+        if (!calibData.cameraMatrix.empty() && !calibData.distCoeffs.empty()) {
+            cv::undistort(image, undistorted, calibData.cameraMatrix, calibData.distCoeffs);
+            line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
+            line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
+            outputImage.write(undistorted);
         }
         else {
             line(image, cv::Point(image.cols/2, 0), cv::Point(image.cols/2, image.rows), cv::Scalar(0, 0, 255), 1);
             line(image, cv::Point(0, image.rows/2), cv::Point(image.cols, image.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(image);
         }
-    }
-
-    if (!homography.empty()) {
-        //~ setExtr(homography);
-        //~ setPxPerMm(calcPixelPerMm(warpedImage, getPatternSize(), getPatternMm()));
-        calibData.pixelPerMm = calcPixelPerMm(warpedImage, calibData.patternSize, calibData.patternMm);
-    }
-    else {
-        std::cerr << "Homography couldn't be aquired!" << std::endl;
+        
+        if (sampleCnt == calibData.numSamples) {
+            calibData.intrCalibDone = true;
+        }
     }
     
     std::cout << "THREAD: Intrinsics calibarion ended." << std::endl;
@@ -137,21 +141,20 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     running = true;
 
     cv::Mat image, warpedImage;
-    //~ cv::Mat homography;
 
     while (running) {
         image = inputImage.read();
         
         if (!image.empty()) {
-            //~ calibExtr(image, homography, getPatternSize(), getPatternMm());
-            calibExtr(image, homography, calibData.patternSize, calibData.patternMm);
+            calibExtr(image, calibData.homography, calibData.patternSize, calibData.patternMm);
         }
-        if (!homography.empty()) {
-            //~ inversePerspectiveTransform(image, warpedImage, homography);
-            warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+        
+        if (!calibData.homography.empty()) {
+            //~ inversePerspectiveTransform(image, warpedImage, calibData.homography);
+            warpPerspective(image, warpedImage, calibData.homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
             line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
-            outputImage.write(image);
+            outputImage.write(warpedImage);
         }
         else {
             line(image, cv::Point(image.cols/2, 0), cv::Point(image.cols/2, image.rows), cv::Scalar(0, 0, 255), 1);
@@ -160,9 +163,7 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
         }
     }
 
-    if (!homography.empty()) {
-        //~ setExtr(homography);
-        //~ setPxPerMm(calcPixelPerMm(warpedImage, getPatternSize(), getPatternMm()));
+    if (!calibData.homography.empty()) {
         calibData.pixelPerMm = calcPixelPerMm(warpedImage, calibData.patternSize, calibData.patternMm);
     }
     else {
@@ -182,9 +183,9 @@ void CameraImageAcquisitor::changeImagePosition (ImageData& inputImage, ImageDat
     while (running) {
         image = inputImage.read();
         
-        if (!image.empty() && !homography.empty()) {
+        if (!image.empty() && !calibData.homography.empty()) {
             char key = uiState.getKey();
-            adjustImagePosition(image, adjustedImage, key, homography);
+            adjustImagePosition(image, adjustedImage, key, calibData.homography);
             outputImage.write(adjustedImage);
         }
     }
@@ -221,33 +222,33 @@ double calcExposure (int value)
     return ((maxVal/pow(2.0, value)) - minVal) / range;
 }
 
-void calcBoardCornerPosition (cv::Size calibPatternSize, float calibPatternMm, std::vector<cv::Point3f>& corners)
+void calcBoardCornerPosition (cv::Size patternSize, float patternMm, std::vector<cv::Point3f>& corners)
 {
     corners.clear();
     // Calculate corner position of chessboard squares
-    for (auto i = 0; i < calibPatternSize.height; i++) {
-        for (auto j = 0; j < calibPatternSize.width; j++) {
-            corners.push_back(cv::Point3f(j*calibPatternMm, i*calibPatternMm, 0));
+    for (auto i = 0; i < patternSize.height; i++) {
+        for (auto j = 0; j < patternSize.width; j++) {
+            corners.push_back(cv::Point3f(j*patternMm, i*patternMm, 0));
         }
     }
 }
 
-void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::Size calibPatternSize, double calibPatternMm)
+bool calibIntr (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, std::vector<std::vector<cv::Point2f> > imagePoints, cv::Size patternSize, double patternMm)
 {
     double aspRatio = 1.0;
-
-    std::vector<std::vector<cv::Point2f> >imagePoints;
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
     std::vector<cv::Point2f> corners;
 
-    bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = cv::findChessboardCorners(image, patternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
         cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
         // Save corners
         imagePoints.push_back(corners);
+        
+        drawChessboardCorners(image, patternSize, corners, found);
     }
     
     cameraMatrix = cv::Mat::eye(3, 3, CV_64F); //< Intrinsic camera matrix
@@ -256,52 +257,56 @@ void calibIntr (cv::Mat image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, cv::S
     std::vector<cv::Mat> tvecs; //< Translation vectors
 
     // Set aspect ratio
-    cameraMatrix.at<double>(1, 1) = aspRatio;
+    cameraMatrix.at<double>(0, 0) = aspRatio;
     // Calculate cornerpoints
     std::vector<std::vector<cv::Point3f> > objectPoints(1);
-    calcBoardCornerPosition(calibPatternSize, calibPatternMm, objectPoints[0]);
+    calcBoardCornerPosition(patternSize, patternMm, objectPoints[0]);
     objectPoints.resize(imagePoints.size(), objectPoints[0]);
-
-    // Calibrate camera and get reprojection error rms
-    double rms = calibrateCamera(objectPoints, imagePoints, cv::Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
     
-    // Wait to reposition chessboard
+    if (imagePoints.size() > 0) {
+        // Calibrate camera and get reprojection error rms
+        double rms = cv::calibrateCamera(objectPoints, imagePoints, cv::Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
+    }
+    bool ok = cv::checkRange(cameraMatrix) && cv::checkRange(distCoeffs);
 
     //std::vector<double> reprojErrs;
     //double totalAvgError = computeReprojectionErrors(objectPoints, imagePoints, rvecs, tvecs, cameraMatrix, distCoeffs, reprojErrs, 1);
+    return ok;
 }
 
-void calibExtr (cv::Mat image, cv::Mat& homography, cv::Size calibPatternSize, double calibPatternMm)
+void calibExtr (cv::Mat& image, cv::Mat& homography, cv::Size patternSize, double patternMm)
 {
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
     std::vector<cv::Point2f> corners;
-    bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(image, patternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
         cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 
         cv::Point2f objectPoints[4];
         objectPoints[0] = cv::Point2f(0, 0);
-        objectPoints[1] = cv::Point2f((calibPatternSize.width-1)*calibPatternMm, 0);
-        objectPoints[2] = cv::Point2f(0, (calibPatternSize.height-1)*calibPatternMm);
-        objectPoints[3] = cv::Point2f((calibPatternSize.width-1)*calibPatternMm, (calibPatternSize.height-1)*calibPatternMm);
+        objectPoints[1] = cv::Point2f((patternSize.width-1)*patternMm, 0);
+        objectPoints[2] = cv::Point2f(0, (patternSize.height-1)*patternMm);
+        objectPoints[3] = cv::Point2f((patternSize.width-1)*patternMm, (patternSize.height-1)*patternMm);
         cv::Point2f imagePoints[4];
         imagePoints[0] = corners[0];
-        imagePoints[1] = corners[calibPatternSize.width-1];
-        imagePoints[2] = corners[(calibPatternSize.height-1)*calibPatternSize.width];
-        imagePoints[3] = corners[(calibPatternSize.height-1)*calibPatternSize.width + calibPatternSize.width-1];
+        imagePoints[1] = corners[patternSize.width-1];
+        imagePoints[2] = corners[(patternSize.height-1)*patternSize.width];
+        imagePoints[3] = corners[(patternSize.height-1)*patternSize.width + patternSize.width-1];
 
 
         homography = getPerspectiveTransform(objectPoints, imagePoints);
 
         // Shift to image center
         cv::Mat t = cv::Mat::eye(3, 3, CV_64F);
-        t.at<double>(0, 2) = 0.5*(image.cols-1) * (-1) + 0.5 * (calibPatternMm * 0.5 * (calibPatternSize.width-1)); // Shift width
-        t.at<double>(1, 2) = (image.rows-1) * (-1) + 1.5 * (calibPatternMm * 0.5 * (calibPatternSize.height-1)); // Shift height
+        t.at<double>(0, 2) = 0.5*(image.cols-1) * (-1) + 0.5 * (patternMm * 0.5 * (patternSize.width-1)); // Shift width
+        t.at<double>(1, 2) = (image.rows-1) * (-1) + 1.5 * (patternMm * 0.5 * (patternSize.height-1)); // Shift height
         t.at<double>(2, 2) = 0.5;
         homography *= t;
+        
+        drawChessboardCorners(image, patternSize, corners, found);
     }
 }
 
@@ -311,7 +316,7 @@ float euclidDist (cv::Point2f p1, cv::Point2f p2)
     return sqrt(diff.x*diff.x + diff.y*diff.y);
 }
 
-float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatternMm)
+float calcPixelPerMm (cv::Mat image, cv::Size patternSize, float patternMm)
 {
     float pxDist;
     float avgPxDist = 0.0;
@@ -320,13 +325,13 @@ float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatte
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
     std::vector<cv::Point2f> corners;
-    bool found = findChessboardCorners(image, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(image, patternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
-        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, calibPatternMm, 0.1));
+        cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, patternMm, 0.1));
 
         for (auto i = 0; i < (corners.size()-1); i++) {
-            if ((i%calibPatternSize.width) < (calibPatternSize.width-1)) {
+            if ((i%patternSize.width) < (patternSize.width-1)) {
                 pxDist = euclidDist(corners[i+1], corners[i]);
                 avgPxDist += pxDist;
                 distCnt++;
@@ -337,22 +342,22 @@ float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatte
         }
         avgPxDist /= distCnt;
         std::cout << "Avg distance in px " << avgPxDist << std::endl;
-        std::cout << "Px per mm " << avgPxDist/calibPatternMm << std::endl;
+        std::cout << "Px per mm " << avgPxDist/patternMm << std::endl;
     }
-    return avgPxDist/calibPatternMm;
+    return avgPxDist/patternMm;
 }
 
-void drawChessBoard (cv::Mat& image, cv::Size calibPatternSize)
+void drawChessBoard (cv::Mat& image, cv::Size patternSize)
 {
     cv::Mat grayImage;
     cvtColor(image, grayImage, CV_BGR2GRAY);
 
     std::vector<cv::Point2f> corners;
-    bool found = findChessboardCorners(grayImage, calibPatternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    bool found = findChessboardCorners(grayImage, patternSize, corners, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 
     if (found) {
         cornerSubPix(grayImage, corners, cv::Size(11,11), cv::Size(-1,-1), cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-        drawChessboardCorners(image, calibPatternSize, corners, found);
+        drawChessboardCorners(image, patternSize, corners, found);
     }
 }
 

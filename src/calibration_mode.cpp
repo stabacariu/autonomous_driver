@@ -30,12 +30,11 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
-            (key == 'b') ||
-            (key == 's')) {
+            (key == 'Q') ||
+            (key == 'B') ||
+            (key == 'S')) {
             running = false;
         }
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     stop();
     
@@ -47,8 +46,9 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
         case 'q': s->setMode(new ClosingMode()); break;
-        case 'b': s->setMode(new ConfigurationMode()); break;
-        case 's': /* Save data */; break;
+        case 'Q': s->setMode(new ClosingMode()); break;
+        case 'B': s->setMode(new ConfigurationMode()); break;
+        case 'S': /* Save data */; break;
     }
     delete this;
 }
@@ -92,8 +92,6 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
             (key == 'S')) {
             running = false;
         }
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     stop();
     
