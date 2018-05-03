@@ -9,8 +9,8 @@
 void UIAboutMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
-    cv::Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
+    cv::Point pt2(200, image.rows);
+    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
     
     std::string titleText = "About";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
@@ -34,19 +34,17 @@ void UIAboutMode::draw (cv::Mat& image)
         textOrg.y = textOrg.y + 15 + textSize.height;
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
-    drawAboutText(image);
+    
+    cv::Mat textImage = cv::Mat(image.rows, image.cols - 200, CV_8UC3, cv::Scalar::all(0));
+    drawAboutText(textImage);
+    cv::Rect insert = cv::Rect(200, 0, image.cols, image.rows);
+    textImage.copyTo(image(insert));
 }
 
 void UIAboutMode::drawAboutText (cv::Mat& image)
 {
-    rectangle(image, cv::Point(0, 0), cv::Point(image.cols-1, image.rows-1), cv::Scalar(218, 218, 218), -1);
-    
-    cv::Point pt1(0, 0);
-    cv::Point pt2(200, (image.size().height-1));
-    
-    pt1.y += 25;
-    pt1.x = 200/2 - 120/2;
-    
+    rectangle(image, cv::Point(0, 0), cv::Point(image.cols, image.rows), cv::Scalar::all(218), -1);
+        
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
@@ -59,6 +57,7 @@ void UIAboutMode::drawAboutText (cv::Mat& image)
     cv::Point textOrg;
     cv::Size textSize;
     textOrg.x = 10;
+    textOrg.y = 0;
     for (size_t i = 0; i < textList.size(); i++) {
         std::string text = textList[i];
         textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
@@ -86,5 +85,4 @@ void UIAboutMode::getAboutTextList (std::vector<std::string>& textList)
     textList.push_back("<sergiu.tabacariu@fh-campuswien.ac.at>");
     textList.push_back("Date 1.5.2018");
     textList.push_back("Version 1.0.0");
-    
 }

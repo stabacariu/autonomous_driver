@@ -23,8 +23,12 @@ void PathPlanner::start (ImageData& inputImage, LaneData& laneData, ObstacleData
         actualLeftLine = laneData.getLeftLine();
         actualRightLine = laneData.getRightLine();
         
-        actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
-        actualLane.push_back(cvtRoadMarkingToVec4i(actualRightLine));
+        if (actualLeftLine.size() > 0) {
+            actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
+        }
+        if (actualRightLine.size() > 0) {
+            actualLane.push_back(cvtRoadMarkingToVec4i(actualRightLine));
+        }
         
         cv::Mat image;
         image = inputImage.read();

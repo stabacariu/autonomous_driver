@@ -79,33 +79,16 @@ public:
      * @param key User input key
      */
     void processUiInput (cv::Mat& image, char key);
-    
-    /**
-     * @brief Set user keyboard input
-     * 
-     * This function sets the user keyboard input.
-     * 
-     * @param c Input key
-     */
-    void setUserInput(char c);
-    
-    /**
-     * @brief Get user keyboard input
-     * 
-     * This function gets the user keyboard input.
-     * 
-     * @return Input key
-     */
-    char getUserInput(void);
-    
+        
 private:
     std::atomic_bool running {false};
     cv::Mat image;
-    //~ UserInterfaceState state;
     std::atomic_char guiInputKey {(char)(-1)};
     std::atomic_char consoleInputKey {(char)(-1)};
     std::mutex lock;
 };
+
+void drawMessage (cv::Mat& image, std::string text);
 
 //! @} user_interface
 

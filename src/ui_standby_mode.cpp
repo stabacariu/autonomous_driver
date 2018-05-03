@@ -11,7 +11,7 @@ void UIStandbyMode::draw (cv::Mat& image)
     // Draw a side bar
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.size().height-1);
-    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
+    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
     
     // Configure text
     std::string titleText = "menu";

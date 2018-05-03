@@ -8,23 +8,16 @@
 
 void UserInterfaceState::setKey (char k)
 {
-    std::lock_guard<std::mutex> guard(lock);
+    //~ std::lock_guard<std::mutex> guard(lock);
     key = k;
-    if (key != (char)(-1)) {
-        lastKey = key;
-    }
 }
 
 char UserInterfaceState::getKey (void)
 {
-    std::lock_guard<std::mutex> guard(lock);
-    return key;
-}
-
-char UserInterfaceState::getLastKey (void)
-{
-    std::lock_guard<std::mutex> guard(lock);
-    return lastKey;
+    //~ std::lock_guard<std::mutex> guard(lock);
+    char k = key;
+    key = (char)(-1);
+    return k;
 }
 
 void UserInterfaceState::setMode (UserInterfaceMode* m)

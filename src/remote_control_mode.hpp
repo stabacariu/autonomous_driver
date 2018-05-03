@@ -15,9 +15,10 @@
 #include "camera_image_acquisitor.hpp"
 #include "vehicle_data.hpp"
 #include "remote_control.hpp"
+#include "vehicle_control.hpp"
 
 //! @addtogroup remote_control_mode
-//! @brief A mode to remotly control the system
+//! @brief A mode to manualy remote control the autonomous driving system
 //! @{
 
 class RemoteControlMode : public SystemMode {
@@ -54,7 +55,8 @@ private:
     UserInterface ui; //!< User interface
     CameraImageAcquisitor camera; //!< Camera image acquisitor
     VehicleData vehicle; //!< Vehicle data
-    RemoteControler remoteControl; //!< Remote control
+    RemoteControler remoteControler; //!< Remote controler
+    VehicleControler vehicleControler; //!< Vehicle control
 };
 
 //! @} remote_control_mode

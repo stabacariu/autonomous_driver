@@ -10,8 +10,8 @@
 void UIRemoteControlMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
-    cv::Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
+    cv::Point pt2(200, image.rows);
+    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
     
     std::string titleText = "RC mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;

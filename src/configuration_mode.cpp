@@ -28,9 +28,10 @@ void ConfigurationMode::start (SystemState* s)
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
-            (key == 'b') ||
-            (key == 'i') ||
-            (key == 'e')) {
+            (key == 'Q') ||
+            (key == 'B') ||
+            (key == 'I') ||
+            (key == 'E')) {
             running = false;
         }
         
@@ -45,9 +46,10 @@ void ConfigurationMode::start (SystemState* s)
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
         case 'q': s->setMode(new ClosingMode()); break;
-        case 'b': s->setMode(new StandbyMode()); break;
-        case 'i': s->setMode(new IntrinsicsCalibrationMode()); break;
-        case 'e': s->setMode(new ExtrinsicsCalibrationMode()); break;
+        case 'Q': s->setMode(new ClosingMode()); break;
+        case 'B': s->setMode(new StandbyMode()); break;
+        case 'I': s->setMode(new IntrinsicsCalibrationMode()); break;
+        case 'E': s->setMode(new ExtrinsicsCalibrationMode()); break;
     }
     delete this;
 }

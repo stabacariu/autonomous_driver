@@ -46,7 +46,7 @@ void LaneDetector::start (ImageData& inputImage, ImageData& outputImage, LaneDat
                 image.copyTo(warpedImage);
             }
 
-            std::vector<cv::Vec4i> lines, someLines;
+            std::vector<cv::Vec4i> lines;
 
             imageProcessing(warpedImage, lines);
 

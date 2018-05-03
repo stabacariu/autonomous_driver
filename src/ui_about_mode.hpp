@@ -13,15 +13,15 @@
 //! @addtogroup user_interface
 //! @{
 
-class UIAboutMode : UserInterfaceMode {
+class UIAboutMode : public UserInterfaceMode {
 public:
     UIAboutMode () {};
     ~UIAboutMode () = default;
     
     void draw (cv::Mat& image) override;
+    void drawAboutText (cv::Mat& image);
     
 private:
-    void drawAboutText (cv::Mat& image);
     void getAboutMenuList (std::vector<std::string>& menuList);
     void getAboutTextList (std::vector<std::string>& textList);
 };

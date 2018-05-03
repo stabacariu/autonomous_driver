@@ -7,6 +7,7 @@
 #include "about_mode.hpp"
 #include "closing_mode.hpp"
 #include "standby_mode.hpp"
+#include "ui_about_mode.hpp"
 
 void AboutMode::start (SystemState* s)
 {
@@ -14,6 +15,7 @@ void AboutMode::start (SystemState* s)
     std::cout << "MODE: About Mode started." << std::endl;
     running = true;
     
+    uiState.setMode(new UIAboutMode());
     std::thread uiShow(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread uiInput(&UserInterface::consoleInput, &ui, std::ref(uiState));
     
@@ -24,7 +26,8 @@ void AboutMode::start (SystemState* s)
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
-            (key == 'b')) {
+            (key == 'Q') ||
+            (key == 'B')) {
             running = false;
         }
         
@@ -37,7 +40,8 @@ void AboutMode::start (SystemState* s)
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
         case 'q': s->setMode(new ClosingMode()); break;
-        case 'b': s->setMode(new StandbyMode()); break;
+        case 'Q': s->setMode(new ClosingMode()); break;
+        case 'B': s->setMode(new StandbyMode()); break;
     }
     delete this;
 }

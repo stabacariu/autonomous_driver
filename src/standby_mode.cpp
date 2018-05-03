@@ -30,14 +30,13 @@ void StandbyMode::start (SystemState* s)
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
-            (key == 'a') ||
-            (key == 'r') ||
-            (key == 'c') ||
-            (key == 's')) {
+            (key == 'Q') ||
+            (key == 'A') ||
+            (key == 'R') ||
+            (key == 'C') ||
+            (key == 'S')) {
             running = false;
         }
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     stop();
     
@@ -48,10 +47,11 @@ void StandbyMode::start (SystemState* s)
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
         case 'q': s->setMode(new ClosingMode()); break;
-        case 'a': s->setMode(new AutonomousMode()); break;
-        case 'r': s->setMode(new RemoteControlMode()); break;
-        case 'c': s->setMode(new ConfigurationMode()); break;
-        case 's': s->setMode(new AboutMode()); break;
+        case 'Q': s->setMode(new ClosingMode()); break;
+        case 'A': s->setMode(new AutonomousMode()); break;
+        case 'R': s->setMode(new RemoteControlMode()); break;
+        case 'C': s->setMode(new ConfigurationMode()); break;
+        case 'S': s->setMode(new AboutMode()); break;
     }
     delete this;
 }

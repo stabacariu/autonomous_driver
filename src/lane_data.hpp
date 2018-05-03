@@ -33,6 +33,8 @@ enum MarkingType {
 struct RoadMarking {
     std::vector<cv::Point> points; //!< Points describing road marking course in an image
     MarkingType type; //!< Type of road marking
+    
+    int size (void) { return points.size(); };
 };
 
 /**

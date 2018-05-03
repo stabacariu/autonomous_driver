@@ -31,7 +31,8 @@ void AutonomousMode::start (SystemState* s)
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
-            (key == 'b')) {
+            (key == 'Q') ||
+            (key == 'B')) {
             running = false;
         }
     }
@@ -49,7 +50,8 @@ void AutonomousMode::start (SystemState* s)
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
         case 'q': s->setMode(new ClosingMode()); break;
-        case 's': s->setMode(new StandbyMode()); break;
+        case 'Q': s->setMode(new ClosingMode()); break;
+        case 'B': s->setMode(new StandbyMode()); break;
     }
     delete this;
 }

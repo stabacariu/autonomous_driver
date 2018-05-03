@@ -15,12 +15,19 @@ void UserInterface::start (ImageData& imageData, UserInterfaceState& uiState)
     
     while (running) {
         image = imageData.read();
-        if (!image.empty()) {
-            uiState.draw(image);
-            
-            imshow("Autonomous Driver 1.0", image);
-            guiInputKey = cv::waitKey(1000/30);
+        if (image.empty()) {
+            image = cv::Mat(360, 640, CV_8UC3, cv::Scalar::all(0));
+            drawMessage(image, "No Image!");
         }
+        // Create output image composition from UI menu and output image
+        cv::Mat outputImage = cv::Mat(image.rows, image.cols + 200, CV_8UC3, cv::Scalar::all(0));
+        uiState.draw(outputImage);
+        
+        cv::Rect insert = cv::Rect(200, 0, image.cols, image.rows);
+        image.copyTo(outputImage(insert));
+        
+        imshow("Autonomous Driver 1.0", outputImage);
+        guiInputKey = cv::waitKey(1000/30);
         
         if (uiState.getKey() == (char)(-1)) {
             uiState.setKey(guiInputKey);
@@ -48,15 +55,17 @@ void UserInterface::consoleInput (UserInterfaceState& uiState)
     std::ios_base::sync_with_stdio(false);
     
     while (running) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                
-        char key = consoleInputKey;
+        char key;
         if (std::cin.readsome(&key, 1) < 1) {
-            consoleInputKey = (char)(-1);
+            key = (char)(-1);
         }
+        consoleInputKey = key;
         
         if (uiState.getKey() == (char)(-1)) {
             uiState.setKey(consoleInputKey);
+        }
+        else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
     
@@ -65,26 +74,19 @@ void UserInterface::consoleInput (UserInterfaceState& uiState)
     std::cout << "THREAD: User input ended." << std::endl;
 }
 
-void UserInterface::setUserInput (char c)
+void drawMessage (cv::Mat& image, std::string text)
 {
-    std::lock_guard<std::mutex> guard(lock);
-    guiInputKey = c;
-    consoleInputKey = c;
-}
-
-char UserInterface::getUserInput ()
-{
-    std::lock_guard<std::mutex> guard(lock);
-    if (guiInputKey == consoleInputKey) {
-        return guiInputKey;
-    }
-    else if ((guiInputKey == (char)(-1)) && (consoleInputKey != (char)(-1))) {
-        return consoleInputKey;
-    }
-    else if ((guiInputKey != (char)(-1)) && (consoleInputKey == (char)(-1))) {
-        return guiInputKey;
-    }
-    else {
-        return guiInputKey;
-    }
+    cv::Point pt1(image.cols/2 - 200/2, image.rows/2 - 100/2);
+    cv::Point pt2(image.cols/2 + 200/2, image.rows/2 + 100/2);
+    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
+    
+    int fontFace = CV_FONT_HERSHEY_DUPLEX;
+    double fontScale = 1;
+    int thickness = 1;
+    int baseline = 0;
+    cv::Size textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
+    
+    // Get center of the text
+    cv::Point textOrg(pt1.x + (pt2.x - pt1.x)/2 - textSize.width/2, pt1.y + (pt2.y - pt1.y)/2 + textSize.height/2);
+    putText(image, text, textOrg, fontFace, fontScale, cv::Scalar(0, 0, 255), thickness);
 }

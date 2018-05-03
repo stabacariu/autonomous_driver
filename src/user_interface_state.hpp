@@ -18,14 +18,12 @@ public:
     
     void setKey (char k);
     char getKey (void);
-    char getLastKey (void);
     void setMode (UserInterfaceMode* m);
     UserInterfaceMode* getMode (void);
     void draw (cv::Mat& image);
 
 private:
-    char key {(char)(-1)};
-    char lastKey {(char)(-1)};
+    std::atomic_char key {(char)(-1)};
     UserInterfaceMode* mode;
     std::mutex lock; //!< Mutex lock for synchronized access
 };

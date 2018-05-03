@@ -10,8 +10,8 @@
 void UIAutonomousMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
-    cv::Point pt2(200, (image.size().height-1));
-    rectangle(image, pt1, pt2, cv::Scalar(218, 218, 218), -1);
+    cv::Point pt2(200, image.rows);
+    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
     
     std::string titleText = "Auto mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
@@ -98,30 +98,29 @@ void UIAutonomousMode::getAutoDetectList (std::vector<std::string>& detectList, 
 {
     detectList.clear();
     std::ostringstream text;
-    cv::Vec4i leftLine = cvtRoadMarkingToVec4i(l.getLeftLine());
-    cv::Vec4i rightLine = cvtRoadMarkingToVec4i(l.getRightLine());
+    cv::Vec4i leftLine, rightLine;
     
     text << "Lane:";
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    //~ if (l.size() > 0) {
-        //~ text << "L: [" << leftLine[0] << "," << leftLine[1] << "][" << leftLine[2] << "," << leftLine[3] << "]";
-    //~ }
-    //~ else {
-        //~ text << "No l found...";
-    //~ }
-    text << "L: [" << leftLine[0] << "," << leftLine[1] << "][" << leftLine[2] << "," << leftLine[3] << "]";
+    if (l.getLeftLine().size() > 0) {
+        leftLine = cvtRoadMarkingToVec4i(l.getLeftLine());
+        text << "L: [" << leftLine[0] << "," << leftLine[1] << "][" << leftLine[2] << "," << leftLine[3] << "]";
+    }
+    else {
+        text << "No left line found.";
+    }
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    //~ if (l.size() > 0) {
-        //~ text << "R: [" << rightLine[0] << "," << rightLine[1] << "][" << rightLine[2] << "," << rightLine[3] << "]";
-    //~ }
-    //~ else {
-        //~ text << "No l found...";
-    //~ }
-    text << "R: [" << rightLine[0] << "," << rightLine[1] << "][" << rightLine[2] << "," << rightLine[3] << "]";
+    if (l.getRightLine().size() > 0) {
+        rightLine = cvtRoadMarkingToVec4i(l.getRightLine());
+        text << "R: [" << rightLine[0] << "," << rightLine[1] << "][" << rightLine[2] << "," << rightLine[3] << "]";
+    }
+    else {
+        text << "No right line found.";
+    }
     detectList.push_back(text.str());
     text.str("");
     text.clear();
