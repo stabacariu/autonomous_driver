@@ -21,13 +21,29 @@
 //! @{
 
 /**
- * @brief A struct for the configuration data
+ * @brief A class for the configuration manager
  *
- * This struct holds all configuration data. It synchronises access via
+ * This class holds all configuration data. It synchronises access via
  * a mutex lock to be thread safe.
  */
-struct ConfigData {
+class Configurator {
 public:
+    Configurator (const std::string file = "config/default.xml");
+    ~Configurator () = default;
+    
+    /**
+     * @brief Configurator instance as global singleton
+     * 
+     * This static function describes a singleton for global accessibility.
+     * 
+     * @param file Path to configuration file
+     */
+    static Configurator &instance (const std::string file = "config/default.xml");
+    
+    int getInt (const std::string key);
+    int getDouble (const std::string key);
+    std::string getString (const std::string key);
+    cv::Mat getMat (const std::string key);
     
     /**
      * @brief A function to set configuration data
@@ -37,7 +53,7 @@ public:
      * 
      * @param c configuration data
      */
-    void setConfigData (ConfigData c);
+    void setConfigData (Configurator c);
     
     /**
      * @brief A function to save a calibration configuration to a XML file
@@ -47,7 +63,7 @@ public:
      * @param fs File storage
      * @param c Configuration data
      */
-    void saveCalibConfig (cv::FileStorage& fs, ConfigData c);
+    void saveCalibConfig (cv::FileStorage& fs, Configurator c);
     
     /**
      * @brief A function to save a calibration configuration to a XML file
@@ -66,7 +82,7 @@ public:
      * @param fs File storage
      * @param c Config data
      */
-    void load (cv::FileStorage fs, ConfigData& c);
+    void load (cv::FileStorage fs, Configurator& c);
     
     /**
      * @brief A function to load a configuration from a XML file
@@ -85,7 +101,7 @@ public:
      * 
      * @return Configuration data
      */
-    ConfigData getConfigData (void);
+    Configurator getConfigData (void);
     
     
     /**
@@ -103,7 +119,7 @@ public:
      * @param fs File storage
      * @param c Configuration data
      */
-    void loadDefault (cv::FileStorage fs, ConfigData& c);
+    void loadDefault (cv::FileStorage fs, Configurator& c);
     
     /**
      * @brief A function to validate a configuration
@@ -113,7 +129,7 @@ public:
      * @param c Configuration data
      * @return Valid data 
      */
-    bool validateConfig (ConfigData& c);
+    bool validateConfig (Configurator& c);
     
 private:
     std::string defaultConfigFileName {"default.xml"}; //! Default config file name

@@ -26,6 +26,8 @@ class CameraImageAcquisitor : public ImageAcquisitor {
 public:
     ~CameraImageAcquisitor() = default;
     
+    void loadConfig (std::string file = "../config/default.xml");
+    
     /**
      * @brief Write image to camera image acquisitor
      * 
@@ -148,7 +150,7 @@ public:
         std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
         cv::Size imageSize {640, 360}; //!< Calibration image size
         std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
-        cv::Size patternSize {5, 7}; //!< Calibration Pattern size
+        cv::Size patternSize {7, 5}; //!< Calibration pattern size
         double patternMm {30.}; //! Size of one pattern element in mm
         int numSamples {50}; //! Number of samples to use for calibration
         // Calibration data

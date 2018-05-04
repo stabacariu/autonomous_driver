@@ -6,8 +6,14 @@
 
 #include "configuration.hpp"
 
-ConfigData config;
+Configurator config;
 ConfigState configState;
+
+Configurator &Configurator::instance (const std::string file)
+{
+    static Configurator instance (file);
+    return instance;
+}
 
 void initConfig (void)
 {
@@ -15,7 +21,7 @@ void initConfig (void)
     configState.mode = CONFIG_MODE_NONE;
     pthread_mutex_init(&configState.lock, NULL);
 
-    ConfigData c;
+    Configurator c;
     cv::FileStorage fs("../config/config.xml", cv::FileStorage::READ);
     if (!fs.isOpened()) {
         fs.release();
@@ -49,9 +55,9 @@ void initConfig (void)
     fs.release();
 }
 
-ConfigData getConfigData (void)
+Configurator getConfigData (void)
 {
-    ConfigData c;
+    Configurator c;
 
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
@@ -81,7 +87,7 @@ ConfigData getConfigData (void)
     return c;
 }
 
-void setConfigData (ConfigData c)
+void setConfigData (Configurator c)
 {
     if (pthread_mutex_lock(&config.lock)) {
         std::cerr << "ERROR: Couldn't lock config mutex!" << std::endl;
@@ -145,7 +151,7 @@ ConfigMode getConfigState (void)
 
 void generateDefaultConfig (void)
 {
-    ConfigData c;
+    Configurator c;
     // Camera config
     c.cameraID = CV_CAP_ANY;
     c.cameraImageSize = cv::Size(640, 360);
@@ -184,7 +190,7 @@ void generateDefaultConfig (void)
     << "validData" << c.validData;
 }
 
-void loadDefaultConfig (cv::FileStorage fs, ConfigData& c)
+void loadDefaultConfig (cv::FileStorage fs, Configurator& c)
 {
     fs["cameraID"] >> c.cameraID;
     fs["cameraImageSize_width"] >> c.cameraImageSize.width;
@@ -203,7 +209,7 @@ void loadDefaultConfig (cv::FileStorage fs, ConfigData& c)
     fs["calibExtrDone"] >> c.calibExtrDone;
 }
 
-void saveCalibConfig (cv::FileStorage& fs, ConfigData c)
+void saveCalibConfig (cv::FileStorage& fs, Configurator c)
 {
     fs.writeComment("Camera config");
     fs << "cameraID" << c.cameraID
@@ -256,11 +262,11 @@ void saveCalibConfig (cv::FileStorage& fs, ConfigData c)
 void saveCalibConfig (void)
 {
     cv::FileStorage fs("../config/config.xml", cv::FileStorage::WRITE);
-    ConfigData c = getConfigData();
+    Configurator c = getConfigData();
     saveCalibConfig(fs, c);
 }
 
-void loadConfig (cv::FileStorage fs, ConfigData& c)
+void loadConfig (cv::FileStorage fs, Configurator& c)
 {
     fs["cameraID"] >> c.cameraID;
     fs["cameraImageSize_width"] >> c.cameraImageSize.width;
@@ -285,7 +291,7 @@ void loadConfig (cv::FileStorage fs, ConfigData& c)
     fs["validData"] >> c.validData;
 }
 
-bool validateConfig (ConfigData& c)
+bool validateConfig (Configurator& c)
 {
     c.validData = true;
     if (!(c.cameraID >= 0) || !(c.cameraID <= 9)) {

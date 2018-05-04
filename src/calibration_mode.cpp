@@ -78,7 +78,7 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
     std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
-    std::thread calibrationThread(&CameraImageAcquisitor::runIntrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage));
+    std::thread calibrationThread(&CameraImageAcquisitor::runExtrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage));
         
     char key = (char)(-1);
     

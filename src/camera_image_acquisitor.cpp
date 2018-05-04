@@ -8,6 +8,38 @@
 #include <ctime>
 #include <thread>
 
+void CameraImageAcquisitor::loadConfig (std::string file)
+{
+    cv::FileStorage fs(file, cv::FileStorage::READ);
+    
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File " << file << " does not exist!" << std::endl;
+    }
+    else {
+        fs["cameraID"] >> cameraData.id;
+        fs["cameraImageSize_width"] >> cameraData.imageSize.width;
+        fs["cameraImageSize_height"] >> cameraData.imageSize.height;
+        fs["cameraFPS"] >> cameraData.fps;
+        
+        fs["calibImageSize_width"] >> calibData.imageSize.width;
+        fs["calibImageSize_height"] >> calibData.imageSize.height;
+        fs["calibPattern"] >> calibData.pattern;
+        fs["calibPatternSize_width"] >> calibData.patternSize.width;
+        fs["calibPatternSize_height"] >> calibData.patternSize.height;
+        fs["calibPatternMm"] >> calibData.patternMm;
+        fs["calibSampleCount"] >> calibData.numSamples;
+        
+        fs["cameraMatrix"] >> calibData.cameraMatrix;
+        fs["distCoeffs"] >> calibData.distCoeffs;
+        fs["calibIntrDone"] >> calibData.intrCalibDone;
+        fs["homography"] >> calibData.homography;
+        fs["calibExtrDone"] >> calibData.extrCalibDone;
+        fs["transformation"] >> calibData.transformation;
+        fs["pixelPerMm"] >> calibData.pixelPerMm;
+    }
+}
+
 cv::Mat CameraImageAcquisitor::read ()
 {
     return capturedImage;
@@ -22,6 +54,8 @@ void CameraImageAcquisitor::start (ImageData& imageData)
 {
     std::cout << "THREAD: Camera capture started." << std::endl;
     running = true;
+    
+    loadConfig("../config/config.xml");
     
     // Initalize camera
     //~ cv::VideoCapture camera(getCameraID());
@@ -97,26 +131,27 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
     std::cout << "THREAD: Intrinsics calibarion started." << std::endl;
     running = true;
 
-    cv::Mat image, undistorted;
-    //~ cv::Mat calibData.homography;
-    
-    int sampleCnt = 0;
-    
+    cv::Mat image, undistorted, cameraMatrix, distCoeffs;
     std::vector<std::vector<cv::Point2f> > imagePoints;
+    int sampleCnt = 0;
 
     while (running) {
         image = inputImage.read();
         
         if (!image.empty() && (sampleCnt <= calibData.numSamples)) {
-            bool ok = calibIntr(image, calibData.cameraMatrix, calibData.distCoeffs, imagePoints, calibData.patternSize, calibData.patternMm);
-            //~ std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            bool ok = calibIntr(image, cameraMatrix, distCoeffs, imagePoints, calibData.patternSize, calibData.patternMm);
+            //~ bool ok = calibIntr(image, calibData.cameraMatrix, calibData.distCoeffs, imagePoints, calibData.patternSize, calibData.patternMm);
             if (ok) {
                 sampleCnt++;
             }
+            std::cout << "Calibration sample counter: " << sampleCnt << std::endl;
+            //~ std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
         
-        if (!calibData.cameraMatrix.empty() && !calibData.distCoeffs.empty()) {
-            cv::undistort(image, undistorted, calibData.cameraMatrix, calibData.distCoeffs);
+        if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+        //~ if (!calibData.cameraMatrix.empty() && !calibData.distCoeffs.empty()) {
+            cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
+            //~ cv::undistort(image, undistorted, calibData.cameraMatrix, calibData.distCoeffs);
             line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
             line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(undistorted);
@@ -126,10 +161,16 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
             line(image, cv::Point(0, image.rows/2), cv::Point(image.cols, image.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(image);
         }
-        
-        if (sampleCnt == calibData.numSamples) {
-            calibData.intrCalibDone = true;
-        }
+    }
+    
+    if ((sampleCnt == calibData.numSamples) && (!cameraMatrix.empty() && !distCoeffs.empty())) {
+        calibData.cameraMatrix = cameraMatrix;
+        calibData.distCoeffs = distCoeffs;
+        calibData.intrCalibDone = true;
+    }
+    else {
+        calibData.intrCalibDone = false;
+        std::cerr << "WARNING: Intrinsic camera calibration not successful!" << std::endl;
     }
     
     std::cout << "THREAD: Intrinsics calibarion ended." << std::endl;
@@ -140,18 +181,21 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     std::cout << "THREAD: Extrinsics calibarion started." << std::endl;
     running = true;
 
-    cv::Mat image, warpedImage;
+    cv::Mat image, warpedImage, homography;
 
     while (running) {
         image = inputImage.read();
         
         if (!image.empty()) {
-            calibExtr(image, calibData.homography, calibData.patternSize, calibData.patternMm);
+            calibExtr(image, homography, calibData.patternSize, calibData.patternMm);
+            //~ calibExtr(image, calibData.homography, calibData.patternSize, calibData.patternMm);
         }
         
-        if (!calibData.homography.empty()) {
+        if (!image.empty() && !homography.empty()) {
+        //~ if (!image.empty() && !calibData.homography.empty()) {
             //~ inversePerspectiveTransform(image, warpedImage, calibData.homography);
-            warpPerspective(image, warpedImage, calibData.homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+            warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
+            //~ warpPerspective(image, warpedImage, calibData.homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
             line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(warpedImage);
@@ -163,11 +207,16 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
         }
     }
 
-    if (!calibData.homography.empty()) {
+    if (!homography.empty()) {
+    //~ if (!calibData.homography.empty()) {
+        calibData.homography = homography;
         calibData.pixelPerMm = calcPixelPerMm(warpedImage, calibData.patternSize, calibData.patternMm);
+        calibData.extrCalibDone = true;
+        std::cout << "Avg px per mm: " << calibData.pixelPerMm << std::endl;
     }
     else {
-        std::cerr << "Homography couldn't be aquired!" << std::endl;
+        calibData.extrCalibDone = false;
+        std::cerr << "WARNING: Extrinsic camera calibration not successful!" << std::endl;
     }
     
     std::cout << "THREAD: Extrinsics calibarion ended." << std::endl;
