@@ -18,15 +18,44 @@
 //! @{
 
 /**
+ * @brief Camera data structure
+ */
+struct CameraConfig {
+    int id {0}; //!< Camera ID initialized with 0
+    cv::Size imageSize {640, 360}; //!< Camera image size
+    double fps {15.}; //!< Frames per second caputred by the camera
+    double exposure {0.}; //!< Camera exposure value
+};
+
+/**
+ * @brief Calibration data structure
+ */
+struct CameraCalibrationConfig {
+    // Calibration configuration
+    std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
+    cv::Size imageSize {640, 360}; //!< Calibration image size
+    std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
+    cv::Size patternSize {7, 5}; //!< Calibration pattern size
+    double patternMm {30.}; //! Size of one pattern element in mm
+    int numSamples {50}; //! Number of samples to use for calibration
+    // Calibration data
+    cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
+    cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
+    bool intrCalibDone {false}; //! Calibration done flag
+    cv::Mat homography; //!< Homography for perspective transform
+    bool extrCalibDone {false}; //! Calibration done flag
+    cv::Mat transformation; //!< Transformation matrix for image position
+    float pixelPerMm {0.f}; //!< Average mm per pixel
+};
+
+/**
  * @brief A camera image acquisition class
  * 
  * This class describes a camera image acquisitor
  */
 class CameraImageAcquisitor : public ImageAcquisitor {
 public:
-    ~CameraImageAcquisitor() = default;
-    
-    void loadConfig (std::string file = "../config/default.xml");
+    ~CameraImageAcquisitor () = default;
     
     /**
      * @brief Write image to camera image acquisitor
@@ -110,7 +139,7 @@ public:
      * @param inputImage Input image data
      * @param outputImage Output image data
      */
-    void runIntrinsicCalibration (ImageData& inputImage, ImageData& outputImage);
+    void runIntrinsicCalibration (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
     /**
      * @brief Run extrinsic camera calibration
@@ -120,7 +149,7 @@ public:
      * @param inputImage Input image data
      * @param outputImage Output image data
      */
-    void runExtrinsicCalibration (ImageData& inputImage, ImageData& outputImage);
+    void runExtrinsicCalibration (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
     /**
      * @brief Change image position in frame
@@ -131,63 +160,11 @@ public:
     void changeImagePosition (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
     
     void showChessBoard (ImageData& inputImage, ImageData& outputImage);
-    
-    /**
-     * @brief Camera data structure
-     */
-    struct CameraData {
-        int id {0}; //!< Camera ID initialized with 0
-        cv::Size imageSize {640, 360}; //!< Camera image size
-        double fps {15.}; //!< Frames per second caputred by the camera
-        double exposure {0.}; //!< Camera exposure value
-     };
-    
-    /**
-     * @brief Calibration data structure
-     */
-    struct CalibrationData {
-        // Calibration configuration
-        std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
-        cv::Size imageSize {640, 360}; //!< Calibration image size
-        std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
-        cv::Size patternSize {7, 5}; //!< Calibration pattern size
-        double patternMm {30.}; //! Size of one pattern element in mm
-        int numSamples {50}; //! Number of samples to use for calibration
-        // Calibration data
-        cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
-        cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
-        bool intrCalibDone {false}; //! Calibration done flag
-        cv::Mat homography; //!< Homography for perspective transform
-        bool extrCalibDone {false}; //! Calibration done flag
-        cv::Mat transformation; //!< Transformation matrix for image position
-        float pixelPerMm {0.f}; //!< Average mm per pixel
-    };
-    
+          
 private:
     cv::Mat capturedImage; //!< Captured image
-    CameraData cameraData; //!< Camera data
-    CalibrationData calibData; //!< Calibration data
-    
-    /**
-     * @brief Calibrate intrinsic camera parameters
-     * 
-     * This function calibrates the intrinsic camera matrix \f$A\f$ and 
-     * the distortion coefficients vector \f$V\f$.
-     * 
-     * @param numSamples Number of image samples to calibrate. A higher number results in better calibration
-     * @param cameraMatrix A 3x3 matrix \f$A=\begin{bmatrix}f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}\f$
-     * @param distCoeffs Distortion coefficients vector \f$V=(k_1, k_2, p_1, p_2[, k_3[, k_4, k_5, k_6 [, s_1, s_2, s_3, s_4[, \tau_x, \tau_y]]]])\f$
-     * @return True if calibration was successfull, else false.
-     */
-    //~ bool calibrateIntrinsics(int numSamples, cv::Mat& cameraMatrix, cv::Mat& distCoeffs);
-    
-    /**
-     * @brief Calibrate extrinsic camera parameters
-     * 
-     * @param image Camera image
-     * @param homography Homography to correct perspective
-     */
-    //~ bool calibrateExtrinsics(cv::Mat image, cv::Mat& homography, cv::Size patternSize, double patternMm);
+    CameraConfig cameraData; //!< Camera configuration data
+    CameraCalibrationConfig calibData; //!< Calibration configuration data
 };
 
 /**
@@ -204,17 +181,18 @@ double calcExposure(int exposureStep);
 /**
  * @brief A function calibrate intrinsic camera parameters
  * 
- * This function calibrates intrinsic camera parameters by searching for chessboard pattern
+ * This function calibrates intrinsic camera parameters by searching for
+ * chessboard pattern. This parameters are stored in a matrix \f$A\f$ and
+ * the distortion coefficients vector \f$V\f$.
  * 
  * @param image Image captured by the camera
- * @param cameraMatrix Pointer to camera matrix where result is stored
- * @param distCoeffs Pointer to matrix where distortion coefficents are stored
- * @param imagePoints Pointer to matrix where distortion coefficents are stored
- * @param calibPatternSize Calibration pattern dimensions
- * @param calibPatternMm Calibration pattern size in mm
- * @param sampleCnt Sample capturing counter
+ * @param cameraMatrix A 3x3 matrix \f$A=\begin{bmatrix}f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}\f$
+ * @param distCoeffs Distortion coefficients vector \f$V=(k_1, k_2, p_1, p_2[, k_3[, k_4, k_5, k_6 [, s_1, s_2, s_3, s_4[, \tau_x, \tau_y]]]])\f$
+ * @param imagePoints Detected calibration pattern corners
+ * @param patternSize Calibration pattern dimensions
+ * @param patternMm Calibration pattern size in mm
  */
-bool calibIntr (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, std::vector<std::vector<cv::Point2f> > imagePoints, cv::Size calibPatternSize, double calibPatternMm);
+bool calibrateIntrinsics (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, std::vector<std::vector<cv::Point2f> > imagePoints, cv::Size patternSize, double patternMm);
 
 /**
  * @brief A function calibrate extrinsic camera parameters
@@ -223,10 +201,10 @@ bool calibIntr (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCoeffs, std:
  * 
  * @param image Image captured by the camera
  * @param homography Perspective transform homography matrix
- * @param calibPatternSize Calibration pattern dimensions
- * @param calibPatternMm Calibration pattern size in mm
+ * @param patternSize Calibration pattern dimensions
+ * @param patternMm Calibration pattern size in mm
  */
-void calibExtr (cv::Mat& image, cv::Mat& homography, cv::Size calibPatternSize, double calibPatternMm);
+void calibrateExtrinsics (cv::Mat& image, cv::Mat& homography, cv::Size patternSize, double patternMm);
 
 /**
  * @brief A function to calculate how many pixels are in 1 mm.
@@ -236,10 +214,10 @@ void calibExtr (cv::Mat& image, cv::Mat& homography, cv::Size calibPatternSize, 
  * average distance between each chessboard field.
  * 
  * @param image Input and output image
- * @param calibPatternSize Calibration pattern dimensions
- * @param calibPatternMm Calibration pattern size in mm
+ * @param patternSize Calibration pattern dimensions
+ * @param patternMm Calibration pattern size in mm
  */
-float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatternMm);
+float calcPixelPerMm (cv::Mat image, cv::Size patternSize, float patternMm);
 
 /**
  * @brief A function to draw chessboard on an image.
@@ -247,9 +225,9 @@ float calcPixelPerMm (cv::Mat image, cv::Size calibPatternSize, float calibPatte
  * This function draws a chessboard on an image.
  * 
  * @param image Input and output image
- * @param calibPatternSize Calibration pattern dimensions
+ * @param patternSize Calibration pattern dimensions
  */
-void drawChessBoard (cv::Mat& image, cv::Size calibPatternSize);
+void drawChessBoard (cv::Mat& image, cv::Size patternSize);
 
 /**
  * @brief A function to adjust image position in frame.

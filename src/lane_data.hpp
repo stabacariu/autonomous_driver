@@ -10,7 +10,6 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <mutex>
-//~ #include "configuration.hpp"
 
 //! @addtogroup lane_detection
 //! @{

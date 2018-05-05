@@ -6,7 +6,7 @@
 
 #include "obstacle_detection.hpp"
 
-void ObstacleDetector::start (ObstacleData& obstacleData)
+void ObstacleDetector::start (ObstacleDetectionConfig& config, ObstacleData& obstacleData)
 {
     std::cout << "THREAD: Obstacle detection started." << std::endl;
     running = true;
@@ -22,9 +22,11 @@ void ObstacleDetector::start (ObstacleData& obstacleData)
     sonar.init(trigger, echo);
     
     while (running) {
-        //~ std::cout << "Obstacle detection: Distance is " << sonar.distance(1000) << " cm." << std::endl;
-        obstacleData.setDistance(sonar.distance(500));
-        delay(500);
+        if (config.active) {
+            std::cout << "Obstacle detection: Distance is " << sonar.distance(500) << " cm." << std::endl;
+            obstacleData.setDistance(sonar.distance(500));
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     std::cout << "THREAD: Obstacle detection ended." << std::endl;

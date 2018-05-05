@@ -51,7 +51,6 @@ void exceptionHandler (const char* errMsg)
  */
 int main (int argc, char *argv[])
 {
-    //! @todo Load config from file
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
     
@@ -61,6 +60,7 @@ int main (int argc, char *argv[])
     }
     catch (cv::Exception& e) {
         exceptionHandler(e.what());
+        app.quit();
     }
     
     

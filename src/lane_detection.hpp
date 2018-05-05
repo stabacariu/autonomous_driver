@@ -25,7 +25,7 @@
  */
 class LaneDetector {
 public:
-    ~LaneDetector() = default;
+    ~LaneDetector () = default;
     
     /**
      * @brief Start lane detection

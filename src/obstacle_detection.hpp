@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <atomic>
+#include <thread>
 #include <wiringPi.h>
 #include <opencv2/opencv.hpp>
 #include "../lib/libSonar.h"
@@ -22,6 +23,10 @@
 
 //! @addtogroup obstacle_detection
 //! @{
+
+struct ObstacleDetectionConfig {
+    bool active {false};
+};
 
 /**
  * @brief A obstacle detector class
@@ -34,8 +39,11 @@ public:
      * @brief Start obstacle detection
      * 
      * This function starts the obstacle detection thread.
+     * 
+     * @param config Obstacle detection configuration
+     * @param obstacleData Detected obstacle data
      */
-    void start(ObstacleData& obstacleData);
+    void start(ObstacleDetectionConfig& config, ObstacleData& obstacleData);
     
     /**
      * @brief Stop obstacle detection

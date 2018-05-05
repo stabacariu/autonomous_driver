@@ -16,6 +16,7 @@ void AutonomousMode::start (SystemState* s)
     running = true;
     
     uiState.setMode(new UIAutonomousMode(vehicle, lane, obstacle));
+    
     std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));

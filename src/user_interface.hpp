@@ -19,7 +19,6 @@
 #include "system_state.hpp"
 #include "image_data.hpp"
 #include "user_interface_state.hpp"
-//~ #include "configuration.hpp"
 #include "user_interface_menus.hpp"
 
 //! @addtogroup user_interface

@@ -5,11 +5,15 @@
  */
 
 #include "lane_detection.hpp"
+#include "configuration.hpp"
 
 void LaneDetector::start (ImageData& inputImage, ImageData& outputImage, LaneData& actualLane)
 {
     std::cout << "THREAD: Lane detection started." << std::endl;
     running = true;
+    
+    Configurator& config = Configurator::instance("../config/config.xml");
+    config.loadCameraCalibrationConfig();
     
     // Initialize line prediction
     cv::KalmanFilter kfL(4, 4, 0);
@@ -36,6 +40,7 @@ void LaneDetector::start (ImageData& inputImage, ImageData& outputImage, LaneDat
         cv::Mat image;
         cv::Mat homography; //!< @todo Inplement Read homography from calibration!
         image = inputImage.read();
+        homography = config.camCalibConfig.homography;
         
         if (!image.empty()) {
             cv::Mat warpedImage;

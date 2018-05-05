@@ -19,6 +19,7 @@ void StandbyMode::start (SystemState* s)
     running = true;
     
     uiState.setMode(new UIStandbyMode());
+    
     std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
     std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));

@@ -30,7 +30,7 @@
 
 class AutonomousMode : public SystemMode {
 public:
-    ~AutonomousMode() = default;
+    ~AutonomousMode () = default;
     
     /**
      * @brief Start autonomous driving mode
