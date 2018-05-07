@@ -12,17 +12,15 @@
 #include "about_mode.hpp"
 #include "ui_standby_mode.hpp"
 
-void StandbyMode::start (SystemState* s)
+void StandbyMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Standby Mode started." << std::endl;
     running = true;
-    
+  
     uiState.setMode(new UIStandbyMode());
-    
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
+    std::thread uiShowThread(&UserInterface::run, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     
     char key = (char)(-1);
     
@@ -39,10 +37,9 @@ void StandbyMode::start (SystemState* s)
             running = false;
         }
     }
-    stop();
+    quit();
     
     uiShowThread.join();
-    uiInputThread.join();
     imageAcquisitionThread.join();
     
     switch (key) {
@@ -57,16 +54,16 @@ void StandbyMode::start (SystemState* s)
     delete this;
 }
 
-void StandbyMode::stop ()
+void StandbyMode::quit ()
 {
     stopModules();
     running = false;
-    std::cout << "MODE: Standby Mode stopped." << std::endl;
+    std::cout << "MODE: Quitting standby mode..." << std::endl;
 }
 
 void StandbyMode::stopModules ()
 {
     std::cout << "MODE: Quiting Standby System Mode Modules..." << std::endl;
-    ui.stop();
-    camera.stop();
+    ui.quit();
+    camera.quit();
 }

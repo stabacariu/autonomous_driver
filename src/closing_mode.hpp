@@ -18,8 +18,8 @@ class ClosingMode : public SystemMode {
 public:
     ~ClosingMode() = default;
 
-    void start (SystemState* s) override;
-    void stop (void) override;
+    void run (SystemState* s) override;
+    void quit (void) override;
 };
 
 //! @} closing_mode

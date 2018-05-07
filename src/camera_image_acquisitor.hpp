@@ -18,7 +18,7 @@
 //! @{
 
 /**
- * @brief Camera data structure
+ * @brief Camera configuration data structure
  */
 struct CameraConfig {
     int id {0}; //!< Camera ID initialized with 0
@@ -28,7 +28,7 @@ struct CameraConfig {
 };
 
 /**
- * @brief Calibration data structure
+ * @brief Camera calibration configuration data structure
  */
 struct CameraCalibrationConfig {
     // Calibration configuration
@@ -75,16 +75,7 @@ public:
      * @return Image frame
      */
     cv::Mat read (void) override;
-    
-    /**
-     * @brief Start camera image acquisition
-     * 
-     * This function starts a camera image acquisition thread.
-     *
-     * @param imageData A image data reference where to store captured image
-     */
-     void start (ImageData& imageData) override;
-    
+           
     /**
      * @brief Set camera exposure
      * 
@@ -134,10 +125,20 @@ public:
     void setHomography (cv::Mat homography);
     
     /**
+     * @brief Run camera image acquisition
+     * 
+     * This function runs a camera image acquisition thread.
+     *
+     * @param imageData A image data reference where to store captured image
+     */
+     void run (ImageData& imageData) override;
+    
+    /**
      * @brief Run intrinsic camera calibration
      * 
      * @param inputImage Input image data
      * @param outputImage Output image data
+     * @param uiState User interface state
      */
     void runIntrinsicCalibration (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
@@ -148,23 +149,36 @@ public:
      * 
      * @param inputImage Input image data
      * @param outputImage Output image data
+     * @param uiState User interface state
      */
     void runExtrinsicCalibration (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
     /**
-     * @brief Change image position in frame
+     * @brief Run image position adjustment in frame
      * 
-     * This function changes horizontal and vertical image position in a
-     * frame
+     * This function runs the image position adjustment in a
+     * frame.
+     * 
+     * @param inputImage Input image data
+     * @param outputImage Output image data
+     * @param uiState User interface state
      */
-    void changeImagePosition (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
+    void runImagePositionAdjustment (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
     
-    void showChessBoard (ImageData& inputImage, ImageData& outputImage);
+    /**
+     * @brief Run chess board show
+     * 
+     * This function runs a chess board showing thread.
+     * 
+     * @param inputImage Input image data
+     * @param outputImage Output image data
+     */
+    void runChessBoardShow (ImageData& inputImage, ImageData& outputImage);
           
 private:
     cv::Mat capturedImage; //!< Captured image
-    CameraConfig cameraData; //!< Camera configuration data
-    CameraCalibrationConfig calibData; //!< Calibration configuration data
+    CameraConfig camConfig; //!< Camera configuration data
+    CameraCalibrationConfig camCalibConfig; //!< Calibration configuration data
 };
 
 /**

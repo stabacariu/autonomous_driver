@@ -6,7 +6,7 @@
 
 #include "remote_control.hpp"
 
-void RemoteControler::start (VehicleData& vehicle, UserInterfaceState& uiState)
+void RemoteControler::run (VehicleData& vehicle, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: Remote control started." << std::endl;
     running = true;
@@ -76,7 +76,7 @@ void RemoteControler::start (VehicleData& vehicle, UserInterfaceState& uiState)
     std::cout << "THREAD: Remote control ended." << std::endl;
 }
 
-void RemoteControler::stop ()
+void RemoteControler::quit ()
 {
     running = false;
 }

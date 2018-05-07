@@ -18,6 +18,13 @@ public:
     UIConfigurationMode() {};
     ~UIConfigurationMode() = default;
     
+    /**
+     * @brief Draw configuration user interface mode
+     * 
+     * This function draws the configuration user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
     
 private:

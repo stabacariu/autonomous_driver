@@ -16,10 +16,41 @@ class UserInterfaceState {
 public:
     ~UserInterfaceState() = default;
     
+    /**
+     * @brief Set user input key
+     * 
+     * @param k User input key
+     */
     void setKey (char k);
+    
+    /**
+     * @brief Get user input key
+     * 
+     * @return User input key
+     */
     char getKey (void);
+    
+    /**
+     * @brief Set user interface mode
+     * 
+     * @param m User interface mode
+     */
     void setMode (UserInterfaceMode* m);
+    
+    /**
+     * @brief Get user interface mode
+     * 
+     * @return User interface mode
+     */
     UserInterfaceMode* getMode (void);
+    
+    /**
+     * @brief Draw user interface
+     * 
+     * This function draws the user interface.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image);
 
 private:

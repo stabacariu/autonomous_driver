@@ -32,7 +32,7 @@ public:
     /**
      * @brief Start path planning
      * 
-     * This function starts the path planning thread. This thread plans
+     * This function runs the path planning thread. This thread plans
      * a path according to a detected lane makring. It then sets a
      * certain acceleration and steering angle.
      * 
@@ -41,14 +41,14 @@ public:
      * @param obstacleData
      * @param vehicle
      */
-    void start(ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle);
+    void run (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle);
     
     /**
-     * @brief Stop path planning
+     * @brief Quit path planning
      * 
-     * This function stops the path planning thread.
+     * This function quits the path planning thread.
      */
-    void stop(void);
+    void quit (void);
     
     /**
      * @brief Check if path planning is running

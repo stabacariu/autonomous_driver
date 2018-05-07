@@ -33,7 +33,7 @@ public:
      * 
      * @param distance in mm
      */
-    void setDistance(double distance);
+    void setDistance (double distance);
     
     /**
      * @brief Get distance to obstacle
@@ -43,7 +43,7 @@ public:
      * 
      * @return Distance in mm
      */
-    double getDistance(void);
+    double getDistance (void);
     
     /**
      * @brief Set velocity of obstacle
@@ -53,7 +53,7 @@ public:
      * 
      * @param velocity in m/s
      */
-    void setVelocity(double velocity);
+    void setVelocity (double velocity);
     
     /**
      * @brief Get velocity of obstacle
@@ -63,7 +63,7 @@ public:
      * 
      * @return Velocity in m/s
      */
-    double getVelocity(void);
+    double getVelocity (void);
     
     /**
      * @brief Set ROI of obstacle
@@ -73,7 +73,7 @@ public:
      * 
      * @param roi Rectangle in pixel
      */
-    void setRoi(cv::Rect roi);
+    void setRoi (cv::Rect roi);
     
     /**
      * @brief Get ROI of obstacle
@@ -83,7 +83,7 @@ public:
      * 
      * @return ROI rectangle in pixel
      */
-    cv::Rect getRoi(void);
+    cv::Rect getRoi (void);
     
 private:
     TrafficSignType type; //!< Traffic sign type

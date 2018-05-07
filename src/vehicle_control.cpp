@@ -6,7 +6,7 @@
 
 #include "vehicle_control.hpp"
 
-void VehicleControler::start (VehicleData& vehicle)
+void VehicleControler::run (VehicleData& vehicle)
 {
     std::cout << "THREAD: Vehicle control started." << std::endl;
     running = true;
@@ -30,7 +30,7 @@ void VehicleControler::start (VehicleData& vehicle)
     std::cout << "THREAD: Vehicle control ended." << std::endl;
 }
 
-void VehicleControler::stop ()
+void VehicleControler::quit ()
 {
     running = false;
 }

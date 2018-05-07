@@ -5,18 +5,23 @@
  */
 
 #include "user_interface.hpp"
+#include "configuration.hpp"
 
-void UserInterface::start (ImageData& imageData, UserInterfaceState& uiState)
+void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: User interface started." << std::endl;
     running = true;
     
-    cv::namedWindow("Autonomous Driver 1.0", CV_WINDOW_AUTOSIZE);
+    Configurator& config = Configurator::instance();
+    uiConfig = config.getUserInterfaceConfig();
+    camConfig = config.getCameraConfig();
+        
+    cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
     
     while (running) {
         image = imageData.read();
         if (image.empty()) {
-            image = cv::Mat(360, 640, CV_8UC3, cv::Scalar::all(0));
+            image = cv::Mat(uiConfig.imageSize.height, uiConfig.imageSize.width, CV_8UC3, cv::Scalar::all(0));
             drawMessage(image, "No Image!");
         }
         // Create output image composition from UI menu and output image
@@ -26,19 +31,22 @@ void UserInterface::start (ImageData& imageData, UserInterfaceState& uiState)
         
         uiState.draw(outputImage);
         
-        imshow("Autonomous Driver 1.0", outputImage);
-        guiInputKey = cv::waitKey(1000/30);
+        imshow(uiConfig.mainWindowName, outputImage);
+        inputKey = cv::waitKey(1000/uiConfig.fps*2);
         
-        if (uiState.getKey() == (char)(-1)) {
-            uiState.setKey(guiInputKey);
+        if (inputKey == (char)(-1)) {
+            inputKey = getConsoleInput();
         }
         
+        if (uiState.getKey() == (char)(-1)) {
+            uiState.setKey(inputKey);
+        }
     }
 
     std::cout << "THREAD: User interface ended." << std::endl;
 }
 
-void UserInterface::stop ()
+void UserInterface::quit ()
 {
     running = false;
 }
@@ -48,30 +56,15 @@ bool UserInterface::isRunning ()
     return running;
 }
 
-void UserInterface::consoleInput (UserInterfaceState& uiState)
+char getConsoleInput (void)
 {
-    std::cout << "THREAD: User input started." << std::endl;
-    running = true;
     std::ios_base::sync_with_stdio(false);
-    
-    while (running) {
-        char key;
-        if (std::cin.readsome(&key, 1) < 1) {
-            key = (char)(-1);
-        }
-        consoleInputKey = key;
-        
-        if (uiState.getKey() == (char)(-1)) {
-            uiState.setKey(consoleInputKey);
-        }
-        else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
+    char key;
+    if (std::cin.readsome(&key, 1) < 1) {
+        key = (char)(-1);
     }
-    
     std::ios_base::sync_with_stdio(true);
-    
-    std::cout << "THREAD: User input ended." << std::endl;
+    return key;
 }
 
 void drawMessage (cv::Mat& image, std::string text)

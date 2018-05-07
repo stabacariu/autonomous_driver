@@ -26,7 +26,6 @@ void MotorDriver::setAcceleration (int value)
 
 void MotorDriver::reset (void)
 {
-    
     pwmModule.setPWM(STEERING, 0);
     pwmModule.setPWM(ESC, 0);
     pwmModule.reset();

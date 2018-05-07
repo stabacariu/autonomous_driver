@@ -18,7 +18,22 @@ public:
     UIAboutMode () {};
     ~UIAboutMode () = default;
     
+    /**
+     * @brief Draw about user interface mode
+     * 
+     * This function draws the about user interface mode.
+     * 
+     * @param image Image matrix
+     */
     void draw (cv::Mat& image) override;
+    
+    /**
+     * @brief Draw about user interface mode text
+     * 
+     * This function draws the about user interface mode text.
+     * 
+     * @param image Image matrix
+     */
     void drawAboutText (cv::Mat& image);
     
 private:

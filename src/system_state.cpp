@@ -6,7 +6,6 @@
 
 #include "system_state.hpp"
 #include "system_mode.hpp"
-//~ #include "standby_mode.hpp"
 
 void SystemState::setMode (SystemMode* m)
 {
@@ -19,19 +18,19 @@ SystemMode* SystemState::getMode ()
     return mode;
 }
 
-void SystemState::start ()
+void SystemState::run ()
 {
     std::cout << "SYSTEM: Starting..." << std::endl;
     running = true;
-    mode->start(this);
+    mode->run(this);
 }
 
-void SystemState::stop ()
+void SystemState::quit ()
 {
     std::cout << "SYSTEM: Stopping..." << std::endl;
     running = false;
     if (mode->isRunning()) {
-        mode->stop();
+        mode->quit();
     }
 }
 

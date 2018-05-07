@@ -31,14 +31,14 @@ public:
      * 
      * @param s System state pointer
      */
-    void start (SystemState* s) override;
+    void run (SystemState* s) override;
     
     /**
      * @brief Stop intrinsics calibration system mode
      * 
      * This function stops the intrinsic camera calibration mode.
      */
-    void stop (void) override;
+    void quit (void) override;
     
     /**
      * @brief Stop mode modules
@@ -66,14 +66,14 @@ public:
      * 
      * @param s System state pointer
      */
-    void start (SystemState* s) override;
+    void run (SystemState* s) override;
     
     /**
      * @brief Stop extrinsics calibration system mode
      * 
      * This function stops the extrinsic camera calibration mode.
      */
-    void stop (void) override;
+    void quit (void) override;
     
     /**
      * @brief Stop mode modules

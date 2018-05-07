@@ -33,18 +33,18 @@ public:
     ~AutonomousMode () = default;
     
     /**
-     * @brief Start autonomous driving mode
+     * @brief Run autonomous driving mode
      * 
-     * This function starts the autonomous driving mode.
+     * This function runs the autonomous driving mode.
      */
-    void start (SystemState* s) override;
+    void run (SystemState* s) override;
     
     /**
-     * @brief Stop autonomous driving mode
+     * @brief Quit autonomous driving mode
      * 
-     * This function stops the autonomous driving mode.
+     * This function quits the autonomous driving mode.
      */
-    void stop (void) override;
+    void quit (void) override;
     
     /**
      * @brief Stop autonomous driving mode modules

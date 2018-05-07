@@ -14,6 +14,7 @@
 #include "image_data.hpp"
 #include "image_filter.hpp"
 #include "lane_data.hpp"
+#include "camera_image_acquisitor.hpp"
 
 //! @addtogroup lane_detection
 //! @{
@@ -28,22 +29,22 @@ public:
     ~LaneDetector () = default;
     
     /**
-     * @brief Start lane detection
+     * @brief Run lane detection
      * 
-     * This function starts the lane detection thread.
+     * This function runs the lane detection thread.
      * 
      * @param inputImage Input image captured by image acquisitor
      * @param outputImage Output image with result for showing on user interface
      * @param actualLane Actual detected lane
      */
-    void start(ImageData& inputImage, ImageData& outputImage, LaneData& actualLane);
+    void run(ImageData& inputImage, ImageData& outputImage, LaneData& actualLane);
     
     /**
-     * @brief Stop lane detection
+     * @brief Quit lane detection
      * 
-     * This function stops the lane detection thread.
+     * This function guits the lane detection thread.
      */
-    void stop(void);
+    void quit(void);
     
     /**
      * @brief Check if lane detection is running
@@ -56,6 +57,8 @@ public:
     
 private:
     std::atomic_bool running{false}; //!< Thread running flag
+    
+    CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration
 };
 
 /**

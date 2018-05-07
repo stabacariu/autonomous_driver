@@ -5,15 +5,19 @@
  */
 
 #include "autonomous_driver.hpp"
+#include "configuration.hpp"
 
 void AutonomousDriver::exec ()
 {
     running = true;
     
-    state.start();
+    // Load config file to configurator instance
+    Configurator& config = Configurator::instance("../config/config.xml");
+    
+    state.run();
     
     while (state.isRunning()) {
-        state.start();
+        state.run();
     }
     
     quit();
@@ -23,6 +27,6 @@ void AutonomousDriver::quit ()
 {
     running = false;
     if (state.isRunning()) {
-        state.stop();
+        state.quit();
     }
 }

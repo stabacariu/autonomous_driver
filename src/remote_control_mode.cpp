@@ -10,18 +10,17 @@
 #include "autonomous_mode.hpp"
 #include "ui_remote_control_mode.hpp"
 
-void RemoteControlMode::start (SystemState* s)
+void RemoteControlMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "Remote Control System Mode started." << std::endl;
     running = true;
     
     uiState.setMode(new UIRemoteControlMode(vehicle));
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
-    std::thread remoteControlThread(&RemoteControler::start, &remoteControler, std::ref(vehicle), std::ref(uiState));
-    std::thread vehicleControlThread(&VehicleControler::start, &vehicleControler, std::ref(vehicle));
+    std::thread uiShowThread(&UserInterface::run, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
+    std::thread remoteControlThread(&RemoteControler::run, &remoteControler, std::ref(vehicle), std::ref(uiState));
+    std::thread vehicleControlThread(&VehicleControler::run, &vehicleControler, std::ref(vehicle));
     
     char key = (char)(-1);
     
@@ -36,10 +35,9 @@ void RemoteControlMode::start (SystemState* s)
             running = false;
         }
     }
-    stop();
+    quit();
     
     uiShowThread.join();
-    uiInputThread.join();
     imageAcquisitionThread.join();
     remoteControlThread.join();
     vehicleControlThread.join();
@@ -54,7 +52,7 @@ void RemoteControlMode::start (SystemState* s)
     delete this;
 }
 
-void RemoteControlMode::stop ()
+void RemoteControlMode::quit ()
 {
     stopModules();
     std::cout << "Remote Control System Mode stopped." << std::endl;
@@ -64,8 +62,8 @@ void RemoteControlMode::stop ()
 void RemoteControlMode::stopModules ()
 {
     std::cout << "MODE: Quiting Remoute Control Mode Modules..." << std::endl;
-    ui.stop();
-    camera.stop();
-    remoteControler.stop();
-    vehicleControler.stop();
+    ui.quit();
+    camera.quit();
+    remoteControler.quit();
+    vehicleControler.quit();
 }

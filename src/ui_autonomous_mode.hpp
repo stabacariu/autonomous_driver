@@ -21,7 +21,13 @@ public:
     UIAutonomousMode (VehicleData& v, LaneData& l, ObstacleData& o) : vehicle(v), lane(l), obstacle(o) {};
     ~UIAutonomousMode () = default;
     
-    //~ void draw (cv::Mat& image, VehicleData& vehicle, LaneData& lane, ObstacleData& obstacle);
+    /**
+     * @brief Draw autonomous driving user interface mode
+     * 
+     * This function draws the autonomous driving user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
 
 private:

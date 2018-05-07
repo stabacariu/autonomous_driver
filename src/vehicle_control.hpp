@@ -29,22 +29,22 @@ public:
     ~VehicleControler() = default;
     
     /**
-     * @brief Start vehicle control
+     * @brief Run vehicle control
      * 
-     * This function starts the vehicle control thread.
+     * This function runs the vehicle control thread.
      * This thread controls the vehicle by converting given values and
      * sending them to the motor driver.
      * 
      * @param vehicle Vehicle to control
      */
-    void start (VehicleData& vehicle);
+    void run (VehicleData& vehicle);
     
     /**
-     * @brief Stop vehicle control
+     * @brief Quit vehicle control
      * 
-     * This function stops the vehicle control thread.
+     * This function quits the vehicle control thread.
      */
-    void stop (void);
+    void quit (void);
     
     /**
      * @brief Check if vehicle control is running

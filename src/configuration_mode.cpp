@@ -10,16 +10,15 @@
 #include "calibration_mode.hpp"
 #include "ui_configuration_mode.hpp"
 
-void ConfigurationMode::start (SystemState* s)
+void ConfigurationMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Configuration Mode started." << std::endl;
     running = true;
     
     uiState.setMode(new UIConfigurationMode());
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(inputImage), std::ref(uiState));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
+    std::thread uiShowThread(&UserInterface::run, &ui, std::ref(inputImage), std::ref(uiState));
+    std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     
     char key = (char)(-1);
     
@@ -35,10 +34,9 @@ void ConfigurationMode::start (SystemState* s)
             running = false;
         }
     }
-    stop();
+    quit();
     
     uiShowThread.join();
-    uiInputThread.join();
     imageAcquisitionThread.join();
     
     switch (key) {
@@ -52,7 +50,7 @@ void ConfigurationMode::start (SystemState* s)
     delete this;
 }
 
-void ConfigurationMode::stop ()
+void ConfigurationMode::quit ()
 {
     stopModules();
     running = false;
@@ -62,6 +60,6 @@ void ConfigurationMode::stop ()
 void ConfigurationMode::stopModules ()
 {
     std::cout << "MODE: Stopping all modules..." << std::endl;
-    ui.stop();
-    camera.stop();
+    ui.quit();
+    camera.quit();
 }

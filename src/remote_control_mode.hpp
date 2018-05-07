@@ -32,14 +32,14 @@ public:
      * 
      * @param s System state pointer
      */
-    void start (SystemState* s) override;
+    void run (SystemState* s) override;
     
     /**
      * @brief Stop remote control mode
      * 
      * This function stops the remote control mode.
      */
-    void stop (void) override;
+    void quit (void) override;
     
     /**
      * @brief Stop autonomous driving mode modules

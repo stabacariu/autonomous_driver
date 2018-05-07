@@ -33,14 +33,14 @@ public:
      * @param inputImageData
      * @param outputImageData
      */
-    void start(ImageData& inputImageData, ImageData& outputImageData);
+    void run (ImageData& inputImageData, ImageData& outputImageData);
     
     /**
-     * @brief Stop traffic sign detection
+     * @brief Quit traffic sign detection
      * 
-     * This function stops the traffic sign detection thread.
+     * This function quits the traffic sign detection thread.
      */
-    void stop(void);
+    void quit (void);
     
     /**
      * @brief Check if traffic sign detection is running

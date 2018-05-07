@@ -31,6 +31,10 @@ public:
         VEHICLE_RIGHT = 1
     };
     
+    /**
+     * @brief An enum to describe the driving direction and gear of the
+     *        vehicle.
+     */
     enum Gear {
         VEHICLE_FORWARD = 1,
         VEHICLE_NEUTRAL = 0,
@@ -229,7 +233,6 @@ private:
     double wheelbase; //!< Vehicle wheelbase in mm
     double frontOverhang; //!< Vehicle front overhang in mm
     double rearOverhang; //!< Vehicle rear overhang in mm
-    
     std::mutex lock;
 };
 

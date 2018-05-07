@@ -17,6 +17,8 @@
 #include <opencv2/opencv.hpp>
 #include <mutex>
 #include "camera_image_acquisitor.hpp"
+#include "user_interface.hpp"
+#include "obstacle_detection.hpp"
 
 //! @addtogroup configuration
 //! @{
@@ -41,9 +43,36 @@ public:
      */
     static Configurator& instance (const std::string file = "../config/default.xml");
     
+    /**
+     * @brief Set camera configuration
+     * 
+     * This function sets the camera configuration.
+     * 
+     * @param c Camera configuration data
+     */
     void setCameraConfig (CameraConfig c);
+    
+    /**
+     * @brief Get camera configuration
+     * 
+     * This function gets the camera configuration.
+     * 
+     * @return Camera configuration data
+     */
     CameraConfig getCameraConfig (void);
+    
+    /**
+     * @brief Save camera configuration to XML-file
+     * 
+     * This function saves the camera configuration data to a XML-file.
+     */
     void saveCameraConfig (void);
+    
+    /**
+     * @brief Load camera configuration from XML-file
+     * 
+     * This function loads the camera conrfiguration data from a XML-file.
+     */
     void loadCameraConfig (void);
     
     void setCameraCalibrationConfig (CameraCalibrationConfig c);
@@ -51,11 +80,22 @@ public:
     void saveCameraCalibrationConfig (void);
     void loadCameraCalibrationConfig (void);
     
-public:
-    std::string fileName; //! Default config file name
-    CameraConfig cameraData;
-    CameraCalibrationConfig camCalibConfig;
+    void setUserInterfaceConfig (UserInterfaceConfig c);
+    UserInterfaceConfig getUserInterfaceConfig (void);
+    void saveUserInterfaceConfig (void);
+    void loadUserInterfaceConfig (void);
     
+    void setObstacleDetectionConfig (ObstacleDetectionConfig c);
+    ObstacleDetectionConfig getObstacleDetectionConfig (void);
+    void saveObstacleDetectionConfig (void);
+    void loadObstacleDetectionConfig (void);
+    
+public:
+    std::string fileName {"../config/default.xml"}; //!< Default config file name
+    CameraConfig camConfig; //!< Camera configuration data
+    CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration data
+    UserInterfaceConfig uiConfig; //!< User interface configuration data
+    ObstacleDetectionConfig obstacleDetConfig; //!< Obstacle detection configuration data
     std::mutex lock; //!< Mutex lock for synchronized access
 };
 

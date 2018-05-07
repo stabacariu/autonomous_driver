@@ -6,7 +6,7 @@
 
 #include "traffic_sign_detection.hpp"
 
-void TrafficSignDetector::start (ImageData& inputImageData, ImageData& outputImageData)
+void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImageData)
 {
     std::cout << "THREAD: Traffic sign detection started." << std::endl;
     running = true;
@@ -49,7 +49,7 @@ void TrafficSignDetector::start (ImageData& inputImageData, ImageData& outputIma
     std::cout << "THREAD: Traffic sign detection ended." << std::endl;
 }
 
-void TrafficSignDetector::stop ()
+void TrafficSignDetector::quit ()
 {
     running = false;
 }

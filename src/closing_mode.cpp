@@ -6,20 +6,20 @@
 
 #include "closing_mode.hpp"
 
-void ClosingMode::start (SystemState* s)
+void ClosingMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Closing Mode started." << std::endl;
     running = true;
     
     //~ resetMotorDriver();
-    stop();
-    s->stop();
+    quit();
+    s->quit();
 }
 
-void ClosingMode::stop ()
+void ClosingMode::quit ()
 {
     running = false;
-    std::cout << "MODE: Closing Mode stopped." << std::endl;
+    std::cout << "MODE: Quitting closing mode..." << std::endl;
 }
 

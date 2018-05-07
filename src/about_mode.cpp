@@ -9,16 +9,15 @@
 #include "standby_mode.hpp"
 #include "ui_about_mode.hpp"
 
-void AboutMode::start (SystemState* s)
+void AboutMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: About Mode started." << std::endl;
     running = true;
     
     uiState.setMode(new UIAboutMode());
-    std::thread uiShow(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
-    std::thread uiInput(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    
+    std::thread uiShow(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
+        
     char key = (char)(-1);
     
     // Process user input
@@ -32,10 +31,9 @@ void AboutMode::start (SystemState* s)
         }
         
     }
-    stop();
+    quit();
     
     uiShow.join();
-    uiInput.join();
     
     switch (key) {
         case 27: s->setMode(new ClosingMode()); break;
@@ -46,15 +44,15 @@ void AboutMode::start (SystemState* s)
     delete this;
 }
 
-void AboutMode::stop ()
+void AboutMode::quit ()
 {
     stopModules();
-    std::cout << "MODE: About mode stopped." << std::endl;
+    std::cout << "MODE: Quitting about mode..." << std::endl;
     running = false;
 }
 
 void AboutMode::stopModules ()
 {
     std::cout << "MODE: Stopping all modules..." << std::endl;
-    ui.stop();
+    ui.quit();
 }

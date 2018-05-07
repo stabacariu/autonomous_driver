@@ -27,7 +27,7 @@ public:
     ~RemoteControler() = default;
     
     /**
-     * @brief Start remote control the system
+     * @brief Run remote control the system
      * 
      * This thread enables user to control the system remotly.
      * The key w is used for acceleration.
@@ -39,14 +39,14 @@ public:
      * @param ui User interface
      * @param vehicle Vehicle data
      */
-    void start (VehicleData& vehicle, UserInterfaceState& uiState);
+    void run (VehicleData& vehicle, UserInterfaceState& uiState);
     
     /**
-     * @brief Stop remote control the system
+     * @brief Quit remote control the system
      * 
-     * This function stops remote control.
+     * This function quits remote control.
      */
-    void stop (void);
+    void quit (void);
     
     /**
      * @brief Check if remote controling is running

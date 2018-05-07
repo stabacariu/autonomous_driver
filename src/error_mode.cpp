@@ -7,7 +7,7 @@
 #include "error_mode.hpp"
 #include "closing_mode.hpp"
 
-void ErrorMode::start (SystemState* s)
+void ErrorMode::run (SystemState* s)
 {
     //! @todo Implement Error mode
     std::cout << "---------------------------------" << std::endl;
@@ -18,7 +18,7 @@ void ErrorMode::start (SystemState* s)
     delete this;
 }
 
-void ErrorMode::stop ()
+void ErrorMode::quit ()
 {
     //! @todo Implement Error mode
     running = false;

@@ -19,7 +19,13 @@ public:
     UIRemoteControlMode (VehicleData& v) : vehicle(v) {};
     ~UIRemoteControlMode () = default;
     
-    //~ void draw (cv::Mat& image, VehicleData& vehicle);
+    /**
+     * @brief Draw remote control user interface mode
+     * 
+     * This function draws the remote control user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
     
 private:

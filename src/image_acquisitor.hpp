@@ -41,17 +41,39 @@ class ImageAcquisitor {
 public:
     ~ImageAcquisitor() = default;
     
+    /**
+     * @brief Read acquisited image
+     * 
+     * This function reads the last acquisited image.
+     * 
+     * @return Acquisited image
+     */
     virtual cv::Mat read (void) = 0;
-    virtual void write (cv::Mat image) = 0;
-    
-    virtual void start (ImageData& image) = 0;
     
     /**
-     * @brief Stop image acquisition
+     * @brief Write image to image acquisitor
      * 
-     * This function stops the image acquisition thread.
+     * This function writes an image to the image acquisitor.
+     * 
+     * @param image Image matrix
      */
-    virtual void stop (void) { running = false; };
+    virtual void write (cv::Mat image) = 0;
+    
+    /**
+     * @brief Run image acquisition
+     * 
+     * This function runs an image acquisition thread
+     * 
+     * @param image Acquisited image
+     */
+    virtual void run (ImageData& image) = 0;
+    
+    /**
+     * @brief Quit image acquisition
+     * 
+     * This function quits the image acquisition thread.
+     */
+    virtual void quit (void) { running = false; };
     
     /**
      * @brief Checks if image aquisition is running
@@ -63,10 +85,7 @@ public:
     virtual bool isRunning (void) { return running; };
     
 protected:
-    int id;
     ImageData image;
-    int width;
-    int height;
     std::atomic_bool running;
 };
 

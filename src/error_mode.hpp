@@ -19,8 +19,8 @@ class ErrorMode : public SystemMode {
 public:
     ~ErrorMode() = default;
 
-    void start (SystemState* s) override;
-    void stop (void) override;
+    void run (SystemState* s) override;
+    void quit (void) override;
 };
 
 //! @} error_mode

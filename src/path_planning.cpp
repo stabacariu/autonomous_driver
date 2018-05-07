@@ -7,7 +7,7 @@
 #include "path_planning.hpp"
 
 
-void PathPlanner::start (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle)
+void PathPlanner::run (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
     running = true;
@@ -60,7 +60,7 @@ void PathPlanner::start (ImageData& inputImage, LaneData& laneData, ObstacleData
     std::cout << "THREAD: Path planning ended." << std::endl;
 }
 
-void PathPlanner::stop ()
+void PathPlanner::quit ()
 {
     running = false;
 }

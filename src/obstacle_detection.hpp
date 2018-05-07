@@ -36,21 +36,20 @@ public:
     ~ObstacleDetector() = default;
     
     /**
-     * @brief Start obstacle detection
+     * @brief Run obstacle detection
      * 
-     * This function starts the obstacle detection thread.
+     * This function runs the obstacle detection thread.
      * 
-     * @param config Obstacle detection configuration
      * @param obstacleData Detected obstacle data
      */
-    void start(ObstacleDetectionConfig& config, ObstacleData& obstacleData);
+    void run (ObstacleData& obstacleData);
     
     /**
-     * @brief Stop obstacle detection
+     * @brief Quit obstacle detection
      * 
-     * This function stops the obstacle detection thread.
+     * This function quits the obstacle detection thread.
      */
-    void stop(void);
+    void quit (void);
     
     /**
      * @brief Check if obstacle detection is running
@@ -62,7 +61,8 @@ public:
     bool isRunning(void);
     
 private:
-    std::atomic_bool running{false};
+    std::atomic_bool running {false};
+    ObstacleDetectionConfig obstacleDetConfig;
 };
 
 //! @} obstacle_detection

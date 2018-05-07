@@ -13,6 +13,13 @@ class UserInterfaceMode {
 public:
     virtual ~UserInterfaceMode () = default;
     
+    /**
+     * @brief Draw user interface mode
+     * 
+     * This function draws the user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     virtual void draw (cv::Mat& image) = 0;
 };
 

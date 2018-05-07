@@ -11,16 +11,16 @@
 #include "configuration_mode.hpp"
 #include "ui_calibration_mode.hpp"
 
-void IntrinsicsCalibrationMode::start (SystemState* s)
+void IntrinsicsCalibrationMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Intrinsics Calibration Mode started." << std::endl;
     running = true;
     
     uiState.setMode(new UIIntrinsicsCalibrationMode());
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
+    std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
+    
+    std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runIntrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
     
     char key = (char)(-1);
@@ -31,15 +31,14 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'Q') ||
-            (key == 'B') ||
-            (key == 'S')) {
+            (key == 'B')) {
             running = false;
         }
     }
-    stop();
+    quit();
     
     uiShowThread.join();
-    uiInputThread.join();
+    
     imageAcquisitionThread.join();
     calibrationThread.join();
     
@@ -48,36 +47,34 @@ void IntrinsicsCalibrationMode::start (SystemState* s)
         case 'q': s->setMode(new ClosingMode()); break;
         case 'Q': s->setMode(new ClosingMode()); break;
         case 'B': s->setMode(new ConfigurationMode()); break;
-        case 'S': /* Save data */; break;
     }
     delete this;
 }
 
-void IntrinsicsCalibrationMode::stop ()
+void IntrinsicsCalibrationMode::quit ()
 {
     stopModules();
     running = false;
-    std::cout << "MODE: Intrinsics Calibration Mode stopped." << std::endl;
+    std::cout << "MODE: Quitting intrinsics Calibration Mode..." << std::endl;
 }
 
 void IntrinsicsCalibrationMode::stopModules ()
 {
     std::cout << "MODE: Quiting Intrinsics Calibration System Mode Modules..." << std::endl;
-    ui.stop();
-    camera.stop();
+    ui.quit();
+    camera.quit();
 }
 
 
-void ExtrinsicsCalibrationMode::start (SystemState* s)
+void ExtrinsicsCalibrationMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Extrinsics Calibration Mode started." << std::endl;
     running = true;
     
     uiState.setMode(new UIExtrinsicsCalibrationMode());
-    std::thread uiShowThread(&UserInterface::start, &ui, std::ref(outputImage), std::ref(uiState));
-    std::thread uiInputThread(&UserInterface::consoleInput, &ui, std::ref(uiState));
-    std::thread imageAcquisitionThread(&CameraImageAcquisitor::start, &camera, std::ref(inputImage));
+    std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
+    std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runExtrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
         
     char key = (char)(-1);
@@ -88,15 +85,13 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'Q') ||
-            (key == 'B') ||
-            (key == 'S')) {
+            (key == 'B')) {
             running = false;
         }
     }
-    stop();
+    quit();
     
     uiShowThread.join();
-    uiInputThread.join();
     imageAcquisitionThread.join();
     calibrationThread.join();
     
@@ -105,21 +100,20 @@ void ExtrinsicsCalibrationMode::start (SystemState* s)
         case 'q': s->setMode(new ClosingMode()); break;
         case 'Q': s->setMode(new ClosingMode()); break;
         case 'B': s->setMode(new ConfigurationMode()); break;
-        case 'S': /* Save data */; break;
     }
     delete this;
 }
 
-void ExtrinsicsCalibrationMode::stop ()
+void ExtrinsicsCalibrationMode::quit ()
 {
     stopModules();
     running = false;
-    std::cout << "MODE: Extrinsics Calibration Mode stopped." << std::endl;
+    std::cout << "MODE: Quitting extrinsics calibration mode..." << std::endl;
 }
 
 void ExtrinsicsCalibrationMode::stopModules ()
 {
     std::cout << "MODE: Quiting Extrinsics Calibration System Mode Modules..." << std::endl;
-    ui.stop();
-    camera.stop();
+    ui.quit();
+    camera.quit();
 }

@@ -18,6 +18,13 @@ public:
     UIIntrinsicsCalibrationMode() {};
     ~UIIntrinsicsCalibrationMode() = default;
     
+    /**
+     * @brief Draw intrinsics calibration user interface mode
+     * 
+     * This function draws the intrinsics calibration user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
 
 private:
@@ -29,6 +36,13 @@ public:
     UIExtrinsicsCalibrationMode() {};
     ~UIExtrinsicsCalibrationMode() = default;
     
+    /**
+     * @brief Draw extrinsics calibration user interface mode
+     * 
+     * This function draws the extrinsics calibration user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
 
 private:

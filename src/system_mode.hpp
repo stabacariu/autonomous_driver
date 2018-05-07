@@ -36,12 +36,33 @@ class SystemMode {
 public:
     virtual ~SystemMode () = default;
     
-    virtual void start (SystemState* s) = 0;
-    virtual void stop (void) = 0;
+    /**
+     * @brief Run system mode
+     * 
+     * This function runs the system mode.
+     * 
+     * @param s System state pointer
+     */
+    virtual void run (SystemState* s) = 0;
+    
+    /**
+     * @brief Quit system mode
+     * 
+     * This function quits the system mode.
+     */
+    virtual void quit (void) = 0;
+    
+    /**
+     * @brief Check if system mode is running
+     * 
+     * This function checks if the system mode is running.
+     * 
+     * @return True if system mode is running, else false.
+     */
     virtual bool isRunning (void) { return running; };
 
 protected:
-    std::atomic_bool running {false};
+    std::atomic_bool running {false}; //!< Running flag
 };
 
 //! @} system_modes

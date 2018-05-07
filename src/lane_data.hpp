@@ -33,6 +33,13 @@ struct RoadMarking {
     std::vector<cv::Point> points; //!< Points describing road marking course in an image
     MarkingType type; //!< Type of road marking
     
+    /**
+     * @brief Size of road marking point vector
+     * 
+     * This function returns the size of a road marking point vector
+     * 
+     * @return Size of point vector
+     */
     int size (void) { return points.size(); };
 };
 
@@ -117,9 +124,40 @@ public:
       */
       LaneData getLane(void);
       
+      /**
+       * @brief Set region of interest of left lane marking
+       * 
+       * This function sets the region of interest of the left lane marking.
+       * 
+       * @param roi Region of interest of left lane marking 
+       */
       void setRoiLeft (cv::Rect roi);
+      
+      /**
+       * @brief Get region of interest of left lane marking
+       * 
+       * This function gets the region of interest of the left lane marking.
+       * 
+       * @return Region of interest of left lane marking
+       */
       cv::Rect getRoiLeft (void);
+      
+      /**
+       * @brief Set region of interest of right lane marking
+       * 
+       * This function sets the region of interest of the right lane marking.
+       * 
+       * @param roi Region of interest of right lane marking
+       */
       void setRoiRight (cv::Rect roi);
+      
+      /**
+       * @brief Get region of interest of right lane marking
+       * 
+       * This function gets the region of interest of the right lane marking.
+       * 
+       * @return Region of interest of right lane marking
+       */
       cv::Rect getRoiRight (void);
     
 private:

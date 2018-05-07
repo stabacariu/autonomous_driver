@@ -17,12 +17,23 @@
 #include <atomic>
 #include <mutex>
 #include "system_state.hpp"
+#include "camera_image_acquisitor.hpp"
 #include "image_data.hpp"
 #include "user_interface_state.hpp"
 #include "user_interface_menus.hpp"
 
 //! @addtogroup user_interface
 //! @{
+
+/**
+ * @brief User interface configuration structure
+ */
+struct UserInterfaceConfig {
+    std::string mainWindowName {"Autonomous Driver"}; //!< Main user interface window title
+    cv::Size imageSize {640, 360}; //!< Image size of output image
+    int menuWidth {200}; //!< Menu width
+    double fps {30.}; //!< User interface frames per second
+};
 
 /**
  * @brief A user interface class
@@ -39,7 +50,7 @@ public:
      * @param imageData Image data to show on user interface
      * @param uiState User interface input data
      */
-    void start (ImageData& imageData, UserInterfaceState& uiState);
+    void run (ImageData& imageData, UserInterfaceState& uiState);
     
     /**
      * @brief Quit user interface thread
@@ -47,7 +58,7 @@ public:
      * This function quits the user interface thread. It does that by
      * by setting a flag.
      */
-    void stop (void);
+    void quit (void);
     
     /**
      * @brief Check if user interface thread is running
@@ -57,16 +68,6 @@ public:
      * @return True if user interface is running, else false
      */
     bool isRunning (void);
-    
-    /**
-     * @brief Get user input from console thread
-     * 
-     * This function gets the user input from the console in an detached
-     * thread.
-     * 
-     * @param uiState User interface input data
-     */
-    void consoleInput (UserInterfaceState& uiState);
     
     /**
      * @brief A function to process the user interface input
@@ -82,11 +83,30 @@ public:
 private:
     std::atomic_bool running {false};
     cv::Mat image;
-    std::atomic_char guiInputKey {(char)(-1)};
-    std::atomic_char consoleInputKey {(char)(-1)};
+    std::atomic_char inputKey {(char)(-1)};
+    UserInterfaceConfig uiConfig;
+    CameraConfig camConfig;
     std::mutex lock;
 };
 
+/**
+ * @brief Get user input from console
+ * 
+ * This function gets the user input from the console with out blocking
+ * wait
+ * 
+ * @return User input key
+ */
+char getConsoleInput (void);
+
+/**
+ * @brief Draw a message on the center of an image
+ * 
+ * This function draws a message on the center of an image.
+ * 
+ * @param image Image matrix
+ * @param text Text string
+ */
 void drawMessage (cv::Mat& image, std::string text);
 
 //! @} user_interface

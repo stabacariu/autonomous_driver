@@ -17,7 +17,13 @@ class UIStandbyMode : public UserInterfaceMode {
 public:
     UIStandbyMode () {};
     ~UIStandbyMode () = default;
-    
+    /**
+     * @brief Draw standby user interface mode
+     * 
+     * This function draws the standby user interface mode.
+     * 
+     * @brief image Image matrix
+     */
     void draw (cv::Mat& image) override;
 
 private:

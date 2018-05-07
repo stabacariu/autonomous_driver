@@ -24,8 +24,8 @@ class AboutMode : public SystemMode {
 public:
     ~AboutMode() = default;
 
-    void start (SystemState* s) override;
-    void stop (void) override;
+    void run (SystemState* s) override;
+    void quit (void) override;
     void stopModules (void);
 
 private:

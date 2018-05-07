@@ -44,20 +44,19 @@ public:
     SystemMode* getMode (void);
     
     /**
-     * @brief Start system state
+     * @brief Run system state
      * 
-     * This function starts the system state. It runs the set system
-     * mode.
+     * This function runs the system state.
      */
-    void start (void);
+    void run (void);
     
     /**
-     * @brief Stop system state
+     * @brief Quit system state
      * 
-     * This function stops the system state. It stops the running system
+     * This function quits the system state. It quits the running system
      * mode.
      */
-    void stop (void);
+    void quit (void);
     
     /**
      * @brief Is system running
