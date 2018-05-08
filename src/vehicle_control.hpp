@@ -24,9 +24,9 @@
 //! @addtogroup vehicle_control
 //! @{
 
-class VehicleControler {
+class VehicleController {
 public:
-    ~VehicleControler() = default;
+    ~VehicleController() = default;
     
     /**
      * @brief Run vehicle control
@@ -37,7 +37,7 @@ public:
      * 
      * @param vehicle Vehicle to control
      */
-    void run (VehicleData& vehicle);
+    void run (VehicleModel& vehicle);
     
     /**
      * @brief Quit vehicle control

@@ -1,18 +1,23 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<!-- Camera config -->
+<!-- camera config -->
 <cameraID>0</cameraID>
 <cameraImageSize_width>640</cameraImageSize_width>
 <cameraImageSize_height>360</cameraImageSize_height>
-<cameraFPS>10</cameraFPS>
-<!-- Calibration config -->
-<calibImageSize_width>640</calibImageSize_width>
-<calibImageSize_height>360</calibImageSize_height>
-<calibPattern>CHESSBOARD</calibPattern>
-<calibPatternSize_width>7</calibPatternSize_width>
-<calibPatternSize_height>5</calibPatternSize_height>
-<calibPatternMm>30.</calibPatternMm>
-<calibIntrDone>0</calibIntrDone>
-<calibExtrDone>0</calibExtrDone>
-<validData>0</validData>
+<cameraFPS>15.</cameraFPS>
+<!-- camera calibration config -->
+<camCalibImageSize_width>640</camCalibImageSize_width>
+<camCalibImageSize_height>360</camCalibImageSize_height>
+<camCalibPattern>CHESSBOARD</camCalibPattern>
+<camCalibPatternSize_width>7</camCalibPatternSize_width>
+<camCalibPatternSize_height>5</camCalibPatternSize_height>
+<camCalibPatternMm>30.</camCalibPatternMm>
+<!-- user interface data -->
+<uiMainWindowName>Autonomous Driver</uiMainWindowName>
+<uiImageSize_width>640</uiImageSize_width>
+<uiImageSize_height>360</uiImageSize_height>
+<uiMenuWidth>200</uiMenuWidth>
+<uiFPS>30.</uiFPS>
+<!-- obstacle detection config -->
+<obstacleDetectionActive>0</obstacleDetectionActive>
 </opencv_storage>

@@ -113,7 +113,7 @@ public:
     
 private:
     PCA9685 pwmModule; //!< PWM Motor driver
-    int steering {STEERING_STRAIGHT}; //!< Direction from 0 to 4095
+    int steering {STEERING_STRAIGHT}; //!< VehicleDirection from 0 to 4095
     int acceleration {ESC_N}; //!< Accerelration from 0 to 4095
     //~ std::mutex lock; //!< Mutex lock for synchronized access
 };

@@ -44,6 +44,20 @@ public:
     static Configurator& instance (const std::string file = "../config/default.xml");
     
     /**
+     * @brief Save configuration
+     * 
+     * This function saves all configuration data.
+     */
+    void save (void);
+    
+    /**
+     * @brief Load configuration
+     * 
+     * This function loads all configuration data.
+     */
+    void load (void);
+    
+    /**
      * @brief Set camera configuration
      * 
      * This function sets the camera configuration.

@@ -11,7 +11,9 @@
 #include <atomic>
 #include <thread>
 #include <opencv2/opencv.hpp>
+#include "traffic_sign_data.hpp"
 #include "image_data.hpp"
+#include "camera_image_acquisitor.hpp"
 
 //! @addtogroup traffic_sign_detection
 //! @{
@@ -32,8 +34,9 @@ public:
      * 
      * @param inputImageData
      * @param outputImageData
+     * @param trafficSignData
      */
-    void run (ImageData& inputImageData, ImageData& outputImageData);
+    void run (ImageData& inputImageData, ImageData& outputImageData, TrafficSignData& trafficSignData);
     
     /**
      * @brief Quit traffic sign detection
@@ -53,6 +56,7 @@ public:
     
 private:
     std::atomic_bool running{false};
+    CameraCalibrationConfig camCalibConfig;
 };
 
 /**

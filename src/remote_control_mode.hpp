@@ -54,9 +54,9 @@ private:
     UserInterfaceState uiState; //!< User inderface user input data
     UserInterface ui; //!< User interface
     CameraImageAcquisitor camera; //!< Camera image acquisitor
-    VehicleData vehicle; //!< Vehicle data
-    RemoteControler remoteControler; //!< Remote controler
-    VehicleControler vehicleControler; //!< Vehicle control
+    VehicleModel vehicle; //!< Vehicle data
+    RemoteController remoteController; //!< Remote controller
+    VehicleController vehicleController; //!< Vehicle controller
 };
 
 //! @} remote_control_mode

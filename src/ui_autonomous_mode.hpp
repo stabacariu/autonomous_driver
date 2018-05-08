@@ -12,13 +12,14 @@
 #include "vehicle_data.hpp"
 #include "lane_data.hpp"
 #include "obstacle_data.hpp"
+#include "traffic_sign_data.hpp"
 
 //! @addtogroup user_interface
 //! @{
 
 class UIAutonomousMode : public UserInterfaceMode {
 public:
-    UIAutonomousMode (VehicleData& v, LaneData& l, ObstacleData& o) : vehicle(v), lane(l), obstacle(o) {};
+    UIAutonomousMode (VehicleModel& v, LaneData& l, ObstacleData& o, TrafficSignData& t) : vehicle(v), lane(l), obstacle(o), trafficSign(t) {};
     ~UIAutonomousMode () = default;
     
     /**
@@ -31,13 +32,14 @@ public:
     void draw (cv::Mat& image) override;
 
 private:
-    void getAutoMenuList (std::vector<std::string>& menuList);
-    void getAutoStateList (std::vector<std::string>& stateList, VehicleData& v);
-    void getAutoDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o);
+    void getMenuList (std::vector<std::string>& menuList);
+    void getStateList (std::vector<std::string>& stateList, VehicleModel& v);
+    void getDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o, TrafficSignData& t);
     
-    VehicleData& vehicle;
+    VehicleModel& vehicle;
     LaneData& lane;
     ObstacleData& obstacle;
+    TrafficSignData& trafficSign;
 };
 
 //! @} user_interface

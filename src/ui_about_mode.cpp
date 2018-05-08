@@ -24,7 +24,7 @@ void UIAboutMode::draw (cv::Mat& image)
     putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
     std::vector<std::string> menuList;
-    getAboutMenuList(menuList);
+    getMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -36,12 +36,12 @@ void UIAboutMode::draw (cv::Mat& image)
     }
     
     cv::Mat textImage = cv::Mat(image.rows, image.cols - 200, CV_8UC3, cv::Scalar::all(0));
-    drawAboutText(textImage);
+    drawText(textImage);
     cv::Rect insert = cv::Rect(200, 0, image.cols, image.rows);
     textImage.copyTo(image(insert));
 }
 
-void UIAboutMode::drawAboutText (cv::Mat& image)
+void UIAboutMode::drawText (cv::Mat& image)
 {
     rectangle(image, cv::Point(0, 0), cv::Point(image.cols, image.rows), cv::Scalar::all(218), -1);
         
@@ -51,7 +51,7 @@ void UIAboutMode::drawAboutText (cv::Mat& image)
     int baseline = 0;
     
     std::vector<std::string> textList;
-    getAboutTextList(textList);
+    getTextList(textList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     cv::Point textOrg;
@@ -66,7 +66,7 @@ void UIAboutMode::drawAboutText (cv::Mat& image)
     }
 }
 
-void UIAboutMode::getAboutMenuList (std::vector<std::string>& menuList)
+void UIAboutMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -74,7 +74,7 @@ void UIAboutMode::getAboutMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void UIAboutMode::getAboutTextList (std::vector<std::string>& textList)
+void UIAboutMode::getTextList (std::vector<std::string>& textList)
 {
     textList.clear();
     

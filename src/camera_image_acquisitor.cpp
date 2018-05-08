@@ -150,6 +150,7 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
     if (saveConfigFlag && camCalibConfig.intrCalibDone) {
         config.setCameraCalibrationConfig(camCalibConfig);
         config.saveCameraCalibrationConfig();
+        config.save();
         std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
     }
     
@@ -199,9 +200,9 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
 
     if (!homography.empty()) {
         camCalibConfig.homography = homography;
-        camCalibConfig.pixelPerMm = calcPixelPerMm(warpedImage, camCalibConfig.patternSize, camCalibConfig.patternMm);
+        camCalibConfig.mmPerPixel = calcPixelPerMm(warpedImage, camCalibConfig.patternSize, camCalibConfig.patternMm);
         camCalibConfig.extrCalibDone = true;
-        std::cout << "Avg px per mm: " << camCalibConfig.pixelPerMm << std::endl;
+        std::cout << "Avg px per mm: " << camCalibConfig.mmPerPixel << std::endl;
     }
     else {
         camCalibConfig.extrCalibDone = false;
@@ -211,6 +212,7 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     if (saveConfigFlag && camCalibConfig.extrCalibDone) {
         config.setCameraCalibrationConfig(camCalibConfig);
         config.saveCameraCalibrationConfig();
+        config.save();
         std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
     }
         

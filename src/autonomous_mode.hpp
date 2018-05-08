@@ -62,7 +62,7 @@ private:
     CameraImageAcquisitor camera; //!< Camera image acquisitor
     
     LaneData lane; //!< Lane data of actual detected lane
-    LaneDetector laneDetetor; //!< Lane detector
+    LaneDetector laneDetector; //!< Lane detector
     
     TrafficSignData trafficSignData; //!< Traffic sign data of detected traffic sign
     TrafficSignDetector trafficSignDetector; //!< Traffic sign detector
@@ -72,8 +72,8 @@ private:
     
     PathPlanner pathPlanner; //!< Path planner
     
-    VehicleData vehicle; //!< Vehicle data
-    VehicleControler vehicleControler; //!< Vehicle controler
+    VehicleModel vehicle; //!< Vehicle data
+    VehicleController vehicleController; //!< Vehicle controler
 };
 
 //! @} autonomous_driving_mode

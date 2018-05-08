@@ -31,21 +31,19 @@ struct CameraConfig {
  * @brief Camera calibration configuration data structure
  */
 struct CameraCalibrationConfig {
-    // Calibration configuration
     std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
     cv::Size imageSize {640, 360}; //!< Calibration image size
     std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
     cv::Size patternSize {7, 5}; //!< Calibration pattern size
     double patternMm {30.}; //! Size of one pattern element in mm
     int numSamples {50}; //! Number of samples to use for calibration
-    // Calibration data
     cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
     cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
     bool intrCalibDone {false}; //! Calibration done flag
     cv::Mat homography; //!< Homography for perspective transform
     bool extrCalibDone {false}; //! Calibration done flag
-    cv::Mat transformation; //!< Transformation matrix for image position
-    float pixelPerMm {0.f}; //!< Average mm per pixel
+    cv::Mat transform; //!< Transformation matrix for image position
+    double mmPerPixel {0.}; //!< Average mm per pixel
 };
 
 /**
@@ -75,54 +73,6 @@ public:
      * @return Image frame
      */
     cv::Mat read (void) override;
-           
-    /**
-     * @brief Set camera exposure
-     * 
-     * This function sets the camera exposure value.
-     * 
-     * @param exposure Camera exposure value
-     */
-    void setExposure(double exposure);
-    
-    /**
-     * @brief Set frames per second to capture
-     * 
-     * This function sets the frames per second to capture by the camera.
-     * 
-     * @param fps Frames per second
-     */
-    void setFPS (double fps);
-    
-    /**
-     * @brief Set camera matrix containing the focal length and principal image point
-     * 
-     * This function sets the camera matrix containing the focal length
-     * and principal image point.
-     * 
-     * @param cameraMatrix A 3x3 floating-point matrix \f$A=\begin{bmatrix}f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}\f$ 
-     */
-    void setCameraMatrix (cv::Mat cameraMatrix);
-    
-    /**
-     * @brief Set distortion coefficients
-     * 
-     * This function sets the distortion coefficients calculated by the
-     * OpenCV-Function calibrateCamera().
-     * 
-     * @param distCoeffs Distortion coefficients vector \f$(k_1, k_2, p_1, p_2[, k_3[, k_4, k_5, k_6 [, s_1, s_2, s_3, s_4[, \tau_x, \tau_y]]]])\f$ 
-     */
-    void setDistCoeffs (cv::Mat distCoeffs);
-    
-    /**
-     * @brief Set homography
-     * 
-     * This function sets the homography calculated by the extrinsic
-     * calibration routine.
-     * 
-     * @param homography A 3x3 floating point matrix \f$H=\begin{bmatrix}s_x & 0 & z_x \\ 0 & s_y & zy \\ 0 & 0 & z \end{bmatrix}\f$
-     */
-    void setHomography (cv::Mat homography);
     
     /**
      * @brief Run camera image acquisition

@@ -12,6 +12,22 @@ Configurator& Configurator::instance (const std::string file)
     return instance;
 }
 
+void Configurator::save (void)
+{
+    saveCameraConfig();
+    saveCameraCalibrationConfig();
+    saveUserInterfaceConfig();
+    saveObstacleDetectionConfig();
+}
+
+void Configurator::load (void)
+{
+    loadCameraConfig();
+    loadCameraCalibrationConfig();
+    loadUserInterfaceConfig();
+    loadObstacleDetectionConfig();
+}
+
 void Configurator::setCameraConfig (CameraConfig c)
 {
     std::lock_guard<std::mutex> guard(lock);
@@ -92,14 +108,14 @@ void Configurator::saveCameraCalibrationConfig (void)
         << "camCalibPatternMm" << camCalibConfig.patternMm
         << "camCalibnumSamples" << camCalibConfig.numSamples;
         
-        fs.writeComment("Calibration data");
+        fs.writeComment("camera calibration data");
         fs << "camCalibIntrDone" << camCalibConfig.intrCalibDone
         << "cameraMatrix" << camCalibConfig.cameraMatrix
         << "distCoeffs" << camCalibConfig.distCoeffs
         << "camCalibExtrDone" << camCalibConfig.extrCalibDone
         << "homography" << camCalibConfig.homography
-        << "transformation" << camCalibConfig.transformation
-        << "pixelPerMm" << camCalibConfig.pixelPerMm;
+        << "transform" << camCalibConfig.transform
+        << "mmPerPixel" << camCalibConfig.mmPerPixel;
     }
     fs.release();
 }
@@ -126,8 +142,8 @@ void Configurator::loadCameraCalibrationConfig (void)
         fs["camCalibIntrDone"] >> camCalibConfig.intrCalibDone;
         fs["homography"] >> camCalibConfig.homography;
         fs["camCalibExtrDone"] >> camCalibConfig.extrCalibDone;
-        fs["transformation"] >> camCalibConfig.transformation;
-        fs["pixelPerMm"] >> camCalibConfig.pixelPerMm;
+        fs["transform"] >> camCalibConfig.transform;
+        fs["mmPerPixel"] >> camCalibConfig.mmPerPixel;
     }
     fs.release();
 }

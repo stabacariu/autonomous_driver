@@ -28,7 +28,7 @@ public:
     void draw (cv::Mat& image) override;
 
 private:
-    void getCalibIntrinsicsMenuList (std::vector<std::string>& menuList);
+    void getMenuList (std::vector<std::string>& menuList);
 };
 
 class UIExtrinsicsCalibrationMode : public UserInterfaceMode {
@@ -46,7 +46,25 @@ public:
     void draw (cv::Mat& image) override;
 
 private:
-    void getCalibExtrinsicsMenuList (std::vector<std::string>& menuList);
+    void getMenuList (std::vector<std::string>& menuList);
+};
+
+class UIImagePositionAdjustmentMode : public UserInterfaceMode {
+public:
+    UIImagePositionAdjustmentMode() {};
+    ~UIImagePositionAdjustmentMode() = default;
+    
+    /**
+     * @brief Draw image position adjustment user interface mode
+     * 
+     * This function draws the image position adjustment user interface mode.
+     * 
+     * @brief image Image matrix
+     */
+    void draw (cv::Mat& image) override;
+
+private:
+    void getMenuList (std::vector<std::string>& menuList);
 };
 
 //! @} user_interface

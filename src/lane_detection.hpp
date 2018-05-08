@@ -57,7 +57,6 @@ public:
     
 private:
     std::atomic_bool running{false}; //!< Thread running flag
-    
     CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration
 };
 

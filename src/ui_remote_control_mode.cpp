@@ -6,7 +6,7 @@
 
 #include "ui_remote_control_mode.hpp"
 
-//~ void UIRemoteControlMode::draw (cv::Mat& image, VehicleData& vehicle)
+//~ void UIRemoteControlMode::draw (cv::Mat& image, VehicleModel& vehicle)
 void UIRemoteControlMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
@@ -26,7 +26,7 @@ void UIRemoteControlMode::draw (cv::Mat& image)
     putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
     std::vector<std::string> menuList;
-    getRcMenuList(menuList);
+    getMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -52,7 +52,7 @@ void UIRemoteControlMode::draw (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> stateList;
-    getRcStateList(stateList, vehicle);
+    getStateList(stateList, vehicle);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -93,7 +93,7 @@ void UIRemoteControlMode::drawRcCom (cv::Mat& image, cv::Point position)
     putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
 }
 
-void UIRemoteControlMode::getRcMenuList (std::vector<std::string>& menuList)
+void UIRemoteControlMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -102,7 +102,7 @@ void UIRemoteControlMode::getRcMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void UIRemoteControlMode::getRcStateList (std::vector<std::string>& stateList, VehicleData& v)
+void UIRemoteControlMode::getStateList (std::vector<std::string>& stateList, VehicleModel& v)
 {
     stateList.clear();
     std::ostringstream text;

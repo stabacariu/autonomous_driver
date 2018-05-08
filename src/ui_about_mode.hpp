@@ -34,11 +34,11 @@ public:
      * 
      * @param image Image matrix
      */
-    void drawAboutText (cv::Mat& image);
+    void drawText (cv::Mat& image);
     
 private:
-    void getAboutMenuList (std::vector<std::string>& menuList);
-    void getAboutTextList (std::vector<std::string>& textList);
+    void getMenuList (std::vector<std::string>& menuList);
+    void getTextList (std::vector<std::string>& textList);
 };
 
 //! @} user_interface

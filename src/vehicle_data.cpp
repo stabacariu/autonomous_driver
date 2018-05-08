@@ -6,121 +6,121 @@
 
 #include "vehicle_data.hpp"
 
-void VehicleData::setAcceleration (double value)
+void VehicleModel::setAcceleration (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     acceleration = value;
 }
 
-double VehicleData::getAcceleration (void)
+double VehicleModel::getAcceleration (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return acceleration;
 }
 
-void VehicleData::setDirection (VehicleData::Direction value)
+void VehicleModel::setDirection (VehicleDirection value)
 {
     std::lock_guard<std::mutex> guard(lock);
     direction = value;
 }
 
-VehicleData::Direction VehicleData::getDirection (void)
+VehicleDirection VehicleModel::getDirection (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return direction;
 }
 
-void VehicleData::setSpeed (double value)
+void VehicleModel::setSpeed (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     speed = value;
 }
 
-double VehicleData::getSpeed (void)
+double VehicleModel::getSpeed (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return speed;
 }
 
-void VehicleData::setSteering (double value)
+void VehicleModel::setSteering (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     steering = value;
 }
 
-double VehicleData::getSteering (void)
+double VehicleModel::getSteering (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return steering;
 }
 
-void VehicleData::setWidth (double value)
+void VehicleModel::setWidth (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     width = value;
 }
 
-double VehicleData::getWidth (void)
+double VehicleModel::getWidth (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return width;
 }
 
-void VehicleData::setLength (double value)
+void VehicleModel::setLength (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     lenght = value;
 }
 
-double VehicleData::getLenght (void)
+double VehicleModel::getLenght (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return lenght;
 }
 
-void VehicleData::setHeight (double value)
+void VehicleModel::setHeight (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     height = value;
 }
 
-double VehicleData::getHeight(void)
+double VehicleModel::getHeight(void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return height;
 }
 
-void VehicleData::setWheelbase(double value)
+void VehicleModel::setWheelbase(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     wheelbase = value;
 }
 
-double VehicleData::getWheelbase(void)
+double VehicleModel::getWheelbase(void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return wheelbase;
 }
 
-void VehicleData::setFrontOverhang(double value)
+void VehicleModel::setFrontOverhang(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     frontOverhang = value;
 }
 
-double VehicleData::getFrontOverhang(void)
+double VehicleModel::getFrontOverhang(void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return frontOverhang;
 }
 
-void VehicleData::setRearOverhang(double value)
+void VehicleModel::setRearOverhang(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
     rearOverhang = value;
 }
 
-double VehicleData::getRearOverhang(void)
+double VehicleModel::getRearOverhang(void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return rearOverhang;

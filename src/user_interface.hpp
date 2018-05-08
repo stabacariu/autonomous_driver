@@ -20,7 +20,6 @@
 #include "camera_image_acquisitor.hpp"
 #include "image_data.hpp"
 #include "user_interface_state.hpp"
-#include "user_interface_menus.hpp"
 
 //! @addtogroup user_interface
 //! @{

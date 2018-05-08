@@ -19,8 +19,8 @@ void RemoteControlMode::run (SystemState* s)
     uiState.setMode(new UIRemoteControlMode(vehicle));
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(inputImage), std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
-    std::thread remoteControlThread(&RemoteControler::run, &remoteControler, std::ref(vehicle), std::ref(uiState));
-    std::thread vehicleControlThread(&VehicleControler::run, &vehicleControler, std::ref(vehicle));
+    std::thread remoteControlThread(&RemoteController::run, &remoteController, std::ref(vehicle), std::ref(uiState));
+    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(vehicle));
     
     char key = (char)(-1);
     
@@ -64,6 +64,6 @@ void RemoteControlMode::stopModules ()
     std::cout << "MODE: Quiting Remoute Control Mode Modules..." << std::endl;
     ui.quit();
     camera.quit();
-    remoteControler.quit();
-    vehicleControler.quit();
+    remoteController.quit();
+    vehicleController.quit();
 }

@@ -7,7 +7,7 @@
 #include "path_planning.hpp"
 
 
-void PathPlanner::run (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle)
+void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
     running = true;
@@ -20,8 +20,8 @@ void PathPlanner::run (ImageData& inputImage, LaneData& laneData, ObstacleData& 
     RoadMarking actualRightLine;
     
     while (running) {
-        actualLeftLine = laneData.getLeftLine();
-        actualRightLine = laneData.getRightLine();
+        actualLeftLine = lane.getLeftLine();
+        actualRightLine = lane.getRightLine();
         
         if (actualLeftLine.size() > 0) {
             actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
@@ -36,11 +36,11 @@ void PathPlanner::run (ImageData& inputImage, LaneData& laneData, ObstacleData& 
         // Obtacle Detection before trajectory calculation
         bool wObtacleDetection = false;
         bool safetyDistance = false;
-        if (obstacleData.getDistance() > (-1)) {
+        if (obstacle.getDistance() > (-1)) {
             wObtacleDetection = true;
         }
         if (wObtacleDetection) {
-            if (obstacleData.getDistance() > 25) {
+            if (obstacle.getDistance() > 25) {
                 safetyDistance = true;
             }
         }
@@ -71,7 +71,7 @@ bool PathPlanner::isRunning ()
 }
 
 
-void calcTrajectory (VehicleData& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize)
+void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize)
 {
     //~ cv::Mat interImage;
     //~ getInterImageData(interImage);
@@ -135,15 +135,15 @@ void calcTrajectory (VehicleData& vehicle, std::vector<cv::Vec4i> actualLane, cv
     else if (drv) {
         // Set steering angle
         if ((theta > 0) && (theta < CV_PI/2*0.9)) {
-            vehicle.setDirection(VehicleData::Direction::VEHICLE_LEFT);
+            vehicle.setDirection(VehicleDirection::VEHICLE_LEFT);
             vehicle.setSteering(theta-CV_PI/8);
         }
         else if ((theta < CV_PI) && (theta > CV_PI/2*1.1)) {
-            vehicle.setDirection(VehicleData::Direction::VEHICLE_RIGHT);
+            vehicle.setDirection(VehicleDirection::VEHICLE_RIGHT);
             vehicle.setSteering(theta+CV_PI/8);
         }
         else {
-            vehicle.setDirection(VehicleData::Direction::VEHICLE_STRAIGHT);
+            vehicle.setDirection(VehicleDirection::VEHICLE_STRAIGHT);
             vehicle.setSteering(theta);
         }
         

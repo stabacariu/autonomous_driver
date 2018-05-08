@@ -34,7 +34,7 @@ public:
      * 
      * @param point Point to be pushed at the end of the vector
      */
-    void push(cv::Point point);
+    void push (cv::Point point);
     
     /**
      * @brief Point at index i
@@ -45,7 +45,7 @@ public:
      * @param i Index of point
      * @return Point at index i
      */
-    cv::Point at(int i);
+    cv::Point at (int i);
     
     /**
      * @brief Size of trajectory data vector
@@ -53,7 +53,7 @@ public:
      * This function returns the size of the trajectory data vector. It
      * provides synchronised access with a mutex lock.
      */
-    int size(void);
+    int size (void);
     
 private:
     std::vector<cv::Point> points; //!< Trajectory data point vector

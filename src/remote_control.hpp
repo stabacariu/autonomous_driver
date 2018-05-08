@@ -22,9 +22,9 @@
 //! @addtogroup remote_control
 //! @{
 
-class RemoteControler {
+class RemoteController {
 public:
-    ~RemoteControler() = default;
+    ~RemoteController() = default;
     
     /**
      * @brief Run remote control the system
@@ -39,7 +39,7 @@ public:
      * @param ui User interface
      * @param vehicle Vehicle data
      */
-    void run (VehicleData& vehicle, UserInterfaceState& uiState);
+    void run (VehicleModel& vehicle, UserInterfaceState& uiState);
     
     /**
      * @brief Quit remote control the system

@@ -27,7 +27,7 @@ public:
     void draw (cv::Mat& image) override;
 
 private:
-    void getMainMenuList (std::vector<std::string>& menuList);
+    void getMenuList (std::vector<std::string>& menuList);
 };
 
 //! @} user_interface

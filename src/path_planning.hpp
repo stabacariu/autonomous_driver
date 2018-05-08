@@ -37,11 +37,11 @@ public:
      * certain acceleration and steering angle.
      * 
      * @param inputImage
-     * @param laneData
-     * @param obstacleData
+     * @param lane
+     * @param obstacle
      * @param vehicle
      */
-    void run (ImageData& inputImage, LaneData& laneData, ObstacleData& obstacleData, VehicleData& vehicle);
+    void run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle);
     
     /**
      * @brief Quit path planning
@@ -84,7 +84,7 @@ private:
  * @param kfT Kalman filter for the Trajectory
  * @param imageSize Size of captured image
  */
-void calcTrajectory (VehicleData& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize);
+void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize);
 
 //! @} path_planning
 

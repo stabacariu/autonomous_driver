@@ -5,26 +5,34 @@
  */
 
 #include "traffic_sign_detection.hpp"
+#include "configuration.hpp"
 
-void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImageData)
+void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImageData, TrafficSignData& trafficSignData)
 {
     std::cout << "THREAD: Traffic sign detection started." << std::endl;
     running = true;
     
+    Configurator& config = Configurator::instance();
+    camCalibConfig = config.getCameraCalibrationConfig();
+    
     cv::CascadeClassifier stopSignCascade;
     
+    bool detectionFlag = true;
     if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {
         std::cerr << "ERROR: Couldn't load classifier data!" << std::endl;
+        detectionFlag = false;
     }
     
     while (running) {
         cv::Mat inputImage, outputImage, homography;
         inputImage = inputImageData.read();
         outputImage = outputImageData.read();
+        homography = camCalibConfig.homography;
         
         std::vector<cv::Rect> stopSigns;
+        double signDistance = (-1);
         
-        if (!inputImage.empty()) {
+        if (!inputImage.empty() && detectionFlag) {
             cv::Mat grayImage;
             cvtColor(inputImage, grayImage, CV_BGR2GRAY);
 
@@ -36,12 +44,12 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
                     //! @todo Convert sign mid to perspective to get correct distance.
                     std::vector<cv::Point> signCenter;
                     signCenter.push_back(getSignCenter(stopSigns[i].tl(), stopSigns[i].br()));
-                    //~ perspectiveTransform(signCenter, signCenter, homography);
-                    //~ std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << getPxPerMm()*signCenter[0].y << std::endl;
-                    std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << signCenter[0].y << std::endl;
+                    signDistance = signCenter[0].y * camCalibConfig.mmPerPixel;
+                    std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << signDistance << std::endl;
                 }
+                trafficSignData.setRoi(stopSigns[0]);
+                trafficSignData.setDistance(signDistance);
             }
-            //~ setOutputImageData(outputImage);
             outputImageData.write(outputImage);
         }
     }

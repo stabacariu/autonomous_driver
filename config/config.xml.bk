@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<!-- camera config -->
+<!-- Camera config -->
 <cameraID>0</cameraID>
 <cameraImageSize_width>640</cameraImageSize_width>
 <cameraImageSize_height>360</cameraImageSize_height>
 <cameraFPS>15.</cameraFPS>
-<!-- camera calibration config -->
-<camCalibImageSize_width>640</camCalibImageSize_width>
-<camCalibImageSize_height>360</camCalibImageSize_height>
-<camCalibPattern>CHESSBOARD</camCalibPattern>
-<camCalibPatternSize_width>7</camCalibPatternSize_width>
-<camCalibPatternSize_height>5</camCalibPatternSize_height>
-<camCalibPatternMm>30.</camCalibPatternMm>
-<!-- camera calibration data -->
-<camCalibIntrDone>0</camCalibIntrDone>
+<!-- Calibration config -->
+<calibImageSize_width>640</calibImageSize_width>
+<calibImageSize_height>360</calibImageSize_height>
+<calibPattern>CHESSBOARD</calibPattern>
+<calibPatternSize_width>7</calibPatternSize_width>
+<calibPatternSize_height>5</calibPatternSize_height>
+<calibPatternMm>30.</calibPatternMm>
+<!-- Calibration data -->
+<calibIntrDone>0</calibIntrDone>
 <cameraMatrix type_id="opencv-matrix">
   <rows>0</rows>
   <cols>0</cols>
@@ -24,7 +24,7 @@
   <cols>0</cols>
   <dt>u</dt>
   <data></data></diffCoeffs>
-<camCalibExtrDone>1</camCalibExtrDone>
+<calibExtrDone>1</calibExtrDone>
 <homography type_id="opencv-matrix">
   <rows>3</rows>
   <cols>3</cols>
@@ -42,12 +42,4 @@
   <data></data></transformation>
 <pixelPerMm>4.9731561541557312e-01</pixelPerMm>
 <validData>0</validData>
-<!-- user interface data -->
-<uiMainWindowName>Autonomous Driver</uiMainWindowName>
-<uiImageSize_width>640</uiImageSize_width>
-<uiImageSize_height>360</uiImageSize_height>
-<uiMenuWidth>200</uiMenuWidth>
-<uiFPS>30.</uiFPS>
-<!-- obstacle detection config -->
-<obstacleDetectionActive>0</obstacleDetectionActive>
 </opencv_storage>

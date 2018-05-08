@@ -16,7 +16,7 @@
 
 class UIRemoteControlMode : public UserInterfaceMode {
 public:
-    UIRemoteControlMode (VehicleData& v) : vehicle(v) {};
+    UIRemoteControlMode (VehicleModel& v) : vehicle(v) {};
     ~UIRemoteControlMode () = default;
     
     /**
@@ -30,10 +30,10 @@ public:
     
 private:
     void drawRcCom (cv::Mat& image, cv::Point position);
-    void getRcMenuList (std::vector<std::string>& menuList);
-    void getRcStateList (std::vector<std::string>& stateList, VehicleData& v);
+    void getMenuList (std::vector<std::string>& menuList);
+    void getStateList (std::vector<std::string>& stateList, VehicleModel& v);
     
-    VehicleData& vehicle;
+    VehicleModel& vehicle;
 };
 
 //! @} user_interface

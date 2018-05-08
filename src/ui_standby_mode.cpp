@@ -26,7 +26,7 @@ void UIStandbyMode::draw (cv::Mat& image)
     putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
     std::vector<std::string> menuList;
-    getMainMenuList(menuList);
+    getMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -38,7 +38,7 @@ void UIStandbyMode::draw (cv::Mat& image)
     }
 }
 
-void UIStandbyMode::getMainMenuList (std::vector<std::string>& menuList)
+void UIStandbyMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     

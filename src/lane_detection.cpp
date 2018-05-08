@@ -115,7 +115,6 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 }
             }
             else {
-                std::cout << "Lane detection: No lines found..." << std::endl;
                 actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
                 actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     

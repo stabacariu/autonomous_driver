@@ -12,6 +12,9 @@
 #include <mutex>
 #include "user_interface_mode.hpp"
 
+//! @addtogroup user_interface
+//! @{
+
 class UserInterfaceState {
 public:
     ~UserInterfaceState() = default;
@@ -54,9 +57,11 @@ public:
     void draw (cv::Mat& image);
 
 private:
-    std::atomic_char key {(char)(-1)};
-    UserInterfaceMode* mode;
+    std::atomic_char key {(char)(-1)}; //!< Actual user input key
+    UserInterfaceMode* mode; //!< Actual user interface mode pointer
     std::mutex lock; //!< Mutex lock for synchronized access
 };
+
+//! @} user_interface
 
 #endif // USER_INTERFACE_STATE_HPP

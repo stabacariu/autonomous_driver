@@ -25,7 +25,7 @@ void UIConfigurationMode::draw (cv::Mat& image)
     putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
     std::vector<std::string> menuList;
-    getConfigMenuList(menuList);
+    getMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -42,7 +42,7 @@ void UIConfigurationMode::draw (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     menuList;
-    getConfigModeList(menuList);
+    getModeList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -54,7 +54,7 @@ void UIConfigurationMode::draw (cv::Mat& image)
     }
 }
 
-void UIConfigurationMode::getConfigMenuList (std::vector<std::string>& menuList)
+void UIConfigurationMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -64,7 +64,7 @@ void UIConfigurationMode::getConfigMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void UIConfigurationMode::getConfigModeList (std::vector<std::string>& menuList)
+void UIConfigurationMode::getModeList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     

@@ -15,15 +15,16 @@ void AutonomousMode::run (SystemState* s)
     std::cout << "MODE: Autonomous Driving Mode started" << std::endl;
     running = true;
     
-    uiState.setMode(new UIAutonomousMode(vehicle, lane, obstacle));
+    uiState.setMode(new UIAutonomousMode(vehicle, lane, obstacle, trafficSignData));
     
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
-    std::thread laneDetectonThread(&LaneDetector::run, &laneDetetor, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
-    //~ std::thread trafficSignDetectionThread(&TrafficSignDetector::start, &trafficSignDetector, std::ref(inputImage), std::ref(outputImage));
+    std::thread laneDetectonThread(&LaneDetector::run, &laneDetector, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
+    std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(inputImage), std::ref(trafficSignData));
+    //~ std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(outputImage), std::ref(trafficSignData));
     std::thread objectDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacle));
     std::thread pathPlanningThread(&PathPlanner::run, &pathPlanner, std::ref(inputImage), std::ref(lane), std::ref(obstacle), std::ref(vehicle));
-    std::thread vehicleControlThread(&VehicleControler::run, &vehicleControler, std::ref(vehicle));
+    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(vehicle));
     
     char key = (char)(-1);
     
@@ -41,7 +42,7 @@ void AutonomousMode::run (SystemState* s)
     uiShowThread.join();
     imageAcquisitionThread.join();
     laneDetectonThread.join();
-    //~ trafficSignDetectionThread.join();
+    trafficSignDetectionThread.join();
     objectDetectionThread.join();
     pathPlanningThread.join();
     vehicleControlThread.join();
@@ -67,10 +68,10 @@ void AutonomousMode::stopModules ()
     std::cout << "MODE: Stopping all modules..." << std::endl;
     ui.quit();
     camera.quit();
-    laneDetetor.quit();
+    laneDetector.quit();
     trafficSignDetector.quit();
     obstacleDetector.quit();
     pathPlanner.quit();
-    vehicleControler.quit();
-    vehicleControler.quit();
+    vehicleController.quit();
+    vehicleController.quit();
 }

@@ -6,7 +6,7 @@
 
 #include "ui_autonomous_mode.hpp"
 
-//~ void UIAutonomousMode::draw (cv::Mat& image, VehicleData& vehicle, LaneData& lane, ObstacleData& obstacle)
+//~ void UIAutonomousMode::draw (cv::Mat& image, VehicleModel& vehicle, LaneData& lane, ObstacleData& obstacle)
 void UIAutonomousMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
@@ -26,7 +26,7 @@ void UIAutonomousMode::draw (cv::Mat& image)
     putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     
     std::vector<std::string> menuList;
-    getAutoMenuList(menuList);
+    getMenuList(menuList);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -43,7 +43,7 @@ void UIAutonomousMode::draw (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> stateList;
-    getAutoStateList(stateList, vehicle);
+    getStateList(stateList, vehicle);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -60,7 +60,7 @@ void UIAutonomousMode::draw (cv::Mat& image)
     line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
     
     std::vector<std::string> detectList;
-    getAutoDetectList(detectList, lane, obstacle);
+    getDetectList(detectList, lane, obstacle, trafficSign);
     fontFace = CV_FONT_HERSHEY_PLAIN;
     fontScale = 1;
     textOrg.x = 10;
@@ -71,7 +71,7 @@ void UIAutonomousMode::draw (cv::Mat& image)
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
-void UIAutonomousMode::getAutoMenuList (std::vector<std::string>& menuList)
+void UIAutonomousMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -79,7 +79,7 @@ void UIAutonomousMode::getAutoMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void UIAutonomousMode::getAutoStateList (std::vector<std::string>& stateList, VehicleData& v)
+void UIAutonomousMode::getStateList (std::vector<std::string>& stateList, VehicleModel& v)
 {
     stateList.clear();
     std::ostringstream text;
@@ -94,7 +94,7 @@ void UIAutonomousMode::getAutoStateList (std::vector<std::string>& stateList, Ve
     text.clear();
 }
 
-void UIAutonomousMode::getAutoDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o)
+void UIAutonomousMode::getDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o, TrafficSignData& t)
 {
     detectList.clear();
     std::ostringstream text;
@@ -130,13 +130,20 @@ void UIAutonomousMode::getAutoDetectList (std::vector<std::string>& detectList, 
         text << o.getDistance() << " cm";
     }
     else {
-        text << "No detection active!";
+        text << "Not active!";
     }
-    
     detectList.push_back(text.str());
     text.str("");
     text.clear();
-    detectList.push_back("Signs: ");
+    
+    text << "Stop sign: ";
+    if (t.getDistance() > (-1)) {
+        text << t.getDistance() << " cm";
+    }
+    else {
+        text << "Not active!";
+    }
+    detectList.push_back(text.str());
     text.str("");
     text.clear();
 }

@@ -87,8 +87,8 @@ public:
     
 private:
     TrafficSignType type; //!< Traffic sign type
-    double distance; //!< Distance from sensor to the object
-    double velocity; //!< Objekt velocity relative to the sensor
+    double distance {(-1)}; //!< Distance from sensor to the object
+    double velocity {(-1)}; //!< Objekt velocity relative to the sensor
     cv::Rect roi; //!< Region of interest where objekt is in a given image
     std::mutex lock; //!< Mutex lock for synchronized access
 };

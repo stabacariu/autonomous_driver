@@ -13,33 +13,51 @@
 //! @addtogroup vehicle_control
 //! @{
 
+/**
+ * @brief An enum to describe the steering direction of the vehicle
+ */
+enum VehicleDirection {
+    VEHICLE_LEFT = -1,
+    VEHICLE_STRAIGHT = 0,
+    VEHICLE_RIGHT = 1
+};
 
+/**
+ * @brief An enum to describe the driving direction and gear of the
+ *        vehicle.
+ */
+enum VehicleGear {
+    VEHICLE_FORWARD = 1,
+    VEHICLE_GEAR_1 = 1,
+    VEHICLE_GEAR_2 = 2,
+    VEHICLE_GEAR_3 = 3,
+    VEHICLE_GEAR_4 = 4,
+    VEHICLE_GEAR_5 = 5,
+    VEHICLE_GEAR_6 = 6,
+    VEHICLE_NEUTRAL = 0,
+    VEHICLE_BACKWARD = -1,
+};
+
+struct VehicleData {
+    double acceleration; //!< Accerelration from -100 to 100 percent
+    double speed; //!< Speed in m/s
+    VehicleGear gear; //!< Driving gear
+    double steering; //!< Steering angle in radian
+    VehicleDirection direction; //!< Direction from -1 to 1
+    double width; //!< Vehicle width in mm
+    double lenght; //!< Vehicle length in mm
+    double height; //!< Vehicle height in mm
+    double wheelbase; //!< Vehicle wheelbase in mm
+    double frontOverhang; //!< Vehicle front overhang in mm
+    double rearOverhang; //!< Vehicle rear overhang in mm
+};
 
 /**
  * @brief A class to describe a vehicle
  */
-class VehicleData {
+class VehicleModel {
 public:
-    ~VehicleData() = default;
-    
-    /**
-     * @brief An enum to describe the steering direction of the vehicle
-     */
-    enum Direction {
-        VEHICLE_LEFT = -1,
-        VEHICLE_STRAIGHT = 0,
-        VEHICLE_RIGHT = 1
-    };
-    
-    /**
-     * @brief An enum to describe the driving direction and gear of the
-     *        vehicle.
-     */
-    enum Gear {
-        VEHICLE_FORWARD = 1,
-        VEHICLE_NEUTRAL = 0,
-        VEHICLE_BACKWARD = -1,
-    };
+    ~VehicleModel () = default;
     
     /**
      * @brief A function to set the vehicle acceleration
@@ -66,7 +84,7 @@ public:
      * 
      * @param value Steering direction
      */
-    void setDirection (Direction value);
+    void setDirection (VehicleDirection value);
     
     /**
      * @brief A function to get the vehicle steering direction
@@ -75,7 +93,7 @@ public:
      * 
      * @return Steering direction
      */
-    Direction getDirection (void);
+    VehicleDirection getDirection (void);
     
     /**
      * @brief A function to set the vehicle speed
@@ -222,11 +240,12 @@ public:
     double getRearOverhang (void);
     
 private:
+    //~ VehicleData vehicle;
     double acceleration; //!< Accerelration from -100 to 100 percent
     double speed; //!< Speed in m/s
-    Gear gear; //!< Driving gear
+    VehicleGear gear; //!< Driving gear
     double steering; //!< Steering angle in radian
-    Direction direction; //!< Direction from -1 to 1
+    VehicleDirection direction; //!< VehicleDirection from -1 to 1
     double width; //!< Vehicle width in mm
     double lenght; //!< Vehicle length in mm
     double height; //!< Vehicle height in mm
