@@ -12,7 +12,7 @@
 #include <thread>
 #include <chrono>
 #include <wiringPi.h>
-#include "../lib/PCA9685.h"
+#include "PCA9685.h"
 
 //! @addtogroup motor_driver
 //! @{

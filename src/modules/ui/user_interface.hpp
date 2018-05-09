@@ -16,7 +16,6 @@
 #include <iostream>
 #include <atomic>
 #include <mutex>
-#include "system_state.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "image_data.hpp"
 #include "user_interface_state.hpp"

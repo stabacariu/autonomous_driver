@@ -18,7 +18,7 @@
 #include <thread>
 #include <wiringPi.h>
 #include <opencv2/opencv.hpp>
-#include "../lib/libSonar.h"
+#include "libSonar.h"
 #include "obstacle_data.hpp"
 
 //! @addtogroup obstacle_detection
