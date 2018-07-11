@@ -30,7 +30,8 @@ void ConfigurationMode::run (SystemState* s)
             (key == 'Q') ||
             (key == 'B') ||
             (key == 'I') ||
-            (key == 'E')) {
+            (key == 'E') ||
+            (key == 'P')) {
             running = false;
         }
     }
@@ -46,6 +47,7 @@ void ConfigurationMode::run (SystemState* s)
         case 'B': s->setMode(new StandbyMode()); break;
         case 'I': s->setMode(new IntrinsicsCalibrationMode()); break;
         case 'E': s->setMode(new ExtrinsicsCalibrationMode()); break;
+        case 'P': s->setMode(new ImageAdjustmentMode()); break;
     }
     delete this;
 }

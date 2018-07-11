@@ -104,16 +104,16 @@ public:
     void runExtrinsicCalibration (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
     /**
-     * @brief Run image position adjustment in frame
+     * @brief Run image adjustment in frame
      * 
-     * This function runs the image position adjustment in a
+     * This function runs the image adjustment in a
      * frame.
      * 
      * @param inputImage Input image data
      * @param outputImage Output image data
      * @param uiState User interface state
      */
-    void runImagePositionAdjustment (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
+    void runImageAdjustment (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
     
     /**
      * @brief Run chess board show

@@ -219,7 +219,7 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     std::cout << "THREAD: Extrinsics calibarion ended." << std::endl;
 }
 
-void CameraImageAcquisitor::runImagePositionAdjustment (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState)
+void CameraImageAcquisitor::runImageAdjustment (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: Image position configuration started." << std::endl;
     running = true;
