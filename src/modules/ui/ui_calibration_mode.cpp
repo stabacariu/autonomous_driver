@@ -88,7 +88,7 @@ void UIExtrinsicsCalibrationMode::getMenuList (std::vector<std::string>& menuLis
     menuList.push_back("(Q)uit");
 }
 
-void UIImagePositionAdjustmentMode::draw (cv::Mat& image)
+void UIImageAdjustmentMode::draw (cv::Mat& image)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.rows);
@@ -119,7 +119,7 @@ void UIImagePositionAdjustmentMode::draw (cv::Mat& image)
     }
 }
 
-void UIImagePositionAdjustmentMode::getMenuList (std::vector<std::string>& menuList)
+void UIImageAdjustmentMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     

@@ -49,10 +49,10 @@ private:
     void getMenuList (std::vector<std::string>& menuList);
 };
 
-class UIImagePositionAdjustmentMode : public UserInterfaceMode {
+class UIImageAdjustmentMode : public UserInterfaceMode {
 public:
-    UIImagePositionAdjustmentMode() {};
-    ~UIImagePositionAdjustmentMode() = default;
+    UIImageAdjustmentMode() {};
+    ~UIImageAdjustmentMode() = default;
     
     /**
      * @brief Draw image position adjustment user interface mode
