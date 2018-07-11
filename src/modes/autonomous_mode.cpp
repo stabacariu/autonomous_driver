@@ -21,7 +21,6 @@ void AutonomousMode::run (SystemState* s)
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread laneDetectonThread(&LaneDetector::run, &laneDetector, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
     std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(inputImage), std::ref(trafficSignData));
-    //~ std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(outputImage), std::ref(trafficSignData));
     std::thread objectDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacle));
     std::thread pathPlanningThread(&PathPlanner::run, &pathPlanner, std::ref(inputImage), std::ref(lane), std::ref(obstacle), std::ref(vehicle));
     std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(vehicle));

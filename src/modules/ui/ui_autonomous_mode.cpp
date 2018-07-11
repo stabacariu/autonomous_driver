@@ -136,13 +136,15 @@ void UIAutonomousMode::getDetectList (std::vector<std::string>& detectList, Lane
     text.str("");
     text.clear();
     
+    cv::Rect roi = t.getRoi();
     text << "Stop sign: ";
-    if (t.getDistance() > (-1)) {
-        text << t.getDistance() << " cm";
-    }
-    else {
-        text << "Not active!";
-    }
+    text << "[" << roi.x << "," << roi.y << "]";
+    //~ if (t.getDistance() > (-1)) {
+        //~ text << t.getDistance() << " cm";
+    //~ }
+    //~ else {
+        //~ text << "Not active!";
+    //~ }
     detectList.push_back(text.str());
     text.str("");
     text.clear();

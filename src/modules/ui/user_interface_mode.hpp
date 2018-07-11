@@ -21,7 +21,8 @@ public:
      * 
      * This function draws the user interface mode.
      * 
-     * @brief image Image matrix
+     * @param image Image matrix
+     * @return Button press
      */
     virtual void draw (cv::Mat& image) = 0;
 };

@@ -1,7 +1,7 @@
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
 
- Version: 2.0.0
+ Version: 2.5.0
 
  Copyright (c) 2016 Fernando Bevilacqua <dovyski@gmail.com>
  Licensed under the MIT license.
@@ -11,6 +11,8 @@
 #define _CVUI_H_
 
 #include <iostream>
+#include <vector>
+#include <map>
 #include <stdarg.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
@@ -20,18 +22,136 @@
 namespace cvui
 {
 /**
- Initializes the library. You must provide the name of the window where
- the components will be added. It is also possible to tell cvui to handle
+ Initializes cvui. You must provide the name of the window where
+ components will be added. It is also possible to tell cvui to handle
  OpenCV's event queue automatically (by informing a value greater than zero
  in the `theDelayWaitKey` parameter of function). In that case, cvui will
  automatically call `cv::waitKey()` within `cvui::update()`, so you don't
  have to worry about it. The value passed to `theDelayWaitKey` will be
  used as the delay for `cv::waitKey()`.
  
- \param theWindowName name of the window where the components will be added
+ \param theWindowName name of the window where the components will be added.
  \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+ \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` *before* initializing cvui, otherwise it will not be able to track UI interactions. 
+
+ \sa watch()
+ \sa context()
 */
-void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
+void init(const cv::String& theWindowName, int theDelayWaitKey = -1, bool theCreateNamedWindow = true);
+
+/**
+ Initialize cvui using a list of names of windows where components will be added.
+ It is also possible to tell cvui to handle OpenCV's event queue automatically
+ (by informing a value greater than zero in the `theDelayWaitKey` parameter of function).
+ In that case, cvui will automatically call `cv::waitKey()` within `cvui::update()`,
+ so you don't have to worry about it. The value passed to `theDelayWaitKey` will be
+ used as the delay for `cv::waitKey()`.
+
+ \param theWindowNames array containing the name of the windows where components will be added. Those windows will be automatically if `theCreateNamedWindows` is `true`.
+ \param theHowManyWindows how many window names exist in the `theWindowNames` array.
+ \param theDelayWaitKey delay value passed to `cv::waitKey()`. If a negative value is informed (default is `-1`), cvui will not automatically call `cv::waitKey()` within `cvui::update()`, which will disable keyboard shortcuts for all components. If you want to enable keyboard shortcut for components (e.g. using & in a button label), you must specify a positive value for this param.
+ \param theCreateNamedWindows if OpenCV windows named according to `theWindowNames` should be created during the initialization. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you call `cv::namedWindow(WINDOW_NAME)` for all windows *before* initializing cvui, otherwise it will not be able to track UI interactions.
+
+ \sa watch()
+ \sa context()
+*/
+void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey = -1, bool theCreateNamedWindows = true);
+
+/**
+ Track UI interactions of a particular window. This function must be invoked
+ for any window that will receive cvui components. cvui automatically calls `cvui::watch()`
+ for any window informed in `cvui::init()`, so generally you don't have to watch them
+ yourself. If you initialized cvui and told it *not* to create windows automatically,
+ you need to call `cvui::watch()` on those windows yourself. `cvui::watch()` can
+ automatically create a window before watching it, if it does not exist.
+
+ \param theWindowName name of the window whose UI interactions will be tracked.
+ \param theCreateNamedWindow if an OpenCV window named `theWindowName` should be created before it is watched. Windows are created using `cv::namedWindow()`. If this parameter is `false`, ensure you have called `cv::namedWindow(WINDOW_NAME)` to create the window, otherwise cvui will not be able to track its UI interactions.
+
+ \sa init()
+ \sa context()
+*/
+void watch(const cv::String& theWindowName, bool theCreateNamedWindow = true);
+
+/**
+ Inform cvui that all subsequent component calls belong to a window in particular.
+ When using cvui with multiple OpenCV windows, you must call cvui component calls
+ between `cvui::contex(NAME)` and `cvui::update(NAME)`, where `NAME` is the name of
+ the window. That way, cvui knows which window you are using (`NAME` in this case),
+ so it can track mouse events, for instance.
+
+ E.g.
+
+ ```
+ // Code for window "window1".
+ cvui::context("window1");
+ cvui::text(frame, ...);
+ cvui::button(frame, ...);
+ cvui::update("window1");
+
+
+ // somewhere else, code for "window2"
+ cvui::context("window2");
+ cvui::printf(frame, ...);
+ cvui::printf(frame, ...);
+ cvui::update("window2");
+
+ // Show everything in a window
+ cv::imshow(frame);
+ ```
+
+ Pay attention to the pair `cvui::context(NAME)` and `cvui::update(NAME)`, which
+ encloses the component calls for that window. You need such pair for each window
+ of your application.
+
+ After calling `cvui::update()`, you can show the result in a window using `cv::imshow()`.
+ If you want to save some typing, you can use `cvui::imshow()`, which calls `cvui::update()`
+ for you and then shows the frame in a window.
+
+ E.g.:
+
+ ```
+ // Code for window "window1".
+ cvui::context("window1");
+ cvui::text(frame, ...);
+ cvui::button(frame, ...);
+ cvui::imshow("window1");
+
+ // somewhere else, code for "window2"
+ cvui::context("window2");
+ cvui::printf(frame, ...);
+ cvui::printf(frame, ...);
+ cvui::imshow("window2");
+ ```
+
+ In that case, you don't have to bother calling `cvui::update()` yourself, since
+ `cvui::imshow()` will do it for you.
+
+ \param theWindowName name of the window that will receive components from all subsequent cvui calls.
+
+ \sa init()
+ \sa watch()
+*/
+void context(const cv::String& theWindowName);
+
+/**
+ Display an image in the specified window and update the internal structures of cvui.
+ This function can be used as a replacement for `cv::imshow()`. If you want to use
+ `cv::imshow() instead of `cvui::imshow()`, you must ensure you call `cvui::update()`
+ *after* all component calls and *before* `cv::imshow()`, so cvui can update its
+ internal structures.
+
+ In general, it is easier to call `cvui::imshow()` alone instead of calling
+ `cvui::update()' immediately followed by `cv::imshow()`.
+
+ \param theWindowName name of the window that will be shown.
+ \param theFrame image, i.e. `cv::Mat`, to be shown in the window.
+
+ \sa update()
+ \sa context()
+ \sa watch()
+*/
+void imshow(const cv::String& theWindowName, cv::InputArray theFrame);
 
 /**
  Return the last key that was pressed. This function will only
@@ -39,8 +159,83 @@ void init(const cv::String& theWindowName, int theDelayWaitKey = -1);
  as the delay waitkey parameter.
 
  \sa init()
- */
+*/
 int lastKeyPressed();
+
+/**
+ Return the last position of the mouse.
+
+ \param theWindowName name of the window whose mouse cursor will be used. If nothing is informed (default), the function will return the position of the mouse cursor for the default window (the one informed in `cvui::init()`).
+ \return a point containing the position of the mouse cursor in the speficied window.
+*/
+cv::Point mouse(const cv::String& theWindowName = "");
+
+/**
+ Query the mouse for events, e.g. "is any button down now?". Available queries are:
+ 
+ * `cvui::DOWN`: any mouse button was pressed. `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::UP`: any mouse button was released.  `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::CLICK`: any mouse button was clicked (went down then up, no matter the amount of frames in between). `cvui::mouse()` returns `true` for a single frame only.
+ * `cvui::IS_DOWN`: any mouse button is currently pressed. `cvui::mouse()` returns `true` for as long as the button is down/pressed.
+
+ It is easier to think of this function as the answer to a questions. For instance, asking if any mouse button went down:
+
+ ```
+ if (cvui::mouse(cvui::DOWN)) {
+   // Any mouse button just went down.
+ }
+ ```
+
+ The window whose mouse will be queried depends on the context. If `cvui::mouse(query)` is being called after
+ `cvui::context()`, the window informed in the context will be queried. If no context is available, the default
+ window (informed in `cvui::init()`) will be used.
+
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int, int)
+*/
+bool mouse(int theQuery);
+
+/**
+ Query the mouse for events in a particular window. This function behave exactly like `cvui::mouse(int theQuery)`
+ with the difference that queries are targeted at a particular window.
+
+ \param theWindowName name of the window that will be queried.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int, int)
+ \sa mouse(int)
+*/
+bool mouse(const cv::String& theWindowName, int theQuery);
+
+/**
+ Query the mouse for events in a particular button. This function behave exactly like `cvui::mouse(int theQuery)`,
+ with the difference that queries are targeted at a particular mouse button instead.
+
+ \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+
+ \sa mouse(const cv::String&)
+ \sa mouse(const cv::String&, int, int)
+ \sa mouse(int)
+*/
+bool mouse(int theButton, int theQuery);
+
+/**
+ Query the mouse for events in a particular button in a particular window. This function behave exactly
+ like `cvui::mouse(int theButton, int theQuery)`, with the difference that queries are targeted at
+ a particular mouse button in a particular window instead.
+
+ \param theWindowName name of the window that will be queried.
+ \param theButton an integer describing the mouse button to be queried. Possible values are `cvui::LEFT_BUTTON`, `cvui::MIDDLE_BUTTON` and `cvui::LEFT_BUTTON`.
+ \param theQuery an integer describing the intended mouse query. Available queries are `cvui::DOWN`, `cvui::UP`, `cvui::CLICK`, and `cvui::IS_DOWN`.
+*/
+bool mouse(const cv::String& theWindowName, int theButton, int theQuery);
 
 /**
  Display a button. The size of the button will be automatically adjusted to
@@ -102,15 +297,15 @@ void image(cv::Mat& theWhere, int theX, int theY, cv::Mat& theImage);
 
 /**
  Display a checkbox. You can use the state parameter to monitor if the
- checkbox is checked or not.
+ checkbox is bwFlag or not.
 
  \param theWhere the image/frame where the component should be rendered.
  \param theX position X where the component should be placed.
  \param theY position Y where the component should be placed.
  \param theLabel text displayed besides the clickable checkbox square.
- \param theState describes the current state of the checkbox: `true` means the checkbox is checked.
+ \param theState describes the current state of the checkbox: `true` means the checkbox is bwFlag.
  \param theColor color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
- \return a boolean value that indicates the current state of the checkbox, `true` if it is checked.
+ \return a boolean value that indicates the current state of the checkbox, `true` if it is bwFlag.
 */
 bool checkbox(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor = 0xCECECE);
 
@@ -564,9 +759,6 @@ bool button(cv::Mat& theIdle, cv::Mat& theOver, cv::Mat& theDown);
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
- \param theWhere the image/frame where the provded image should be rendered.
- \param theX position X where the image should be placed.
- \param theY position Y where the image should be placed.
  \param theImage an image to be rendered in the specified destination.
 
  \sa button()
@@ -580,14 +772,14 @@ void image(cv::Mat& theImage);
 
 /**
  Display a checkbox within a `begin*()` and `end*()` block. You can use the state parameter
- to monitor if the checkbox is checked or not.
+ to monitor if the checkbox is bwFlag or not.
 
  IMPORTANT: this function can only be used within a `begin*()/end*()` block, otherwise it does nothing.
 
  \param theLabel text displayed besides the clickable checkbox square.
- \param theState describes the current state of the checkbox: `true` means the checkbox is checked.
+ \param theState describes the current state of the checkbox: `true` means the checkbox is bwFlag.
  \param theColor color of the label in the format `0xRRGGBB`, e.g. `0xff0000` for red.
- \return a boolean value that indicates the current state of the checkbox, `true` if it is checked.
+ \return a boolean value that indicates the current state of the checkbox, `true` if it is bwFlag.
 
  \sa beginColumn()
  \sa beginRow()
@@ -778,8 +970,14 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 /**
  Updates the library internal things. You need to call this function **AFTER** you are done adding/manipulating
  UI elements in order for them to react to mouse interactions.
+
+ \param theWindowName name of the window whose components are being updated. If no window name is provided, cvui uses the default window.
+
+ \sa init()
+ \sa watch()
+ \sa context()
 */
-void update();
+void update(const cv::String& theWindowName = "");
 
 // Internally used to handle mouse events
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
@@ -792,11 +990,39 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 #define CVUI_FILLED -1
 
-// Check for Windows-specific functions and react accordingly
+// If we are not in a Windows-based environment, replace Windows-specific functions with
+// their POSIX equivalents.
 #if !defined(_MSC_VER)
 	#define vsprintf_s vsprintf
 	#define sprintf_s sprintf
 #endif
+
+// Define a few platform-dependent macros
+#ifdef _MSC_VER
+	#define _CVUI_COMPILE_MESSAGE(x) message(x)
+#elif __GNUC__
+	#define _CVUI_COMPILE_MESSAGE(x) message x
+#endif
+
+// Some compilation messages
+#define _CVUI_IMPLEMENTATION_NOTICE "cvui.h: compiling implementation because of CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
+#define _CVUI_NO_IMPLEMENTATION_NOTICE "cvui.h: implementation skipped. Ensure one of your C++ files included cvui.h after a #define CVUI_IMPLEMENTATION. See: https://dovyski.github.io/cvui/usage/"
+
+// Below is paranoic, dramatic bug-fixing action to ensure no evil macro
+// have already defined our names. For some bizarre reason, cvui did not
+// compile in one of my projects because OUT was already defined. So be it.
+#undef VERSION
+#undef ROW
+#undef COLUMN
+#undef DOWN
+#undef CLICK
+#undef OVER
+#undef OUT
+#undef UP
+#undef IS_DOWN
+#undef LEFT_BUTTON
+#undef MIDDLE_BUTTON
+#undef RIGHT_BUTTON
 
 // Check for Unix stuff
 #ifdef __GNUC__
@@ -806,7 +1032,7 @@ void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData);
 #endif
 
 // Lib version
-static const char *VERSION = "2.0.0";
+static const char *VERSION = "2.5.0";
 
 const int ROW = 0;
 const int COLUMN = 1;
@@ -814,6 +1040,13 @@ const int DOWN = 2;
 const int CLICK = 3;
 const int OVER = 4;
 const int OUT = 5;
+const int UP = 6;
+const int IS_DOWN = 7;
+
+// Constants regarding mouse buttons
+const int LEFT_BUTTON = 0;
+const int MIDDLE_BUTTON = 1;
+const int RIGHT_BUTTON = 2;
 
 // Constants regarding components
 const unsigned int TRACKBAR_HIDE_SEGMENT_LABELS = 1;
@@ -846,16 +1079,35 @@ typedef struct {
 	std::string textAfterShortcut;
 } cvui_label_t;
 
+// Describe a mouse button
+typedef struct {
+	bool justReleased;          // if the mouse button was released, i.e. click event.
+	bool justPressed;           // if the mouse button was just pressed, i.e. true for a frame when a button is down.
+	bool pressed;               // if the mouse button is pressed or not.
+} cvui_mouse_btn_t;
+
+// Describe the information of the mouse cursor
+typedef struct {
+	cvui_mouse_btn_t buttons[3]; // status of each button. Use cvui::{RIGHT,LEFT,MIDDLE}_BUTTON to access the buttons.
+	cvui_mouse_btn_t anyButton;  // represent the behavior of all mouse buttons combined
+	cv::Point position;          // x and y coordinates of the mouse at the moment.
+} cvui_mouse_t;
+
+// Describes a (window) context.
+typedef struct {
+	cv::String windowName;       // name of the window related to this context.
+	cvui_mouse_t mouse;          // the mouse cursor related to this context.
+} cvui_context_t;
+
 // Internal namespace with all code that is shared among components/functions.
 // You should probably not be using anything from here.
 namespace internal
 {
-	// Variables to keep track of mouse events and stuff
-	static bool gMouseJustReleased = false;
-	static bool gMousePressed = false;
-	static cv::Point gMouse;
+	static cv::String gDefaultContext;
+	static cv::String gCurrentContext;
+	static std::map<cv::String, cvui_context_t> gContexts; // indexed by the window name.
 	static char gBuffer[1024];
-	static int gLastKeyPressed;
+	static int gLastKeyPressed; // TODO: collect it per window
 	static int gDelayWaitKey;
 	static cvui_block_t gScreen;
 
@@ -881,6 +1133,10 @@ namespace internal
 	static int gStackCount = -1;
 	static const int gTrackbarMarginX = 14;
 
+	bool isMouseButton(cvui_mouse_btn_t& theButton, int theQuery);
+	void resetMouseButton(cvui_mouse_btn_t& theButton);
+	void init(const cv::String& theWindowName, int theDelayWaitKey);
+	cvui_context_t& getContext(const cv::String& theWindowName = "");
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue);
 	void error(int theId, std::string theMessage);
 	void updateLayoutFlow(cvui_block_t& theBlock, cv::Size theSize);
@@ -1000,8 +1256,18 @@ bool trackbar(int theWidth, num_type *theValue, num_type theMin, num_type theMax
 
 // Below this line is the implementation of all functions declared above.
 
-#ifndef _CVUI_IMPLEMENTATION_
-#define _CVUI_IMPLEMENTATION_
+#if !defined(CVUI_IMPLEMENTATION) && !defined(CVUI_DISABLE_COMPILATION_NOTICES)
+	// cvui.h is being included without CVUI_IMEPLEMENTATION. Let's output a compile notice about it
+	// to help those trying to debug possible cvui compilation errors.
+	#pragma _CVUI_COMPILE_MESSAGE(_CVUI_NO_IMPLEMENTATION_NOTICE)
+#endif
+
+#ifdef CVUI_IMPLEMENTATION
+
+// Show some helping hand in case cvui.h does not compile because of inclusion in multiple files.
+#ifndef CVUI_DISABLE_COMPILATION_NOTICES
+	#pragma _CVUI_COMPILE_MESSAGE(_CVUI_IMPLEMENTATION_NOTICE)
+#endif
 
 namespace cvui
 {
@@ -1010,6 +1276,56 @@ namespace cvui
 // that is shared among components/functions
 namespace internal
 {
+	bool isMouseButton(cvui_mouse_btn_t& theButton, int theQuery) {
+		bool aRet = false;
+
+		switch (theQuery) {
+			case cvui::CLICK:
+			case cvui::UP:
+				aRet = theButton.justReleased; break;
+			case cvui::DOWN:
+				aRet = theButton.justPressed; break;
+			case cvui::IS_DOWN:
+				aRet = theButton.pressed; break;
+		}
+
+		return aRet;
+	}
+
+	void resetMouseButton(cvui_mouse_btn_t& theButton) {
+		theButton.justPressed = false;
+		theButton.justReleased = false;
+		theButton.pressed = false;
+	}
+
+	void init(const cv::String& theWindowName, int theDelayWaitKey) {
+		internal::gDefaultContext = theWindowName;
+		internal::gCurrentContext = theWindowName;
+		internal::gDelayWaitKey = theDelayWaitKey;
+		internal::gLastKeyPressed = -1;
+	}
+
+	cvui_context_t& getContext(const cv::String& theWindowName) {
+		if (!theWindowName.empty()) {
+			// Get context in particular
+			return internal::gContexts[theWindowName];
+
+		} else if (!internal::gCurrentContext.empty()) {
+			// No window provided, return currently active context.
+			return internal::gContexts[internal::gCurrentContext];
+
+		} else if (!internal::gDefaultContext.empty()) {
+			// We have no active context, so let's use the default one.
+			return internal::gContexts[internal::gDefaultContext];
+
+		} else {
+			// Apparently we have no window at all! <o>
+			// This should not happen. Probably cvui::init() was never called.
+			internal::error(5, "Unable to read context. Did you forget to call cvui::init()?");
+			return internal::gContexts["first"]; // return to make the compiler happy.
+		}
+	}
+
 	bool bitsetHas(unsigned int theBitset, unsigned int theValue) {
 		return (theBitset & theValue) != 0;
 	}
@@ -1223,23 +1539,24 @@ namespace internal
 	}
 
 	int iarea(int theX, int theY, int theWidth, int theHeight) {
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
+
 		// By default, return that the mouse is out of the interaction area.
 		int aRet = cvui::OUT;
 
 		// Check if the mouse is over the interaction area.
-		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(internal::gMouse);
+		bool aMouseIsOver = cv::Rect(theX, theY, theWidth, theHeight).contains(aMouse.position);
 
 		if (aMouseIsOver) {
-			if (internal::gMousePressed) {
+			if (aMouse.anyButton.pressed) {
 				aRet = cvui::DOWN;
-			}
-			else {
+			} else {
 				aRet = cvui::OVER;
 			}
 		}
 
 		// Tell if the button was clicked or not
-		if (aMouseIsOver && internal::gMouseJustReleased) {
+		if (aMouseIsOver && aMouse.anyButton.justReleased) {
 			aRet = cvui::CLICK;
 		}
 
@@ -1253,23 +1570,10 @@ namespace internal
 		// Make the button bit enough to house the label
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
 
-		// Check the state of the button (idle, pressed, etc.)
-		bool aMouseIsOver = aRect.contains(internal::gMouse);
-
-		if (aMouseIsOver) {
-			if (internal::gMousePressed) {
-				render::button(theBlock, cvui::DOWN, aRect, theLabel);
-				render::buttonLabel(theBlock, cvui::DOWN, aRect, theLabel, aTextSize);
-			}
-			else {
-				render::button(theBlock, cvui::OVER, aRect, theLabel);
-				render::buttonLabel(theBlock, cvui::OVER, aRect, theLabel, aTextSize);
-			}
-		}
-		else {
-			render::button(theBlock, cvui::OUT, aRect, theLabel);
-			render::buttonLabel(theBlock, cvui::OUT, aRect, theLabel, aTextSize);
-		}
+		// Render the button according to mouse interaction, e.g. OVER, DOWN, OUT.
+		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
+		render::button(theBlock, aStatus, aRect, theLabel);
+		render::buttonLabel(theBlock, aStatus, aRect, theLabel, aTextSize);
 
 		// Update the layout flow according to button size
 		// if we were told to update.
@@ -1278,19 +1582,19 @@ namespace internal
 			updateLayoutFlow(theBlock, aSize);
 		}
 
-		bool wasShortcutPressed = false;
+		bool aWasShortcutPressed = false;
 
 		//Handle keyboard shortcuts
 		if (internal::gLastKeyPressed != -1) {
 			// TODO: replace with something like strpos(). I think it has better performance.
 			auto aLabel = internal::createLabel(theLabel);
 			if (aLabel.hasShortcut && (tolower(aLabel.shortcut) == tolower((char)internal::gLastKeyPressed))) {
-				wasShortcutPressed = true;
+				aWasShortcutPressed = true;
 			}
 		}
 
-		// Tell if the button was clicked or not
-		return (aMouseIsOver && internal::gMouseJustReleased) || wasShortcutPressed;
+		// Return true if the button was clicked
+		return aStatus == cvui::CLICK || aWasShortcutPressed;
 	}
 
 	bool button(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel) {
@@ -1306,9 +1610,9 @@ namespace internal
 		int aStatus = cvui::iarea(theX, theY, aRect.width, aRect.height);
 
 		switch (aStatus) {
-		case cvui::OUT: render::image(theBlock, aRect, theIdle); break;
-		case cvui::OVER: render::image(theBlock, aRect, theOver); break;
-		case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
+			case cvui::OUT: render::image(theBlock, aRect, theIdle); break;
+			case cvui::OVER: render::image(theBlock, aRect, theOver); break;
+			case cvui::DOWN: render::image(theBlock, aRect, theDown); break;
 		}
 
 		// Update the layout flow according to button size
@@ -1334,19 +1638,19 @@ namespace internal
 	}
 
 	bool checkbox(cvui_block_t& theBlock, int theX, int theY, const cv::String& theLabel, bool *theState, unsigned int theColor) {
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
 		cv::Rect aRect(theX, theY, 15, 15);
 		cv::Size aTextSize = getTextSize(theLabel, cv::FONT_HERSHEY_SIMPLEX, 0.4, 1, nullptr);
 		cv::Rect aHitArea(theX, theY, aRect.width + aTextSize.width + 6, aRect.height);
-		bool aMouseIsOver = aHitArea.contains(internal::gMouse);
+		bool aMouseIsOver = aHitArea.contains(aMouse.position);
 
 		if (aMouseIsOver) {
 			render::checkbox(theBlock, cvui::OVER, aRect);
 
-			if (internal::gMouseJustReleased) {
+			if (aMouse.anyButton.justReleased) {
 				*theState = !(*theState);
 			}
-		}
-		else {
+		} else {
 			render::checkbox(theBlock, cvui::OUT, aRect);
 		}
 
@@ -1420,14 +1724,15 @@ namespace internal
 	}
 
 	bool trackbar(cvui_block_t& theBlock, int theX, int theY, int theWidth, long double *theValue, const TrackbarParams & theParams) {
+		cvui_mouse_t& aMouse = internal::getContext().mouse;
 		cv::Rect aContentArea(theX, theY, theWidth, 45);
 		long double aValue = *theValue;
-		bool aMouseIsOver = aContentArea.contains(internal::gMouse);
+		bool aMouseIsOver = aContentArea.contains(aMouse.position);
 
 		render::trackbar(theBlock, aMouseIsOver ? OVER : OUT, aContentArea, *theValue, theParams);
 
-		if (internal::gMousePressed && aMouseIsOver) {
-			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, internal::gMouse.x);
+		if (aMouse.anyButton.pressed && aMouseIsOver) {
+			*theValue = internal::trackbarXPixelToValue(theParams, aContentArea, aMouse.position.x);
 
 			if (bitsetHas(theParams.options, TRACKBAR_DISCRETE)) {
 				internal::trackbarForceValuesAsMultiplesOfSmallStep(theParams, theValue);
@@ -1454,7 +1759,14 @@ namespace internal
 	}
 
 	void rect(cvui_block_t& theBlock, int theX, int theY, int theWidth, int theHeight, unsigned int theBorderColor, unsigned int theFillingColor) {
+		cv::Point aAnchor(theX, theY);
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
+		
+		aRect.x = aRect.width < 0 ? aAnchor.x + aRect.width : aAnchor.x;
+		aRect.y = aRect.height < 0 ? aAnchor.y + aRect.height : aAnchor.y;
+		aRect.width = std::abs(aRect.width);
+		aRect.height = std::abs(aRect.height);
+
 		render::rect(theBlock, aRect, theBorderColor, theFillingColor);
 
 		// Update the layout flow
@@ -1465,9 +1777,14 @@ namespace internal
 	void sparkline(cvui_block_t& theBlock, std::vector<double>& theValues, int theX, int theY, int theWidth, int theHeight, unsigned int theColor) {
 		double aMin, aMax;
 		cv::Rect aRect(theX, theY, theWidth, theHeight);
+		std::vector<double>::size_type aHowManyValues = theValues.size();
 
-		internal::findMinMax(theValues, &aMin, &aMax);
-		render::sparkline(theBlock, theValues, aRect, aMin, aMax, theColor);
+		if (aHowManyValues >= 2) {
+			internal::findMinMax(theValues, &aMin, &aMax);
+			render::sparkline(theBlock, theValues, aRect, aMin, aMax, theColor);
+		} else {
+			internal::text(theBlock, theX, theY, aHowManyValues == 0 ? "No data." : "Insufficient data points.", 0.4, 0xCECECE, false);
+		}
 
 		// Update the layout flow
 		cv::Size aSize(theWidth, theHeight);
@@ -1765,15 +2082,80 @@ namespace render
 	}
 } // namespace render
 
-void init(const cv::String& theWindowName, int theDelayWaitKey) {
-	cv::setMouseCallback(theWindowName, handleMouse, NULL);
-	internal::gDelayWaitKey = theDelayWaitKey;
-	internal::gLastKeyPressed = -1;
-	//TODO: init gScreen here?
+void init(const cv::String& theWindowName, int theDelayWaitKey, bool theCreateNamedWindow) {
+	internal::init(theWindowName, theDelayWaitKey);
+	watch(theWindowName, theCreateNamedWindow);
+}
+
+void init(const cv::String theWindowNames[], size_t theHowManyWindows, int theDelayWaitKey, bool theCreateNamedWindows) {
+	internal::init(theWindowNames[0], theDelayWaitKey);
+
+	for (size_t i = 0; i < theHowManyWindows; i++) {
+		watch(theWindowNames[i], theCreateNamedWindows);
+	}
+}
+
+void watch(const cv::String& theWindowName, bool theCreateNamedWindow) {
+	cvui_context_t aContex;
+
+	if (theCreateNamedWindow) {
+		cv::namedWindow(theWindowName);
+	}
+
+	aContex.windowName = theWindowName;
+	aContex.mouse.position.x = 0;
+	aContex.mouse.position.y = 0;
+	
+	internal::resetMouseButton(aContex.mouse.anyButton);
+	internal::resetMouseButton(aContex.mouse.buttons[RIGHT_BUTTON]);
+	internal::resetMouseButton(aContex.mouse.buttons[MIDDLE_BUTTON]);
+	internal::resetMouseButton(aContex.mouse.buttons[LEFT_BUTTON]);
+
+	internal::gContexts[theWindowName] = aContex;
+	cv::setMouseCallback(theWindowName, handleMouse, &internal::gContexts[theWindowName]);
+}
+
+void context(const cv::String& theWindowName) {
+	internal::gCurrentContext = theWindowName;
+}
+
+void imshow(const cv::String& theWindowName, cv::InputArray theFrame) {
+	cvui::update(theWindowName);
+	cv::imshow(theWindowName, theFrame);
 }
 
 int lastKeyPressed() {
 	return internal::gLastKeyPressed;
+}
+
+cv::Point mouse(const cv::String& theWindowName) {
+	return internal::getContext(theWindowName).mouse.position;
+}
+
+bool mouse(int theQuery) {
+	return mouse("", theQuery);
+}
+
+bool mouse(const cv::String& theWindowName, int theQuery) {
+	cvui_mouse_btn_t& aButton = internal::getContext(theWindowName).mouse.anyButton;
+	bool aRet = internal::isMouseButton(aButton, theQuery);
+
+	return aRet;
+}
+
+bool mouse(int theButton, int theQuery) {
+	return mouse("", theButton, theQuery);
+}
+
+bool mouse(const cv::String& theWindowName, int theButton, int theQuery) {
+	if (theButton != RIGHT_BUTTON && theButton != MIDDLE_BUTTON && theButton != LEFT_BUTTON) {
+		internal::error(6, "Invalid mouse button. Are you using one of the available: cvui::{RIGHT,MIDDLE,LEFT}_BUTTON ?");
+	}
+
+	cvui_mouse_btn_t& aButton = internal::getContext(theWindowName).mouse.buttons[theButton];
+	bool aRet = internal::isMouseButton(aButton, theQuery);
+
+	return aRet;
 }
 
 bool button(cv::Mat& theWhere, int theX, int theY, const cv::String& theLabel) {
@@ -1967,9 +2349,17 @@ void sparkline(std::vector<double>& theValues, int theWidth, int theHeight, unsi
 	internal::sparkline(aBlock, theValues, aBlock.anchor.x, aBlock.anchor.y, theWidth, theHeight, theColor);
 }
 
-void update() {
-	internal::gMouseJustReleased = false;
+void update(const cv::String& theWindowName) {
+	cvui_context_t& aContext = internal::getContext(theWindowName);
 
+	aContext.mouse.anyButton.justReleased = false;
+	aContext.mouse.anyButton.justPressed = false;
+
+	for (int i = cvui::LEFT_BUTTON; i <= cvui::RIGHT_BUTTON; i++) {
+		aContext.mouse.buttons[i].justReleased = false;
+		aContext.mouse.buttons[i].justPressed = false;
+	}
+	
 	internal::resetRenderingBuffer(internal::gScreen);
 
 	// If we were told to keep track of the keyboard shortcuts, we
@@ -1984,18 +2374,32 @@ void update() {
 }
 
 void handleMouse(int theEvent, int theX, int theY, int theFlags, void* theData) {
-	internal::gMouse.x = theX;
-	internal::gMouse.y = theY;
+	int aButtons[3] = { cvui::LEFT_BUTTON, cvui::MIDDLE_BUTTON, cvui::RIGHT_BUTTON };
+	int aEventsDown[3] = { cv::EVENT_LBUTTONDOWN, cv::EVENT_MBUTTONDOWN, cv::EVENT_RBUTTONDOWN };
+	int aEventsUp[3] = { cv::EVENT_LBUTTONUP, cv::EVENT_MBUTTONUP, cv::EVENT_RBUTTONUP };
+	
+	cvui_context_t *aContext = (cvui_context_t *)theData;
+	
+	for (int i = 0; i < 3; i++) {
+		int aBtn = aButtons[i];
 
-	if (theEvent == cv::EVENT_LBUTTONDOWN || theEvent == cv::EVENT_RBUTTONDOWN) {
-		internal::gMousePressed = true;
+		if (theEvent == aEventsDown[i]) {
+			aContext->mouse.anyButton.justPressed = true;
+			aContext->mouse.anyButton.pressed = true;
+			aContext->mouse.buttons[aBtn].justPressed = true;
+			aContext->mouse.buttons[aBtn].pressed = true;
 
+		} else if (theEvent == aEventsUp[i]) {
+			aContext->mouse.anyButton.justReleased = true;
+			aContext->mouse.anyButton.pressed = false;
+			aContext->mouse.buttons[aBtn].justReleased = true;
+			aContext->mouse.buttons[aBtn].pressed = false;
+		}
 	}
-	else if (theEvent == cv::EVENT_LBUTTONUP || theEvent == cv::EVENT_RBUTTONUP) {
-		internal::gMouseJustReleased = true;
-		internal::gMousePressed = false;
-	}
+	
+	aContext->mouse.position.x = theX;
+	aContext->mouse.position.y = theY;
 }
 
 } // namespace cvui
-#endif //_CVUI_IMPLEMENTATION_
+#endif // CVUI_IMPLEMENTATION

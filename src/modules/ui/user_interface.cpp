@@ -7,16 +7,21 @@
 #include "user_interface.hpp"
 #include "configuration.hpp"
 
+#define CVUI_IMPLEMENTATION
+#include "cvui.h"
+
 void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
 {
     std::cout << "THREAD: User interface started." << std::endl;
     running = true;
     
     Configurator& config = Configurator::instance();
-    uiConfig = config.getUserInterfaceConfig();
+    //~ uiConfig = config.getUserInterfaceConfig();
     camConfig = config.getCameraConfig();
+    int menuWith = 200;
         
-    cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
+    //~ cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
+    cvui::init(uiConfig.mainWindowName);
     
     while (running) {
         image = imageData.read();
@@ -25,14 +30,19 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
             drawMessage(image, "No Image!");
         }
         // Create output image composition from UI menu and output image
-        cv::Mat outputImage = cv::Mat(image.rows, image.cols + 200, CV_8UC3, cv::Scalar::all(0));
-        cv::Rect insert = cv::Rect(200, 0, image.cols, image.rows);
-        image.copyTo(outputImage(insert));
+        cv::Mat outputImage = cv::Mat(image.rows, image.cols + menuWith, CV_8UC3, cv::Scalar(49, 52, 49));
+        //~ cv::Rect insert = cv::Rect(menuWith, 0, image.cols, image.rows);
+        //~ image.copyTo(outputImage(insert));
+        
+        cvui::image(outputImage, menuWith, 0, image);
         
         uiState.draw(outputImage);
         
-        imshow(uiConfig.mainWindowName, outputImage);
-        inputKey = cv::waitKey(1000/uiConfig.fps*2);
+        //~ cvui::update();
+        //~ imshow(uiConfig.mainWindowName, outputImage);
+        
+        cvui::imshow(uiConfig.mainWindowName, outputImage);
+        inputKey = cv::waitKey((1000/uiConfig.fps)*(1.5));
         
         if (inputKey == (char)(-1)) {
             inputKey = getConsoleInput();

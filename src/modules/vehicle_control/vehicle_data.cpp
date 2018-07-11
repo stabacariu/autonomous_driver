@@ -6,6 +6,16 @@
 
 #include "vehicle_data.hpp"
 
+void VehicleDimensions::set(double w, double l, double h, double wb, double fO, double rO)
+{
+    width = w;
+    length = l;
+    height = h;
+    wheelbase = wb;
+    frontOverhang = fO;
+    rearOverhang = rO;
+}
+
 void VehicleModel::setAcceleration (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
@@ -57,71 +67,94 @@ double VehicleModel::getSteering (void)
 void VehicleModel::setWidth (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    width = value;
+    dimensions.width = value;
 }
 
 double VehicleModel::getWidth (void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return width;
+    return dimensions.width;
 }
 
 void VehicleModel::setLength (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    lenght = value;
+    dimensions.length = value;
 }
 
-double VehicleModel::getLenght (void)
+double VehicleModel::getlength (void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return lenght;
+    return dimensions.length;
 }
 
 void VehicleModel::setHeight (double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    height = value;
+    dimensions.height = value;
 }
 
 double VehicleModel::getHeight(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return height;
+    return dimensions.height;
 }
 
 void VehicleModel::setWheelbase(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    wheelbase = value;
+    dimensions.wheelbase = value;
 }
 
 double VehicleModel::getWheelbase(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return wheelbase;
+    return dimensions.wheelbase;
 }
 
 void VehicleModel::setFrontOverhang(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    frontOverhang = value;
+    dimensions.frontOverhang = value;
 }
 
 double VehicleModel::getFrontOverhang(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return frontOverhang;
+    return dimensions.frontOverhang;
 }
 
 void VehicleModel::setRearOverhang(double value)
 {
     std::lock_guard<std::mutex> guard(lock);
-    rearOverhang = value;
+    dimensions.rearOverhang = value;
 }
 
 double VehicleModel::getRearOverhang(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return rearOverhang;
+    return dimensions.rearOverhang;
+}
+
+void VehicleModel::setDimensions(double w, double l, double h, double wb, double fO, double rO)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    dimensions.width = w;
+    dimensions.length = l;
+    dimensions.height = h;
+    dimensions.wheelbase = wb;
+    dimensions.frontOverhang = fO;
+    dimensions.rearOverhang = rO;
+}
+
+void VehicleModel::setDimensions(VehicleDimensions d)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    dimensions = d;
+}
+
+VehicleDimensions VehicleModel::getDimensions (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    return dimensions;
 }

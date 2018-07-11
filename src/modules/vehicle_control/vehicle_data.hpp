@@ -38,18 +38,23 @@ enum VehicleGear {
     VEHICLE_BACKWARD = -1,
 };
 
+struct VehicleDimensions {
+    double width; //!< Vehicle width in mm
+    double length; //!< Vehicle length in mm
+    double height; //!< Vehicle height in mm
+    double wheelbase; //!< Vehicle wheelbase in mm
+    double frontOverhang; //!< Vehicle front overhang in mm
+    double rearOverhang; //!< Vehicle rear overhang in mm
+    void set (double w, double l, double h, double wb, double fO, double rO); //!< Set overall vehicle dimensions
+};
+
 struct VehicleData {
     double acceleration; //!< Accerelration from -100 to 100 percent
     double speed; //!< Speed in m/s
     VehicleGear gear; //!< Driving gear
     double steering; //!< Steering angle in radian
     VehicleDirection direction; //!< Direction from -1 to 1
-    double width; //!< Vehicle width in mm
-    double lenght; //!< Vehicle length in mm
-    double height; //!< Vehicle height in mm
-    double wheelbase; //!< Vehicle wheelbase in mm
-    double frontOverhang; //!< Vehicle front overhang in mm
-    double rearOverhang; //!< Vehicle rear overhang in mm
+    VehicleDimensions dimensions; //!< Vehicle overall dimensions
 };
 
 /**
@@ -165,7 +170,7 @@ public:
      * 
      * @return Vehicle length in mm
      */
-    double getLenght (void);
+    double getlength (void);
     
     /**
      * @brief A function to set the vehicle height
@@ -239,19 +244,46 @@ public:
      */
     double getRearOverhang (void);
     
+    /**
+     * @brief A function to set the vehicle overall dimensions
+     * 
+     * This function sets the vehicle overall dimensions in mm.
+     * 
+     * @param w Width
+     * @param l Length
+     * @param h Height
+     * @param wb Wheelbase
+     * @param fO Front overhang
+     * @param bO Rear overhang
+     */
+    void setDimensions (double w, double l, double h, double wb, double fO, double rO);
+    
+    /**
+     * @brief A function to set the vehicle overall dimensions
+     * 
+     * This function sets the vehicle overall dimensions in mm.
+     * 
+     * @param d Dimensions
+     */
+    void setDimensions (VehicleDimensions d);
+    
+    /**
+     * @brief A function to get the vehicle overall dimensions
+     * 
+     * This function gets the vehicle overall dimensions in mm.
+     * 
+     * @return Vehicle dimensions
+     */
+    VehicleDimensions getDimensions ();
+    
 private:
     //~ VehicleData vehicle;
     double acceleration; //!< Accerelration from -100 to 100 percent
     double speed; //!< Speed in m/s
     VehicleGear gear; //!< Driving gear
     double steering; //!< Steering angle in radian
-    VehicleDirection direction; //!< VehicleDirection from -1 to 1
-    double width; //!< Vehicle width in mm
-    double lenght; //!< Vehicle length in mm
-    double height; //!< Vehicle height in mm
-    double wheelbase; //!< Vehicle wheelbase in mm
-    double frontOverhang; //!< Vehicle front overhang in mm
-    double rearOverhang; //!< Vehicle rear overhang in mm
+    VehicleDirection direction; //!< Vehicle direction from -1 to 1
+    VehicleDimensions dimensions; //!< Vehicle overall dimensions
     std::mutex lock;
 };
 
