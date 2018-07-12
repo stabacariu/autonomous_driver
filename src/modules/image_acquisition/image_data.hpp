@@ -43,7 +43,7 @@ public:
 private:
     cv::Mat data; //!< Image data as matrix
     //~ std::queue<cv::Mat> buffer; //!< Image data as matrix
-    std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Time of capture
+    std::chrono::high_resolution_clock::time_point timeStamp; //!< Time of capture
     std::mutex lock; //!< Mutex lock for synchronized access
     
 };

@@ -110,9 +110,11 @@ void Configurator::saveCameraCalibrationConfig (void)
         
         fs.writeComment("camera calibration data");
         fs << "camCalibIntrDone" << camCalibConfig.intrCalibDone
+        //~ << "timeOfIntrCalib" << camCalibConfig.timeOfIntrCalib
         << "cameraMatrix" << camCalibConfig.cameraMatrix
         << "distCoeffs" << camCalibConfig.distCoeffs
         << "camCalibExtrDone" << camCalibConfig.extrCalibDone
+        //~ << "timeOfExtrCalib" << camCalibConfig.timeOfExtrCalib
         << "homography" << camCalibConfig.homography
         << "transform" << camCalibConfig.transform
         << "mmPerPixel" << camCalibConfig.mmPerPixel;
@@ -139,8 +141,10 @@ void Configurator::loadCameraCalibrationConfig (void)
         fs["camCalibnumSamples"] >> camCalibConfig.numSamples;
         fs["cameraMatrix"] >> camCalibConfig.cameraMatrix;
         fs["distCoeffs"] >> camCalibConfig.distCoeffs;
+        //~ fs["timeOfIntrCalib"] >> camCalibConfig.timeOfIntrCalib;
         fs["camCalibIntrDone"] >> camCalibConfig.intrCalibDone;
         fs["homography"] >> camCalibConfig.homography;
+        //~ fs["timeOfExtrCalib"] >> camCalibConfig.timeOfExtrCalib;
         fs["camCalibExtrDone"] >> camCalibConfig.extrCalibDone;
         fs["transform"] >> camCalibConfig.transform;
         fs["mmPerPixel"] >> camCalibConfig.mmPerPixel;
@@ -195,6 +199,49 @@ void Configurator::loadUserInterfaceConfig (void)
         fs["uiImageSize_height"] >> uiConfig.imageSize.height;
         fs["uiMenuWidth"] >> uiConfig.menuWidth;
         fs["uiFPS"] >> uiConfig.fps;
+    }
+    fs.release();
+}
+
+void Configurator::setTrafficSignDetectionConfig (TrafficSignDetectionConfig c)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    trafficSignDetConfig = c;
+}
+
+TrafficSignDetectionConfig Configurator::getTrafficSignDetectionConfig (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    return trafficSignDetConfig;
+}
+
+void Configurator::saveTrafficSignDetectionConfig (void)
+{
+    cv::FileStorage fs(fileName, cv::FileStorage::WRITE);
+    
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File " << fileName << " does not exist!" << std::endl;
+    }
+    else {
+        std::lock_guard<std::mutex> guard(lock);
+        fs.writeComment("traffic sign detection config");
+        fs << "trafficSignDetectionActive" << trafficSignDetConfig.active;
+    }
+    fs.release();
+}
+
+void Configurator::loadTrafficSignDetectionConfig (void)
+{
+    cv::FileStorage fs(fileName, cv::FileStorage::READ);
+    
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File " << fileName << " does not exist!" << std::endl;
+    }
+    else {
+        std::lock_guard<std::mutex> guard(lock);
+        fs["trafficSignDetectionActive"] >> trafficSignDetConfig.active;
     }
     fs.release();
 }

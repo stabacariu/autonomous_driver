@@ -5,7 +5,6 @@
  */
 
 #include "camera_image_acquisitor.hpp"
-#include <ctime>
 #include <thread>
 #include "configuration.hpp"
 
@@ -40,7 +39,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     }
     
     // FPS measurement
-    time_t frameStart, frameEnd;
+    std::chrono::high_resolution_clock::time_point frameTimerStart, frameTimerEnd;
     int timeTick = 0;
     long frameTotal = 0;
     long frameCnt = 0;
@@ -49,15 +48,12 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     while (running) {
         camera >> capturedImage;
         
-        time_t ts;
-        time(&ts);
-        
         if (frameCnt == 0) {
-            frameStart = ts;
+            frameTimerStart = std::chrono::high_resolution_clock::now();
         }
         // FPS measurement
         frameCnt++;
-        time(&frameEnd);
+        frameTimerEnd = std::chrono::high_resolution_clock::now();
         
         if (capturedImage.empty()) {
             std::cerr << "ERROR: Couldn't aquire image data!" << std::endl;
@@ -79,7 +75,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
             
             
             // FPS measurement
-            if (difftime(frameEnd, frameStart) >= 3) {
+            if (std::chrono::duration_cast<std::chrono::seconds>(frameTimerEnd - frameTimerStart).count() >= 3) {
                 timeTick++;
                 frameTotal += frameCnt;
                 //~ std::cout << "Captured FPS: " << frameTotal/timeTick << std::endl;
@@ -140,6 +136,7 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
     if ((sampleCnt == camCalibConfig.numSamples) && (!cameraMatrix.empty() && !distCoeffs.empty())) {
         camCalibConfig.cameraMatrix = cameraMatrix;
         camCalibConfig.distCoeffs = distCoeffs;
+        camCalibConfig.timeOfIntrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.intrCalibDone = true;
     }
     else {
@@ -201,6 +198,7 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     if (!homography.empty()) {
         camCalibConfig.homography = homography;
         camCalibConfig.mmPerPixel = calcPixelPerMm(warpedImage, camCalibConfig.patternSize, camCalibConfig.patternMm);
+        camCalibConfig.timeOfExtrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.extrCalibDone = true;
         std::cout << "Avg px per mm: " << camCalibConfig.mmPerPixel << std::endl;
     }

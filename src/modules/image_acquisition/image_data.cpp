@@ -10,7 +10,7 @@ void ImageData::write (cv::Mat image)
 {
     std::lock_guard<std::mutex> guard(lock);
     data = image;
-    //~ timeStamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now());
+    timeStamp = std::chrono::high_resolution_clock::now();
 }
 
 cv::Mat ImageData::read ()

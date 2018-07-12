@@ -14,6 +14,7 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     
     Configurator& config = Configurator::instance();
     camCalibConfig = config.getCameraCalibrationConfig();
+    trafficSignDetConfig = config.getTrafficSignDetectionConfig();
     
     cv::CascadeClassifier stopSignCascade;
     
@@ -24,37 +25,39 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     }
     
     while (running) {
-        cv::Mat inputImage, outputImage, homography;
-        inputImage = inputImageData.read();
-        outputImage = outputImageData.read();
-        homography = camCalibConfig.homography;
-        
-        std::vector<cv::Rect> stopSigns;
-        double signDistance = (-1);
-        
-        if (!inputImage.empty() && detectionFlag) {
-            cv::Mat grayImage;
-            cvtColor(inputImage, grayImage, CV_BGR2GRAY);
-
-            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.5, 3, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(15, 15));
-
-            //~ if ((stopSigns.size() > 0) && !outputImage.empty() && !homography.empty()) {
-            if ((stopSigns.size() > 0) && !inputImage.empty()) {
-                for (size_t i = 0; i < stopSigns.size(); i++) {
-                    //~ rectangle(outputImage, stopSigns[i], cv::Scalar(0, 255, 0), 1);
-                    rectangle(inputImage, stopSigns[i], cv::Scalar(0, 255, 0), 1);
-                    //! @todo Convert sign mid to perspective to get correct distance.
-                    std::vector<cv::Point> signCenter;
-                    signCenter.push_back(getSignCenter(stopSigns[i].tl(), stopSigns[i].br()));
-                    signDistance = signCenter[0].y * camCalibConfig.mmPerPixel;
-                    std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << signDistance << std::endl;
-                                        
-                    trafficSignData.setRoi(stopSigns[i]);
-                    trafficSignData.setDistance(signDistance);
+        if (trafficSignDetConfig.active) {
+            cv::Mat inputImage, outputImage, homography;
+            inputImage = inputImageData.read();
+            outputImage = outputImageData.read();
+            homography = camCalibConfig.homography;
+            
+            std::vector<cv::Rect> stopSigns;
+            double signDistance = (-1);
+            
+            if (!inputImage.empty() && detectionFlag) {
+                cv::Mat grayImage;
+                cvtColor(inputImage, grayImage, CV_BGR2GRAY);
+    
+                stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.5, 3, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(15, 15));
+    
+                //~ if ((stopSigns.size() > 0) && !outputImage.empty() && !homography.empty()) {
+                if ((stopSigns.size() > 0) && !inputImage.empty()) {
+                    for (size_t i = 0; i < stopSigns.size(); i++) {
+                        //~ rectangle(outputImage, stopSigns[i], cv::Scalar(0, 255, 0), 1);
+                        rectangle(inputImage, stopSigns[i], cv::Scalar(0, 255, 0), 1);
+                        //! @todo Convert sign mid to perspective to get correct distance.
+                        std::vector<cv::Point> signCenter;
+                        signCenter.push_back(getSignCenter(stopSigns[i].tl(), stopSigns[i].br()));
+                        signDistance = signCenter[0].y * camCalibConfig.mmPerPixel;
+                        std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << signDistance << std::endl;
+                                            
+                        trafficSignData.setRoi(stopSigns[i]);
+                        trafficSignData.setDistance(signDistance);
+                    }
                 }
+                //~ outputImageData.write(outputImage);
+                outputImageData.write(inputImage);
             }
-            //~ outputImageData.write(outputImage);
-            outputImageData.write(inputImage);
         }
     }
 

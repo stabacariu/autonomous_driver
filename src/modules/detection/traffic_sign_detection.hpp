@@ -18,6 +18,11 @@
 //! @addtogroup traffic_sign_detection
 //! @{
 
+struct TrafficSignDetectionConfig {
+    bool active {false};
+};
+
+
 /**
  * @brief A traffic sign detector class
  */
@@ -57,6 +62,7 @@ public:
 private:
     std::atomic_bool running{false};
     CameraCalibrationConfig camCalibConfig;
+    TrafficSignDetectionConfig trafficSignDetConfig;
 };
 
 /**

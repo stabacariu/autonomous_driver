@@ -18,6 +18,7 @@
 #include <mutex>
 #include "camera_image_acquisitor.hpp"
 #include "user_interface.hpp"
+#include "traffic_sign_detection.hpp"
 #include "obstacle_detection.hpp"
 
 //! @addtogroup configuration
@@ -99,6 +100,11 @@ public:
     void saveUserInterfaceConfig (void);
     void loadUserInterfaceConfig (void);
     
+    void setTrafficSignDetectionConfig (TrafficSignDetectionConfig c);
+    TrafficSignDetectionConfig getTrafficSignDetectionConfig (void);
+    void saveTrafficSignDetectionConfig (void);
+    void loadTrafficSignDetectionConfig (void);
+    
     void setObstacleDetectionConfig (ObstacleDetectionConfig c);
     ObstacleDetectionConfig getObstacleDetectionConfig (void);
     void saveObstacleDetectionConfig (void);
@@ -109,6 +115,7 @@ public:
     CameraConfig camConfig; //!< Camera configuration data
     CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration data
     UserInterfaceConfig uiConfig; //!< User interface configuration data
+    TrafficSignDetectionConfig trafficSignDetConfig; //!< Traffic sign detection configuration data
     ObstacleDetectionConfig obstacleDetConfig; //!< Obstacle detection configuration data
     std::mutex lock; //!< Mutex lock for synchronized access
 };

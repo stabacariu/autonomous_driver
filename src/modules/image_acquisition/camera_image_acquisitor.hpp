@@ -31,7 +31,6 @@ struct CameraConfig {
  * @brief Camera calibration configuration data structure
  */
 struct CameraCalibrationConfig {
-    std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> timeStamp; //!< Calibration time stamp
     cv::Size imageSize {640, 360}; //!< Calibration image size
     std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
     cv::Size patternSize {7, 5}; //!< Calibration pattern size
@@ -40,8 +39,10 @@ struct CameraCalibrationConfig {
     cv::Mat cameraMatrix; //! Camera matrix containing the focal length and principal image point
     cv::Mat distCoeffs; //! Distortion coefficients for distortion correction
     bool intrCalibDone {false}; //! Calibration done flag
+    std::chrono::high_resolution_clock::time_point timeOfIntrCalib; //!< Intrinsics calibration time stamp
     cv::Mat homography; //!< Homography for perspective transform
     bool extrCalibDone {false}; //! Calibration done flag
+    std::chrono::high_resolution_clock::time_point timeOfExtrCalib; //!< Extrinsics calibration time stamp
     cv::Mat transform; //!< Transformation matrix for image position
     double mmPerPixel {0.}; //!< Average mm per pixel
 };

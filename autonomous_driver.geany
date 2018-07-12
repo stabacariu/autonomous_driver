@@ -23,7 +23,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=59
+current_page=67
 FILE_NAME_0=527;None;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fautonomous_driver.geany;0;4
 FILE_NAME_1=1306;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmain.cpp;0;4
 FILE_NAME_2=600;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.hpp;0;4
@@ -83,7 +83,7 @@ FILE_NAME_55=1878;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_dri
 FILE_NAME_56=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2Fuser_interface_state.cpp;0;4
 FILE_NAME_57=98272;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Flib%2Fcvui.h;0;4
 FILE_NAME_58=34;CMake;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2FCMakeLists.txt;0;4
-FILE_NAME_59=4523;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2Fui_autonomous_mode.cpp;0;4
+FILE_NAME_59=4492;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2Fui_autonomous_mode.cpp;0;4
 FILE_NAME_60=239;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fvehicle_control%2Fvehicle_data.cpp;0;4
 FILE_NAME_61=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fvehicle_control%2Fvehicle_control.cpp;0;4
 FILE_NAME_62=1532;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Ftraffic_sign_detection.cpp;0;4
@@ -91,6 +91,7 @@ FILE_NAME_63=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver
 FILE_NAME_64=313;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Ftraffic_sign_data.hpp;0;4
 FILE_NAME_65=1228;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2Fui_autonomous_mode.hpp;0;4
 FILE_NAME_66=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fui%2Fui_about_mode.hpp;0;4
+FILE_NAME_67=430;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fimage_acquisition%2Fimage_data.cpp;0;4
 
 [VTE]
 last_dir=/home/pi
