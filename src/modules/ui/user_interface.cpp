@@ -4,6 +4,7 @@
  * @date 10.4.2018
  */
 
+#include <chrono>
 #include "user_interface.hpp"
 #include "configuration.hpp"
 
@@ -23,12 +24,26 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
     //~ cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
     cvui::init(uiConfig.mainWindowName);
     
+    // Frame time measurement
+    std::chrono::high_resolution_clock::time_point frameTimerStart, frameTimerEnd;
+    int frameCnt = 0;
+    
     while (running) {
         image = imageData.read();
         if (image.empty()) {
             image = cv::Mat(uiConfig.imageSize.height, uiConfig.imageSize.width, CV_8UC3, cv::Scalar::all(0));
+            if (frameCnt == 0) {
+                frameTimerStart = std::chrono::high_resolution_clock::now();
+            }
             drawMessage(image, "No Image!");
         }
+        else {
+            if (frameCnt == 0) {
+                frameTimerStart = imageData.getTime();
+            }
+            frameCnt++;
+        }
+        
         // Create output image composition from UI menu and output image
         cv::Mat outputImage = cv::Mat(image.rows, image.cols + menuWith, CV_8UC3, cv::Scalar(49, 52, 49));
         //~ cv::Rect insert = cv::Rect(menuWith, 0, image.cols, image.rows);
@@ -50,6 +65,12 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         
         if (uiState.getKey() == (char)(-1)) {
             uiState.setKey(inputKey);
+        }
+        
+        frameTimerEnd = std::chrono::high_resolution_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(frameTimerEnd - frameTimerStart).count() >= 3) {
+            std::cout << "Processed FPS: " << frameCnt/3 << std::endl;
+            frameCnt = 0;
         }
     }
 

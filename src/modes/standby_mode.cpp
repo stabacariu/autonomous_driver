@@ -7,6 +7,7 @@
 #include "standby_mode.hpp"
 #include "closing_mode.hpp"
 #include "autonomous_mode.hpp"
+#include "development_mode.hpp"
 #include "remote_control_mode.hpp"
 #include "configuration_mode.hpp"
 #include "about_mode.hpp"
@@ -31,6 +32,7 @@ void StandbyMode::run (SystemState* s)
             (key == 'q') ||
             (key == 'Q') ||
             (key == 'A') ||
+            (key == 'D') ||
             (key == 'R') ||
             (key == 'C') ||
             (key == 'S')) {
@@ -47,6 +49,7 @@ void StandbyMode::run (SystemState* s)
         case 'q': s->setMode(new ClosingMode()); break;
         case 'Q': s->setMode(new ClosingMode()); break;
         case 'A': s->setMode(new AutonomousMode()); break;
+        case 'D': s->setMode(new DevelopmentMode()); break;
         case 'R': s->setMode(new RemoteControlMode()); break;
         case 'C': s->setMode(new ConfigurationMode()); break;
         case 'S': s->setMode(new AboutMode()); break;

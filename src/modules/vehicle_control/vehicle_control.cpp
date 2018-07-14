@@ -12,8 +12,8 @@ void VehicleController::run (VehicleModel& vehicle)
     running = true;
     
     MotorDriver motor;
-    
-    while (running) {
+    bool motorInitFlag = motor.init();
+    while (running && motorInitFlag) {
         // Calculate steering value from rad to a value from 0 to 4096
         double steering = vehicle.getSteering();
         int steeringValue = (int) round(STEERING_MIN + steering/((double) CV_PI/(STEERING_MAX - STEERING_MIN)));

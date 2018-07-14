@@ -1,11 +1,11 @@
 /**
- * @file autonomous_mode.hpp
+ * @file development_mode.hpp
  * @author Sergiu-Petru Tabacariu
  * @date 5.4.2018
  */
 
-#ifndef AUTONOMOUS_MODE_HPP
-#define AUTONOMOUS_MODE_HPP
+#ifndef DEVELOPMENT_MODE_HPP
+#define DEVELOPMENT_MODE_HPP
 
 #include <iostream>
 #include "system_mode.hpp"
@@ -20,36 +20,36 @@
 #include "traffic_sign_detection.hpp"
 #include "obstacle_data.hpp"
 #include "obstacle_detection.hpp"
-#include "path_planning.hpp"
+#include "remote_control.hpp"
 #include "vehicle_data.hpp"
 #include "vehicle_control.hpp"
 
-//! @addtogroup autonomous_driving_mode
-//! @brief A mode for autonomous driving
+//! @addtogroup development_mode
+//! @brief A mode for development
 //! @{
 
-class AutonomousMode : public SystemMode {
+class DevelopmentMode : public SystemMode {
 public:
-    ~AutonomousMode () = default;
+    ~DevelopmentMode () = default;
     
     /**
-     * @brief Run autonomous driving mode
+     * @brief Run development mode
      * 
-     * This function runs the autonomous driving mode.
+     * This function runs the development mode.
      */
     void run (SystemState* s) override;
     
     /**
-     * @brief Quit autonomous driving mode
+     * @brief Quit development mode
      * 
-     * This function quits the autonomous driving mode.
+     * This function quits the development mode.
      */
     void quit (void) override;
     
     /**
-     * @brief Stop autonomous driving mode modules
+     * @brief Stop development mode modules
      * 
-     * This function stops all autonomous driving mode modules.
+     * This function stops all development mode modules.
      */
     void stopModules (void);
 
@@ -64,18 +64,19 @@ private:
     LaneData lane; //!< Lane data of actual detected lane
     LaneDetector laneDetector; //!< Lane detector
     
-    TrafficSignData trafficSigns; //!< Traffic sign data of detected traffic sign
+    TrafficSignData trafficSignData; //!< Traffic sign data of detected traffic sign
     TrafficSignDetector trafficSignDetector; //!< Traffic sign detector
     
-    ObstacleData obstacles; //!< Obstacle data
+    ObstacleData obstacle; //!< Obstacle data
     ObstacleDetector obstacleDetector; //!< Obstacle detector
     
-    PathPlanner pathPlanner; //!< Path planner
+    RemoteController remoteController; //!< Remote controller
     
     VehicleModel vehicle; //!< Vehicle data
     VehicleController vehicleController; //!< Vehicle controler
 };
 
-//! @} autonomous_driving_mode
+//! @} development_mode
 
-#endif // AUTONOMOUS_MODE_HPP
+#endif // DEVELOPMENT_MODE_HPP
+

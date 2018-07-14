@@ -120,6 +120,7 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                     
                 lanePredicted.clear();
             }
+            
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);
         }

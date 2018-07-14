@@ -18,3 +18,9 @@ cv::Mat ImageData::read ()
     std::lock_guard<std::mutex> guard(lock);
     return data;
 }
+
+std::chrono::high_resolution_clock::time_point ImageData::getTime()
+{
+    std::lock_guard<std::mutex> guard(lock);
+    return timeStamp;
+}

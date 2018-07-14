@@ -40,8 +40,6 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     
     // FPS measurement
     std::chrono::high_resolution_clock::time_point frameTimerStart, frameTimerEnd;
-    int timeTick = 0;
-    long frameTotal = 0;
     long frameCnt = 0;
     
     // Caputre image
@@ -51,9 +49,6 @@ void CameraImageAcquisitor::run (ImageData& imageData)
         if (frameCnt == 0) {
             frameTimerStart = std::chrono::high_resolution_clock::now();
         }
-        // FPS measurement
-        frameCnt++;
-        frameTimerEnd = std::chrono::high_resolution_clock::now();
         
         if (capturedImage.empty()) {
             std::cerr << "ERROR: Couldn't aquire image data!" << std::endl;
@@ -73,12 +68,11 @@ void CameraImageAcquisitor::run (ImageData& imageData)
                 //~ inversePerspectiveTransform(image, image, camCalibConfig.homography);
             //~ }
             
-            
             // FPS measurement
+            frameCnt++;
+            frameTimerEnd = std::chrono::high_resolution_clock::now();
+            
             if (std::chrono::duration_cast<std::chrono::seconds>(frameTimerEnd - frameTimerStart).count() >= 3) {
-                timeTick++;
-                frameTotal += frameCnt;
-                //~ std::cout << "Captured FPS: " << frameTotal/timeTick << std::endl;
                 std::cout << "Captured FPS: " << frameCnt/3 << std::endl;
                 frameCnt = 0;
             }

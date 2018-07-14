@@ -55,10 +55,11 @@ void UIStandbyMode::draw (cv::Mat& image)
     cvui::text(image, 10, 10, "Main Menu");
     
     cvui::button(image, 10, 30, 150, 40, "&Autonomous");
-    cvui::button(image, 10, 80, 150, 40, "&Remote Control");
-    cvui::button(image, 10, 130, 150, 40, "&Configuration");
-    cvui::button(image, 10, 180, 150, 40, "&About");
-    cvui::button(image, 10, 230, 150, 40, "&Quit");
+    cvui::button(image, 10, 80, 150, 40, "&Development");
+    cvui::button(image, 10, 130, 150, 40, "&Remote Control");
+    cvui::button(image, 10, 180, 150, 40, "&Configuration");
+    cvui::button(image, 10, 230, 150, 40, "&About");
+    cvui::button(image, 10, 280, 150, 40, "&Quit");
 }
 
 void UIStandbyMode::getMenuList (std::vector<std::string>& menuList)
@@ -66,6 +67,7 @@ void UIStandbyMode::getMenuList (std::vector<std::string>& menuList)
     menuList.clear();
     
     menuList.push_back("(A)utonomous");
+    menuList.push_back("(D)evelopment");
     menuList.push_back("(R)emote Control");
     menuList.push_back("(C)onfigure");
     menuList.push_back("(S)About");

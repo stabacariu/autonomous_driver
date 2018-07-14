@@ -25,7 +25,7 @@ public:
     /**
      * @brief Write image data
      * 
-     * This function writes the image data and the creation time.
+     * This function writes the image data and the aquisition time.
      * 
      * @param image
      */
@@ -34,11 +34,20 @@ public:
     /**
      * @brief Read image data
      * 
-     * This function reads the input image data and the creation time.
+     * This function reads the input image data.
      * 
      * @return Image matrix and time
      */
     cv::Mat read (void);
+    
+    /**
+     * @brief Get frame aquisition time
+     * 
+     * This function gets the frame aquisition time.
+     * 
+     * @return Aquisition time
+     */
+    std::chrono::high_resolution_clock::time_point getTime();
 
 private:
     cv::Mat data; //!< Image data as matrix

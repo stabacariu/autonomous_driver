@@ -12,6 +12,7 @@ set(SRC
         calibration_mode.cpp
         closing_mode.cpp
         configuration_mode.cpp
+        development_mode.cpp
         error_mode.cpp
         remote_control_mode.cpp
         standby_mode.cpp
@@ -24,6 +25,7 @@ set(INC
         calibration_mode.hpp
         closing_mode.hpp
         configuration_mode.hpp
+        development_mode.hpp
         error_mode.hpp
         remote_control_mode.hpp
         standby_mode.hpp

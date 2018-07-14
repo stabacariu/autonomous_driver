@@ -11,6 +11,7 @@ set(SRC
         ui_autonomous_mode.cpp
         ui_calibration_mode.cpp
         ui_configuration_mode.cpp
+        ui_development_mode.cpp
         ui_error_mode.cpp
         ui_remote_control_mode.cpp
         ui_standby_mode.cpp
@@ -23,6 +24,7 @@ set(INC
         ui_autonomous_mode.hpp
         ui_calibration_mode.hpp
         ui_configuration_mode.hpp
+        ui_development_mode.hpp
         ui_error_mode.hpp
         ui_remote_control_mode.hpp
         ui_standby_mode.hpp

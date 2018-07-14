@@ -53,22 +53,21 @@ class PCA9685 {
 public:
 
     PCA9685();
-    void init(int,int);
+    int init(int,int);
     virtual ~PCA9685();
-    void reset(void);
-    void setPWMFreq(int);
-    void setPWM(uint8_t, int, int);
-    void setPWM(uint8_t, int);
+    int reset(void);
+    int setPWMFreq(int);
+    int setPWM(uint8_t, int, int);
+    int setPWM(uint8_t, int);
+    
 private:
     int _i2caddr;
     int _i2cbus;
     char busfile[64];
     uint8_t dataBuffer[BUFFER_SIZE];
-    uint8_t read_byte(int, uint8_t);
-    void write_byte(int, uint8_t, uint8_t);
+    int read_byte(int, uint8_t);
+    int write_byte(int, uint8_t, uint8_t);
     int openfd();
-
-
 };
 #endif
 

@@ -65,8 +65,16 @@ enum MotorDriverSteering {
  */
 class MotorDriver {
 public:
-    MotorDriver();
     ~MotorDriver() = default;
+    
+    /**
+     * @brief Initialize motor driver
+     * 
+     * This function initializes the motor driver.
+     * 
+     * @return Init done
+     */
+    bool init ();
     
     /**
      * @brief Set steering motor value
@@ -115,6 +123,7 @@ private:
     PCA9685 pwmModule; //!< PWM Motor driver
     int steering {STEERING_STRAIGHT}; //!< VehicleDirection from 0 to 4095
     int acceleration {ESC_N}; //!< Accerelration from 0 to 4095
+    bool initFlag {false};
     //~ std::mutex lock; //!< Mutex lock for synchronized access
 };
 
