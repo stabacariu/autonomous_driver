@@ -24,12 +24,19 @@
 //! @{
 
 /**
- * @brief User interface configuration structure
+ * @brief User interface configuration class
  */
-struct UserInterfaceConfig {
+class UserInterfaceConfig {
+public:
+    ~UserInterfaceConfig() = default;
+    
+    bool load (cv::FileStorage fs);
+    void save (cv::FileStorage fs);
+    
+public:
     std::string mainWindowName {"Autonomous Driver"}; //!< Main user interface window title
     cv::Size imageSize {640, 360}; //!< Image size of output image
-    int menuWidth {200}; //!< Menu width
+    int menuWidth {160}; //!< Menu width
     double fps {30.}; //!< User interface frames per second
 };
 

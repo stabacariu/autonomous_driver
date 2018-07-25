@@ -52,9 +52,10 @@ public:
      * 
      * This function draws the user interface.
      * 
-     * @brief image Image matrix
+     * @param image Image matrix
+     * @param selected Selected button
      */
-    void draw (cv::Mat& image);
+    void draw (cv::Mat& image, char& selected);
 
 private:
     std::atomic_char key {(char)(-1)}; //!< Actual user input key

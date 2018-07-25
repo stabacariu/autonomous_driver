@@ -8,6 +8,7 @@ find_package(OpenCV REQUIRED)
 find_library(WiringPi REQUIRED)
 
 add_subdirectory(modes)
+add_subdirectory(ui)
 add_subdirectory(modules)
 add_subdirectory(tools)
 

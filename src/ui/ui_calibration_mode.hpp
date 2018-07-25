@@ -24,8 +24,9 @@ public:
      * This function draws the intrinsics calibration user interface mode.
      * 
      * @brief image Image matrix
+     * @param selected Selected button
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
 
 private:
     void getMenuList (std::vector<std::string>& menuList);
@@ -43,7 +44,7 @@ public:
      * 
      * @brief image Image matrix
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
 
 private:
     void getMenuList (std::vector<std::string>& menuList);
@@ -61,7 +62,7 @@ public:
      * 
      * @brief image Image matrix
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
 
 private:
     void getMenuList (std::vector<std::string>& menuList);

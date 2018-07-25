@@ -37,7 +37,6 @@ public:
     void quit (void);
     
 private:
-    std::atomic_bool running {false}; //!< Running flag
     SystemState state {new StandbyMode()}; //!< Current system state
 };
 

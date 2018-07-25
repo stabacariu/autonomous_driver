@@ -1,19 +1,18 @@
 /**
- * @file ui_autonomous_mode.cpp
+ * @file ui_development_mode.cpp
  * @author Sergiu-Petru Tabacariu
  * @date 1.5.2018
  */
 
-#include "ui_autonomous_mode.hpp"
+#include "ui_development_mode.hpp"
 
-//~ void UIAutonomousMode::draw (cv::Mat& image, VehicleModel& vehicle, LaneData& lane, ObstacleData& obstacle)
-void UIAutonomousMode::draw (cv::Mat& image)
+void UIDevelopmentMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.rows);
     rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
     
-    std::string titleText = "Auto mode";
+    std::string titleText = "Dev mode";
     int fontFace = CV_FONT_HERSHEY_DUPLEX;
     double fontScale = 0.7;
     int thickness = 1;
@@ -71,7 +70,7 @@ void UIAutonomousMode::draw (cv::Mat& image)
         putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
     }
 }
-void UIAutonomousMode::getMenuList (std::vector<std::string>& menuList)
+void UIDevelopmentMode::getMenuList (std::vector<std::string>& menuList)
 {
     menuList.clear();
     
@@ -79,7 +78,7 @@ void UIAutonomousMode::getMenuList (std::vector<std::string>& menuList)
     menuList.push_back("(Q)uit");
 }
 
-void UIAutonomousMode::getStateList (std::vector<std::string>& stateList, VehicleModel& v)
+void UIDevelopmentMode::getStateList (std::vector<std::string>& stateList, VehicleModel& v)
 {
     stateList.clear();
     std::ostringstream text;
@@ -94,7 +93,7 @@ void UIAutonomousMode::getStateList (std::vector<std::string>& stateList, Vehicl
     text.clear();
 }
 
-void UIAutonomousMode::getDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o, TrafficSignData& t)
+void UIDevelopmentMode::getDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o, TrafficSignData& t)
 {
     detectList.clear();
     std::ostringstream text;
@@ -149,3 +148,4 @@ void UIAutonomousMode::getDetectList (std::vector<std::string>& detectList, Lane
     text.str("");
     text.clear();
 }
+

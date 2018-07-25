@@ -24,8 +24,9 @@ public:
      * This function draws the error user interface mode.
      * 
      * @brief image Image matrix
+     * @param selected Selected button
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
 };
 
 //! @} user_interface

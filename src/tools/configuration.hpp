@@ -92,25 +92,17 @@ public:
     
     void setCameraCalibrationConfig (CameraCalibrationConfig c);
     CameraCalibrationConfig getCameraCalibrationConfig (void);
-    void saveCameraCalibrationConfig (void);
-    void loadCameraCalibrationConfig (void);
     
     void setUserInterfaceConfig (UserInterfaceConfig c);
     UserInterfaceConfig getUserInterfaceConfig (void);
-    void saveUserInterfaceConfig (void);
-    void loadUserInterfaceConfig (void);
     
     void setTrafficSignDetectionConfig (TrafficSignDetectionConfig c);
     TrafficSignDetectionConfig getTrafficSignDetectionConfig (void);
-    void saveTrafficSignDetectionConfig (void);
-    void loadTrafficSignDetectionConfig (void);
     
     void setObstacleDetectionConfig (ObstacleDetectionConfig c);
     ObstacleDetectionConfig getObstacleDetectionConfig (void);
-    void saveObstacleDetectionConfig (void);
-    void loadObstacleDetectionConfig (void);
     
-public:
+private:
     std::string fileName {"../config/default.xml"}; //!< Default config file name
     CameraConfig camConfig; //!< Camera configuration data
     CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration data

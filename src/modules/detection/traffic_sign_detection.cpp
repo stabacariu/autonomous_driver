@@ -7,6 +7,33 @@
 #include "traffic_sign_detection.hpp"
 #include "configuration.hpp"
 
+bool TrafficSignDetectionConfig::load (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+        return false;
+    }
+    else {
+        fs["trafficSignDetectionActive"] >> active;
+    }
+    fs.release();
+    return true;
+}
+
+void TrafficSignDetectionConfig::save (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+    }
+    else {
+        fs.writeComment("traffic sign detection config");
+        fs << "trafficSignDetectionActive" << active;
+    }
+    fs.release();
+}
+
 void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImageData, TrafficSignData& trafficSignData)
 {
     std::cout << "THREAD: Traffic sign detection started." << std::endl;
@@ -18,6 +45,7 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     
     cv::CascadeClassifier stopSignCascade;
     
+    //~ bool detectionFlag = trafficSignDetConfig.active;
     bool detectionFlag = true;
     if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {
         std::cerr << "ERROR: Couldn't load classifier data!" << std::endl;

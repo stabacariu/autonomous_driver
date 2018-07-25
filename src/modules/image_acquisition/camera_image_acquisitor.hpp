@@ -20,7 +20,14 @@
 /**
  * @brief Camera configuration data structure
  */
-struct CameraConfig {
+class CameraConfig {
+public:
+    ~CameraConfig() = default;
+    
+    bool load (cv::FileStorage fs);
+    void save (cv::FileStorage fs);
+
+public:
     int id {0}; //!< Camera ID initialized with 0
     cv::Size imageSize {640, 360}; //!< Camera image size
     double fps {15.}; //!< Frames per second caputred by the camera
@@ -30,7 +37,14 @@ struct CameraConfig {
 /**
  * @brief Camera calibration configuration data structure
  */
-struct CameraCalibrationConfig {
+class CameraCalibrationConfig {
+public:
+    ~CameraCalibrationConfig() = default;
+    
+    bool load (cv::FileStorage fs);
+    void save (cv::FileStorage fs);
+    
+public:
     cv::Size imageSize {640, 360}; //!< Calibration image size
     std::string pattern {"CHESSBOARD"}; //!< Calibration pattern
     cv::Size patternSize {7, 5}; //!< Calibration pattern size
@@ -54,7 +68,7 @@ struct CameraCalibrationConfig {
  */
 class CameraImageAcquisitor : public ImageAcquisitor {
 public:
-    ~CameraImageAcquisitor () = default;
+    ~CameraImageAcquisitor() = default;
     
     /**
      * @brief Write image to camera image acquisitor

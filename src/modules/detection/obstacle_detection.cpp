@@ -7,6 +7,33 @@
 #include "obstacle_detection.hpp"
 #include "configuration.hpp"
 
+bool ObstacleDetectionConfig::load (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+        return false;
+    }
+    else {
+        fs["obstacleDetectionActive"] >> active;
+    }
+    fs.release();
+    return true;
+}
+
+void ObstacleDetectionConfig::save (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+    }
+    else {
+        fs.writeComment("obstacle detection config");
+        fs << "obstacleDetectionActive" << active;
+    }
+    fs.release();
+}
+
 void ObstacleDetector::run (ObstacleData& obstacleData)
 {
     std::cout << "THREAD: Obstacle detection started." << std::endl;

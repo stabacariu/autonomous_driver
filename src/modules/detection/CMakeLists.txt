@@ -30,7 +30,7 @@ add_library(detection STATIC ${INC} ${SRC})
 target_include_directories(detection PUBLIC
         ${CMAKE_SOURCE_DIR}/lib
         ${CMAKE_SOURCE_DIR}/modes
+        ${CMAKE_SOURCE_DIR}/ui
         ${CMAKE_SOURCE_DIR}/modules/image_acquisition
-        ${CMAKE_SOURCE_DIR}/modules/ui
         ${CMAKE_SOURCE_DIR}/tools
 )

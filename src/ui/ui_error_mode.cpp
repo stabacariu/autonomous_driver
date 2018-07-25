@@ -6,7 +6,7 @@
 
 #include "ui_error_mode.hpp"
 
-void UIErrorMode::draw (cv::Mat& image)
+void UIErrorMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.rows);

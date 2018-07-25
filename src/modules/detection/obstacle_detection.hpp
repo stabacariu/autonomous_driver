@@ -24,7 +24,14 @@
 //! @addtogroup obstacle_detection
 //! @{
 
-struct ObstacleDetectionConfig {
+class ObstacleDetectionConfig {
+public:
+    ~ObstacleDetectionConfig() = default;
+    
+    bool load (cv::FileStorage fs);
+    void save (cv::FileStorage fs);
+    
+public:
     bool active {false};
 };
 

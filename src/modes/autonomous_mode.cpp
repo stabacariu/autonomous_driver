@@ -72,5 +72,4 @@ void AutonomousMode::stopModules ()
     obstacleDetector.quit();
     pathPlanner.quit();
     vehicleController.quit();
-    vehicleController.quit();
 }

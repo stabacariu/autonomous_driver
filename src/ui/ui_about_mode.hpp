@@ -24,8 +24,9 @@ public:
      * This function draws the about user interface mode.
      * 
      * @param image Image matrix
+     * @param selected Selected button
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
     
     /**
      * @brief Draw about user interface mode text

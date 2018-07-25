@@ -15,9 +15,10 @@ void UserInterfaceState::setKey (char k)
 char UserInterfaceState::getKey (void)
 {
     //~ std::lock_guard<std::mutex> guard(lock);
-    char k = key;
-    key = (char)(-1);
-    return k;
+    //~ char k = key;
+    //~ key = (char)(-1);
+    //~ return k;
+    return key;
 }
 
 void UserInterfaceState::setMode (UserInterfaceMode* m)
@@ -32,7 +33,7 @@ UserInterfaceMode* UserInterfaceState::getMode (void)
     return mode;
 }
 
-void UserInterfaceState::draw (cv::Mat& image)
+void UserInterfaceState::draw (cv::Mat& image, char& selected)
 {
-    mode->draw(image);
+    mode->draw(image, selected);
 }

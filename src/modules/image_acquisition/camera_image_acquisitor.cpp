@@ -24,7 +24,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     running = true;
     
     Configurator& config = Configurator::instance();
-    camConfig = config.camConfig;
+    camConfig = config.getCameraConfig();
     
     // Initalize camera
     cv::VideoCapture camera(camConfig.id);
@@ -140,7 +140,6 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
     
     if (saveConfigFlag && camCalibConfig.intrCalibDone) {
         config.setCameraCalibrationConfig(camCalibConfig);
-        config.saveCameraCalibrationConfig();
         config.save();
         std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
     }
@@ -203,7 +202,6 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
     
     if (saveConfigFlag && camCalibConfig.extrCalibDone) {
         config.setCameraCalibrationConfig(camCalibConfig);
-        config.saveCameraCalibrationConfig();
         config.save();
         std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
     }
@@ -443,4 +441,96 @@ void adjustImagePosition (cv::Mat image, cv::Mat& adjustedImage, char key, cv::M
         homography.at<double>(1, 2) += yOffset;
         homography.at<double>(2, 2) += zOffset;
     }
+}
+
+bool CameraConfig::load (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+        return false;
+    }
+    else {
+        fs["cameraID"] >> id;
+        fs["cameraImageSize_width"] >> imageSize.width;
+        fs["cameraImageSize_height"] >> imageSize.height;
+        fs["cameraFPS"] >> fps;
+    }
+    fs.release();
+    return true;
+}
+
+void CameraConfig::save (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+    }
+    else {
+        fs.writeComment("camera config");
+        fs << "cameraID" << id
+        << "cameraImageSize_width" << imageSize.width
+        << "cameraImageSize_height" << imageSize.height
+        << "cameraFPS" << fps;
+    }
+    fs.release();
+}
+
+bool CameraCalibrationConfig::load (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+        return false;
+    }
+    else {
+        fs["camCalibImageSize_width"] >> imageSize.width;
+        fs["camCalibImageSize_height"] >> imageSize.height;
+        fs["camCalibPattern"] >> pattern;
+        fs["camCalibPatternSize_width"] >> patternSize.width;
+        fs["camCalibPatternSize_height"] >> patternSize.height;
+        fs["camCalibPatternMm"] >> patternMm;
+        fs["camCalibnumSamples"] >> numSamples;
+        fs["cameraMatrix"] >> cameraMatrix;
+        fs["distCoeffs"] >> distCoeffs;
+        //~ fs["timeOfIntrCalib"] >> timeOfIntrCalib;
+        fs["camCalibIntrDone"] >> intrCalibDone;
+        fs["homography"] >> homography;
+        //~ fs["timeOfExtrCalib"] >> timeOfExtrCalib;
+        fs["camCalibExtrDone"] >> extrCalibDone;
+        fs["transform"] >> transform;
+        fs["mmPerPixel"] >> mmPerPixel;
+    }
+    fs.release();
+    return true;
+}
+
+void CameraCalibrationConfig::save (cv::FileStorage fs)
+{
+    if (!fs.isOpened()) {
+        fs.release();
+        std::cerr << "ERROR: File storage not opened" << std::endl;
+    }
+    else {
+        fs.writeComment("camera calibration config");
+        fs << "camCalibImageSize_width" << imageSize.width
+        << "camCalibImageSize_height" << imageSize.height
+        << "camCalibPattern" << pattern
+        << "camCalibPatternSize_width" << patternSize.width
+        << "camCalibPatternSize_height" << patternSize.height
+        << "camCalibPatternMm" << patternMm
+        << "camCalibnumSamples" << numSamples;
+        
+        fs.writeComment("camera calibration data");
+        fs << "camCalibIntrDone" << intrCalibDone
+        //~ << "timeOfIntrCalib" << timeOfIntrCalib
+        << "cameraMatrix" << cameraMatrix
+        << "distCoeffs" << distCoeffs
+        << "camCalibExtrDone" << extrCalibDone
+        //~ << "timeOfExtrCalib" << timeOfExtrCalib
+        << "homography" << homography
+        << "transform" << transform
+        << "mmPerPixel" << mmPerPixel;
+    }
+    fs.release();
 }

@@ -35,7 +35,7 @@ void StandbyMode::run (SystemState* s)
             (key == 'D') ||
             (key == 'R') ||
             (key == 'C') ||
-            (key == 'S')) {
+            (key == 'B')) {
             running = false;
         }
     }
@@ -52,7 +52,7 @@ void StandbyMode::run (SystemState* s)
         case 'D': s->setMode(new DevelopmentMode()); break;
         case 'R': s->setMode(new RemoteControlMode()); break;
         case 'C': s->setMode(new ConfigurationMode()); break;
-        case 'S': s->setMode(new AboutMode()); break;
+        case 'B': s->setMode(new AboutMode()); break;
     }
     delete this;
 }

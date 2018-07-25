@@ -7,7 +7,7 @@
 #include "ui_remote_control_mode.hpp"
 
 //~ void UIRemoteControlMode::draw (cv::Mat& image, VehicleModel& vehicle)
-void UIRemoteControlMode::draw (cv::Mat& image)
+void UIRemoteControlMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.rows);

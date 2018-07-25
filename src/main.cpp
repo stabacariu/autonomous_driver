@@ -27,7 +27,12 @@ AutonomousDriver app;
 
 void signalHandler (int signal)
 {
-    std::cout << "ERROR: Signal caught: " << signal << std::endl;
+    switch (signal) {
+        case SIGINT: std::cout << "ERROR: Signal caught: SIGINT" << std::endl; break;
+        case SIGQUIT: std::cout << "ERROR: Signal caught: SIGQUIT" << std::endl;break;
+        case SIGTERM: std::cout << "ERROR: Signal caught: SIGTERM" << std::endl; break;
+    }
+    
     //! @todo Change state to error
     app.quit();
 }
@@ -52,6 +57,7 @@ void exceptionHandler (const char* errMsg)
 int main (int argc, char *argv[])
 {
     std::signal(SIGINT, signalHandler);
+    std::signal(SIGQUIT, signalHandler);
     std::signal(SIGTERM, signalHandler);
     
     try {

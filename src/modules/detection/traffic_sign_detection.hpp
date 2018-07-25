@@ -18,7 +18,14 @@
 //! @addtogroup traffic_sign_detection
 //! @{
 
-struct TrafficSignDetectionConfig {
+class TrafficSignDetectionConfig {
+public:
+    ~TrafficSignDetectionConfig() = default;
+    
+    bool load (cv::FileStorage fs);
+    void save (cv::FileStorage fs);
+    
+public:
     bool active {false};
 };
 

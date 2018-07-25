@@ -9,11 +9,9 @@
 
 void AutonomousDriver::exec ()
 {
-    running = true;
-    
     // Load config file to configurator instance
-    //~ Configurator& config = Configurator::instance("../config/config.xml");
-    Configurator& config = Configurator::instance(); //< Load defautl.xml
+    Configurator& config = Configurator::instance("../config/config.xml");
+    //~ Configurator& config = Configurator::instance(); //< Load defautl.xml
     config.load();
     
     state.run();
@@ -27,7 +25,6 @@ void AutonomousDriver::exec ()
 
 void AutonomousDriver::quit ()
 {
-    running = false;
     if (state.isRunning()) {
         state.quit();
     }

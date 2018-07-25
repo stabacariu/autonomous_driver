@@ -6,7 +6,7 @@
 
 #include "ui_calibration_mode.hpp"
 
-void UIIntrinsicsCalibrationMode::draw (cv::Mat& image)
+void UIIntrinsicsCalibrationMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, (image.size().height-1));
@@ -47,7 +47,7 @@ void UIIntrinsicsCalibrationMode::getMenuList (std::vector<std::string>& menuLis
     menuList.push_back("(Q)uit");
 }
 
-void UIExtrinsicsCalibrationMode::draw (cv::Mat& image)
+void UIExtrinsicsCalibrationMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, (image.size().height-1));
@@ -88,7 +88,7 @@ void UIExtrinsicsCalibrationMode::getMenuList (std::vector<std::string>& menuLis
     menuList.push_back("(Q)uit");
 }
 
-void UIImageAdjustmentMode::draw (cv::Mat& image)
+void UIImageAdjustmentMode::draw (cv::Mat& image, char& selected)
 {
     cv::Point pt1(0, 0);
     cv::Point pt2(200, image.rows);

@@ -22,9 +22,9 @@ public:
      * This function draws the user interface mode.
      * 
      * @param image Image matrix
-     * @return Button press
+     * @param selected Pressed button
      */
-    virtual void draw (cv::Mat& image) = 0;
+    virtual void draw (cv::Mat& image, char& selected) = 0;
 };
 
 //! @} user_interface

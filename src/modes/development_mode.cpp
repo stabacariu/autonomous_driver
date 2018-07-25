@@ -71,6 +71,5 @@ void DevelopmentMode::stopModules ()
     obstacleDetector.quit();
     remoteController.quit();
     vehicleController.quit();
-    vehicleController.quit();
 }
 

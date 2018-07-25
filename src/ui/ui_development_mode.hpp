@@ -1,5 +1,5 @@
 /**
- * @file ui_autonomous_mode.hpp
+ * @file ui_development_mode.hpp
  * @author Sergiu-Petru Tabacariu
  * @date 1.5.2018
  */
@@ -17,19 +17,20 @@
 //! @addtogroup user_interface
 //! @{
 
-class UIAutonomousMode : public UserInterfaceMode {
+class UIDevelopmentMode : public UserInterfaceMode {
 public:
-    UIAutonomousMode (VehicleModel& v, LaneData& l, ObstacleData& o, TrafficSignData& t) : vehicle(v), lane(l), obstacle(o), trafficSign(t) {};
-    ~UIAutonomousMode () = default;
+    UIDevelopmentMode (VehicleModel& v, LaneData& l, ObstacleData& o, TrafficSignData& t) : vehicle(v), lane(l), obstacle(o), trafficSign(t) {};
+    ~UIDevelopmentMode () = default;
     
     /**
-     * @brief Draw autonomous driving user interface mode
+     * @brief Draw development driving user interface mode
      * 
-     * This function draws the autonomous driving user interface mode.
+     * This function draws the development driving user interface mode.
      * 
      * @brief image Image matrix
+     * @param selected Selected button
      */
-    void draw (cv::Mat& image) override;
+    void draw (cv::Mat& image, char& selected) override;
 
 private:
     void getMenuList (std::vector<std::string>& menuList);
@@ -45,3 +46,4 @@ private:
 //! @} user_interface
 
 #endif // UI_AUTONOMOUS_MODE_HPP
+
