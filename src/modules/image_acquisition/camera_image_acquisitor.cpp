@@ -36,6 +36,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     
     if (!camera.isOpened()) {
         std::cerr << "ERROR: Could not open camera!" << std::endl;
+        running = false;
     }
     
     // FPS measurement
@@ -110,7 +111,7 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
         
-        if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+        if (!image.empty() && !cameraMatrix.empty() && !distCoeffs.empty()) {
             cv::undistort(image, undistorted, cameraMatrix, distCoeffs);
             line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
             line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
@@ -132,17 +133,19 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
         camCalibConfig.distCoeffs = distCoeffs;
         camCalibConfig.timeOfIntrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.intrCalibDone = true;
+
+        if (saveConfigFlag) {
+            config.setCameraCalibrationConfig(camCalibConfig);
+            config.save();
+            std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
+        }
     }
     else {
         camCalibConfig.intrCalibDone = false;
         std::cerr << "WARNING: Intrinsic camera calibration not successful!" << std::endl;
     }
     
-    if (saveConfigFlag && camCalibConfig.intrCalibDone) {
-        config.setCameraCalibrationConfig(camCalibConfig);
-        config.save();
-        std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
-    }
+    
     
     std::cout << "THREAD: Intrinsics calibarion ended." << std::endl;
 }
@@ -194,16 +197,15 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
         camCalibConfig.timeOfExtrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.extrCalibDone = true;
         std::cout << "Avg px per mm: " << camCalibConfig.mmPerPixel << std::endl;
+        if (saveConfigFlag) {
+            config.setCameraCalibrationConfig(camCalibConfig);
+            config.save();
+            std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
+        }
     }
     else {
         camCalibConfig.extrCalibDone = false;
         std::cerr << "WARNING: Extrinsic camera calibration not successful!" << std::endl;
-    }
-    
-    if (saveConfigFlag && camCalibConfig.extrCalibDone) {
-        config.setCameraCalibrationConfig(camCalibConfig);
-        config.save();
-        std::cout << "THREAD: Intrinsic camera calibration saved!" << std::endl;
     }
         
     std::cout << "THREAD: Extrinsics calibarion ended." << std::endl;
