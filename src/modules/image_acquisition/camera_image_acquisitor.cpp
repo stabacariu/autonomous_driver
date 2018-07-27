@@ -301,12 +301,12 @@ bool calibrateIntrinsics (cv::Mat& image, cv::Mat& cameraMatrix, cv::Mat& distCo
 
     // Set aspect ratio
     cameraMatrix.at<double>(0, 0) = aspRatio;
-    // Calculate cornerpoints
-    std::vector<std::vector<cv::Point3f> > objectPoints(1);
-    calcBoardCornerPosition(patternSize, patternMm, objectPoints[0]);
-    objectPoints.resize(imagePoints.size(), objectPoints[0]);
     
     if (imagePoints.size() > 0) {
+        // Calculate cornerpoints
+        std::vector<std::vector<cv::Point3f> > objectPoints(1);
+        calcBoardCornerPosition(patternSize, patternMm, objectPoints[0]);
+        objectPoints.resize(imagePoints.size(), objectPoints[0]);
         // Calibrate camera and get reprojection error rms
         double rms = cv::calibrateCamera(objectPoints, imagePoints, cv::Size(image.cols, image.rows), cameraMatrix, distCoeffs, rvecs, tvecs, CV_CALIB_USE_INTRINSIC_GUESS);
     }

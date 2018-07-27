@@ -50,12 +50,13 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
             else {
                 image.copyTo(warpedImage);
             }
-
-            imagePrep(warpedImage, warpedImage);
+            
+            cv::Mat prepImage;
+            prepareImage(warpedImage, prepImage);
 
             // Detect lines
             std::vector<cv::Vec4i> lines;
-            detectLines(warpedImage, lines);
+            detectLines(prepImage, lines);
 
             // If no lines where found, take predicted lines
             if (lines.size() <= 0) {
@@ -375,7 +376,7 @@ void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numVal
     }
 }
 
-void imagePrep (cv::Mat image, cv::Mat& prepImage)
+void prepareImage (cv::Mat image, cv::Mat& prepImage)
 {
     autoAdjustBrightness(image);
     

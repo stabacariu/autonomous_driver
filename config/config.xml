@@ -46,7 +46,7 @@
 <uiMainWindowName>Autonomous Driver</uiMainWindowName>
 <uiImageSize_width>640</uiImageSize_width>
 <uiImageSize_height>360</uiImageSize_height>
-<uiMenuWidth>200</uiMenuWidth>
+<uiMenuWidth>160</uiMenuWidth>
 <uiFPS>30.</uiFPS>
 <!-- obstacle detection config -->
 <obstacleDetectionActive>0</obstacleDetectionActive>

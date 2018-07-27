@@ -285,7 +285,7 @@ void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numVal
  * @param image Image matrix
  * @param lines Detected lines
  */
-void imagePrep (cv::Mat image, cv::Mat& prepImage);
+void prepareImage (cv::Mat image, cv::Mat& prepImage);
 
 /**
  * @brief Rest ROI
