@@ -277,15 +277,15 @@ void initLinePrediction (cv::KalmanFilter& kf, int numValues);
 void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numValues, std::vector<cv::Vec4i>& predLines);
 
 /**
- * @brief Process image
+ * @brief Prepare image for line detection
  * 
- * This function process a image. It applies the necessare filters for
+ * This function prepares an image for line detection. It applies the necessare filters for
  * line detection.
  * 
  * @param image Image matrix
  * @param lines Detected lines
  */
-void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines);
+void imagePrep (cv::Mat image, cv::Mat& prepImage);
 
 /**
  * @brief Rest ROI

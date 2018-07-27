@@ -51,9 +51,11 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 image.copyTo(warpedImage);
             }
 
-            std::vector<cv::Vec4i> lines;
+            imagePrep(warpedImage, warpedImage);
 
-            imageProcessing(warpedImage, lines);
+            // Detect lines
+            std::vector<cv::Vec4i> lines;
+            detectLines(warpedImage, lines);
 
             // If no lines where found, take predicted lines
             if (lines.size() <= 0) {
@@ -106,20 +108,24 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 }
                 
                 // Check lane has any line
-                if (lanePredicted.size() > 0) {
-                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
-                    actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                    actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+                //~ if (lanePredicted.size() > 0) {
+                    //~ //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
+                    //~ actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                    //~ actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     
-                    lanePredicted.clear();
-                }
+                    //~ lanePredicted.clear();
+                //~ }
             }
-            else {
-                actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+            //~ else {
+                //~ actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                //~ actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     
-                lanePredicted.clear();
-            }
+                //~ lanePredicted.clear();
+            //~ }
+
+            actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+            actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));        
+            lanePredicted.clear();
             
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);
@@ -369,7 +375,7 @@ void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numVal
     }
 }
 
-void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines)
+void imagePrep (cv::Mat image, cv::Mat& prepImage)
 {
     autoAdjustBrightness(image);
     
@@ -389,10 +395,9 @@ void imageProcessing (cv::Mat& image, std::vector<cv::Vec4i>& lines)
     //~ bitwise_or(image, yellowImage, grayImage);
 
     // Blur image
-    GaussianBlur(grayImage, grayImage, cv::Size(5, 5), 0);
+    //~ GaussianBlur(grayImage, grayImage, cv::Size(5, 5), 0);
+    GaussianBlur(grayImage, prepImage, cv::Size(5, 5), 0);
 
-    // Detect lines
-    detectLines(grayImage, lines);
     //~ cvtColor(grayImage, image, CV_GRAY2BGR);
 }
 
