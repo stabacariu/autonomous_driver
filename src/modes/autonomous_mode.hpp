@@ -20,6 +20,7 @@
 #include "traffic_sign_detection.hpp"
 #include "obstacle_data.hpp"
 #include "obstacle_detection.hpp"
+#include "trajectory_data.hpp"
 #include "path_planning.hpp"
 #include "vehicle_data.hpp"
 #include "vehicle_control.hpp"
@@ -70,6 +71,7 @@ private:
     ObstacleData obstacles; //!< Obstacle data
     ObstacleDetector obstacleDetector; //!< Obstacle detector
     
+    TrajectoryData trajectory; //!< Trajectory data
     PathPlanner pathPlanner; //!< Path planner
     
     VehicleModel vehicle; //!< Vehicle data

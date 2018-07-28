@@ -5,7 +5,7 @@
  */
 #include "trajectory_data.hpp"
 
-void TrajectoryData::push (cv::Point point)
+void TrajectoryData::push_back (cv::Point point)
 {
     std::lock_guard<std::mutex> guard(lock);
     points.push_back(point);
@@ -21,4 +21,10 @@ int TrajectoryData::size (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     return points.size();
+}
+
+void TrajectoryData::clear (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    points.clear();
 }

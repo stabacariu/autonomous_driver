@@ -54,6 +54,7 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         uiState.draw(outputImage, selected);
         
         cvui::update();
+        
         imshow(uiConfig.mainWindowName, outputImage);
         
         //~ cvui::imshow(uiConfig.mainWindowName, outputImage);

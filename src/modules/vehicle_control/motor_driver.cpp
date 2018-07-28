@@ -5,9 +5,16 @@
  */
  
 #include "motor_driver.hpp"
+#include <wiringPi.h>
 
 bool MotorDriver::init ()
 {
+    if (wiringPiSetup() == -1) {
+        std::cerr << "ERROR: Couldn't init wiringPi library!" << std::endl;
+        pinMode(outputEnablePin, OUTPUT);
+        digitalWrite(outputEnablePin, LOW);
+        return false;
+    }
     if (pwmModule.init(1, 0x40)) {
         pwmModule.setPWMFreq(50);
         pwmModule.setPWM(ESC, ESC_N);
@@ -41,7 +48,16 @@ void MotorDriver::reset (void)
         pwmModule.setPWM(STEERING, 0);
         pwmModule.setPWM(ESC, 0);
         pwmModule.reset();
+        
+        // Switch motors off and on
+        digitalWrite(outputEnablePin, HIGH);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        digitalWrite(outputEnablePin, LOW);
     }
 }
 
+void MotorDriver::stop (void)
+{
+    digitalWrite(outputEnablePin, HIGH);
+}
 

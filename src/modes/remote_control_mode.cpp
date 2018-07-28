@@ -20,7 +20,7 @@ void RemoteControlMode::run (SystemState* s)
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(inputImage), std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread remoteControlThread(&RemoteController::run, &remoteController, std::ref(vehicle), std::ref(uiState));
-    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(vehicle));
+    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(trajectory), std::ref(vehicle));
     
     char key = (char)(-1);
     

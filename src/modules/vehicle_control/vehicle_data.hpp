@@ -274,7 +274,33 @@ public:
      * 
      * @return Vehicle dimensions
      */
-    VehicleDimensions getDimensions ();
+    VehicleDimensions getDimensions (void);
+    
+    
+    /**
+     * @brief Stop vehicle
+     * 
+     * This function stops the vehicle
+     */
+    void stop (void);
+    
+    
+    /**
+     * @brief Release vehicle stop
+     * 
+     * This function releases the vehicle engine stop.
+     */
+    void releaseStop (void);
+    
+    
+    /**
+     * @brief Check if vehicle stop is active
+     * 
+     * This function checks if vehicle stop is active.
+     * 
+     * return Stop status
+     */
+    bool checkStop (void);
     
 private:
     //~ VehicleData vehicle;
@@ -284,6 +310,7 @@ private:
     double steering; //!< Steering angle in radian
     VehicleDirection direction; //!< Vehicle direction from -1 to 1
     VehicleDimensions dimensions; //!< Vehicle overall dimensions
+    bool stopFlag {false};
     std::mutex lock;
 };
 

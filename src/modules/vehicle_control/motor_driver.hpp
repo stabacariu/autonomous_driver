@@ -115,12 +115,20 @@ public:
     /**
      * @brief A function to reset the motor driver
      * 
-     * This function resets the motordriver.
+     * This function resets the motor driver.
      */
     void reset (void);
     
+    /**
+     * @brief A function to stop the motor driver
+     * 
+     * This function stops the motor driver.
+     */
+    void stop (void);
+    
 private:
     PCA9685 pwmModule; //!< PWM Motor driver
+    int outputEnablePin {0}; //! WiringPi pin number
     int steering {STEERING_STRAIGHT}; //!< VehicleDirection from 0 to 4095
     int acceleration {ESC_N}; //!< Accerelration from 0 to 4095
     bool initFlag {false};

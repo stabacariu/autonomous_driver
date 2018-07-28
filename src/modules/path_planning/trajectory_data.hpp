@@ -34,7 +34,7 @@ public:
      * 
      * @param point Point to be pushed at the end of the vector
      */
-    void push (cv::Point point);
+    void push_back (cv::Point point);
     
     /**
      * @brief Point at index i
@@ -54,6 +54,8 @@ public:
      * provides synchronised access with a mutex lock.
      */
     int size (void);
+    
+    void clear (void);
     
 private:
     std::vector<cv::Point> points; //!< Trajectory data point vector

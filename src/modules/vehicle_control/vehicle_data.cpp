@@ -158,3 +158,21 @@ VehicleDimensions VehicleModel::getDimensions (void)
     std::lock_guard<std::mutex> guard(lock);
     return dimensions;
 }
+
+void VehicleModel::stop (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    stopFlag = true;
+}
+
+void VehicleModel::releaseStop (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    stopFlag = false;
+}
+
+bool VehicleModel::checkStop (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    return stopFlag;
+}

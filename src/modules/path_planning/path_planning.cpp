@@ -5,12 +5,16 @@
  */
 
 #include "path_planning.hpp"
+#include "configuration.hpp"
 
-
-void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle)
+void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
     running = true;
+    
+    Configurator& config = Configurator::instance();
+    camConfig = config.getCameraConfig();
+    obstacleDetConfig = config.getObstacleDetectionConfig();
     
     cv::KalmanFilter kfT(4, 4, 0);
     initLinePrediction(kfT, 4);
@@ -21,25 +25,17 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obst
     
     while (running) {
         actualLeftLine = lane.getLeftLine();
-        actualRightLine = lane.getRightLine();
-        
         if (actualLeftLine.size() > 0) {
             actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
         }
+        actualRightLine = lane.getRightLine();
         if (actualRightLine.size() > 0) {
             actualLane.push_back(cvtRoadMarkingToVec4i(actualRightLine));
         }
         
-        cv::Mat image;
-        image = inputImage.read();
-        
         // Obtacle Detection before trajectory calculation
-        bool wObtacleDetection = false;
         bool safetyDistance = false;
-        if (obstacle.getDistance() > (-1)) {
-            wObtacleDetection = true;
-        }
-        if (wObtacleDetection) {
+        if (obstacleDetConfig.active) {
             if (obstacle.getDistance() > 25) {
                 safetyDistance = true;
             }
@@ -48,10 +44,11 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obst
             safetyDistance = true; //! @warning Safety distance cannot be measured if ultrasonic sensor is not plugged in!
         }
         
-        if (safetyDistance && (actualLane.size() > 0) && (!image.empty())) {
-            calcTrajectory(vehicle, actualLane, kfT, image.size());
+        if (safetyDistance && (actualLane.size() > 0)) {
+            calcTrajectory(vehicle, actualLane, trajectory, kfT, camConfig.imageSize);
         }
         else {
+            vehicle.stop();
             vehicle.setSteering(CV_PI/2);
             vehicle.setAcceleration(0);
         }
@@ -70,12 +67,8 @@ bool PathPlanner::isRunning ()
     return running;
 }
 
-
-void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize)
+void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize)
 {
-    //~ cv::Mat interImage;
-    //~ getInterImageData(interImage);
-    
     std::vector<cv::Vec4i> trajectoryPredicted;
     bool llf = false;
     bool rlf = false;
@@ -89,6 +82,7 @@ void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, c
         rlf = true;
     }
     
+    // @todo Convert from Vec4i to Point vector
     cv::Vec4i laneMid;
     cv::Vec4i viewMid(imageSize.width/2-1, 0, imageSize.width/2-1, imageSize.height-1);
     
@@ -118,61 +112,9 @@ void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, c
         drv = false;
     }
     
-    //~ drawArrowedLine(interImage, laneMid, Scalar(200, 200, 0));
-    //~ setOutputImageData(interImage);
-    
-    int diffX1 = laneMid[0]-viewMid[0]; // If result positive then lane is to much to the right. Car must steer to the right.
-    int diffX2 = laneMid[2]-viewMid[2];
-
-    float theta = getTheta(cv::Point(laneMid[0], laneMid[1]), cv::Point(laneMid[2], laneMid[3]));
-    
-    double acVal = 18; // 59% if 100% full forward and 0% full reverse
-    double brVal = 0; // 50% if 100% full forward and 0% full reverse
-    
-    if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.90))) {
-        vehicle.setAcceleration(brVal);
-    }
-    else if (drv) {
-        // Set steering angle
-        if ((theta > 0) && (theta < CV_PI/2*0.9)) {
-            vehicle.setDirection(VehicleDirection::VEHICLE_LEFT);
-            vehicle.setSteering(theta-CV_PI/8);
-        }
-        else if ((theta < CV_PI) && (theta > CV_PI/2*1.1)) {
-            vehicle.setDirection(VehicleDirection::VEHICLE_RIGHT);
-            vehicle.setSteering(theta+CV_PI/8);
-        }
-        else {
-            vehicle.setDirection(VehicleDirection::VEHICLE_STRAIGHT);
-            vehicle.setSteering(theta);
-        }
-        
-        // Set acceleration percentage
-        // Vehicle is too much to the left
-        // Counter steer to the right
-        if ((diffX2 > 10) && (diffX1 > 10)) {
-            vehicle.setSteering(3*CV_PI/4);
-            vehicle.setAcceleration(acVal-0.5);
-        }
-        // Vehicle is too much to the right
-        // Counter steer to the left
-        else if ((diffX2 < -10) && (diffX1 < -10)) {
-            vehicle.setSteering(CV_PI/4);
-            vehicle.setAcceleration(acVal-0.5);
-        }
-        else {
-            vehicle.setAcceleration(acVal);
-            //~ if (diffX1 > 10) {
-                //~ setAcceleration(acVal);
-            //~ }
-            //~ else if (diffX1 < -10) {
-                //~ setAcceleration(acVal);
-            //~ }
-            //~ else {
-                //~ setAcceleration(acVal);
-            //~ }
-        }
-    }
+    trajectory.clear();
+    trajectory.push_back(cv::Point(laneMid[0], laneMid[1]));
+    trajectory.push_back(cv::Point(laneMid[2], laneMid[3]));
 }
 
 

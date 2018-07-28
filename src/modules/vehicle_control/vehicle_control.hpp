@@ -18,6 +18,7 @@
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "trajectory_data.hpp"
 #include "vehicle_data.hpp"
 #include "motor_driver.hpp"
 
@@ -35,9 +36,10 @@ public:
      * This thread controls the vehicle by converting given values and
      * sending them to the motor driver.
      * 
+     * @param trajectory Trajectory data
      * @param vehicle Vehicle to control
      */
-    void run (VehicleModel& vehicle);
+    void run (TrajectoryData& trajectory, VehicleModel& vehicle);
     
     /**
      * @brief Quit vehicle control
@@ -58,6 +60,7 @@ public:
 private:
     std::atomic_bool running {false}; //!< Thread running flag
 };
+
 
 //! @} vehicle_control
 

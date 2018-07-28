@@ -22,7 +22,7 @@ void DevelopmentMode::run (SystemState* s)
     std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(inputImage), std::ref(trafficSignData));
     std::thread objectDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacle));
     std::thread remoteControlThread(&RemoteController::run, &remoteController, std::ref(vehicle), std::ref(uiState));
-    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(vehicle));
+    std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(trajectory), std::ref(vehicle));
     
     char key = (char)(-1);
     

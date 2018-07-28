@@ -16,11 +16,14 @@
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "camera_image_acquisitor.hpp"
 #include "lane_data.hpp"
 #include "lane_detection.hpp"
 #include "obstacle_data.hpp"
+#include "obstacle_detection.hpp"
 #include "vehicle_control.hpp"
 #include "vehicle_data.hpp"
+#include "trajectory_data.hpp"
 
 //! @addtogroup path_planning Path planning
 //! @{
@@ -40,8 +43,9 @@ public:
      * @param lane
      * @param obstacle
      * @param vehicle
+     * @param trajectory
      */
-    void run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle);
+    void run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
     
     /**
      * @brief Quit path planning
@@ -61,6 +65,8 @@ public:
     
 private:
     std::atomic_bool running{false}; //!< Path planning running flag
+    CameraConfig camConfig;
+    ObstacleDetectionConfig obstacleDetConfig;
 };
 
 /**
@@ -80,11 +86,13 @@ private:
  * 
  * This function calculates a trajectory to be driven by the autonomous car
  * 
+ * @param vehicle Vehicle data
  * @param actualLane Actual lane composed of left and right road marking line
+ * @param trajectory Trajectory data
  * @param kfT Kalman filter for the Trajectory
  * @param imageSize Size of captured image
  */
-void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv::Size imageSize);
+void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize);
 
 //! @} path_planning
 

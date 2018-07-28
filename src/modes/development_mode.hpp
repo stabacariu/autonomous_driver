@@ -20,6 +20,7 @@
 #include "traffic_sign_detection.hpp"
 #include "obstacle_data.hpp"
 #include "obstacle_detection.hpp"
+#include "trajectory_data.hpp"
 #include "remote_control.hpp"
 #include "vehicle_data.hpp"
 #include "vehicle_control.hpp"
@@ -70,6 +71,7 @@ private:
     ObstacleData obstacle; //!< Obstacle data
     ObstacleDetector obstacleDetector; //!< Obstacle detector
     
+    TrajectoryData trajectory; //! Trajectory data
     RemoteController remoteController; //!< Remote controller
     
     VehicleModel vehicle; //!< Vehicle data

@@ -42,7 +42,7 @@ void ObstacleDetector::run (ObstacleData& obstacleData)
     Configurator& config = Configurator::instance();
     obstacleDetConfig = config.getObstacleDetectionConfig();
     
-    int trigger = 0; //!< WiringPi lib pin number 
+    int trigger = 3; //!< WiringPi lib pin number 
     int echo = 2; //!< Wirring Pi lib pin number
     
     if (wiringPiSetup() == -1) {

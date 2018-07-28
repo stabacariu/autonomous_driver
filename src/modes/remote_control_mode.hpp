@@ -14,6 +14,7 @@
 #include "user_interface.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "vehicle_data.hpp"
+#include "trajectory_data.hpp"
 #include "remote_control.hpp"
 #include "vehicle_control.hpp"
 
@@ -55,6 +56,7 @@ private:
     UserInterface ui; //!< User interface
     CameraImageAcquisitor camera; //!< Camera image acquisitor
     VehicleModel vehicle; //!< Vehicle data
+    TrajectoryData trajectory; //!< Trajectory data
     RemoteController remoteController; //!< Remote controller
     VehicleController vehicleController; //!< Vehicle controller
 };
