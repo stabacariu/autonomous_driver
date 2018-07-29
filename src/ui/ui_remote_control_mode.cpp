@@ -5,114 +5,77 @@
  */
 
 #include "ui_remote_control_mode.hpp"
+#include "cvui.h"
 
-//~ void UIRemoteControlMode::draw (cv::Mat& image, VehicleModel& vehicle)
 void UIRemoteControlMode::draw (cv::Mat& image, char& selected)
 {
-    cv::Point pt1(0, 0);
-    cv::Point pt2(200, image.rows);
-    rectangle(image, pt1, pt2, cv::Scalar::all(218), -1);
+    cvui::beginColumn(image, 10, 10, -1, -1, 5);
+        cvui::text("RC Mode", 0.6);
+        cvui::space(5);
+        if (cvui::button(140, 40, "&Back")) {
+            selected = 'B';
+        }
+        if (cvui::button(140, 40, "&Quit")) {
+            selected = 'Q';
+        }
+        cvui::space(5);
+        
+        cvui::text("Telemetry", 0.5);
+        cvui::printf("Steering: %0.2f rad", vehicle.getSteering());
+        cvui::printf("Acceleration: %0.2f %", vehicle.getAcceleration());
+        cvui::space(5);
+        
+        cvui::text("Vehicle Control", 0.5);
+        cvui::beginRow();
+            cvui::beginColumn();
+                cvui::text("Accelerate");
+                cvui::space();
+                cvui::text("Decelerate");
+                cvui::space();
+                cvui::text("Left");
+                cvui::space();
+                cvui::text("Right");
+                cvui::space();
+                cvui::text("Brake");
+            cvui::endColumn();
+            cvui::space();
+            cvui::beginColumn();
+                cvui::text("[W]");
+                cvui::space();
+                cvui::text("[S]");
+                cvui::space();
+                cvui::text("[A]");
+                cvui::space();
+                cvui::text("[D]");
+                cvui::space();
+                
+                cvui::text("[space]");
+            cvui::endColumn();
+        cvui::endRow();
+    cvui::endColumn();
     
-    std::string titleText = "RC mode";
-    int fontFace = CV_FONT_HERSHEY_DUPLEX;
-    double fontScale = 0.7;
-    int thickness = 1;
-    int baseline = 0;
-    cv::Size textSize = cv::getTextSize(titleText, fontFace, fontScale, 
-    thickness, &baseline);
-    
-    // Get center of the text
-    cv::Point textOrg((200 - textSize.width)/2, (10 + textSize.height));
-    putText(image, titleText, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
-    
-    std::vector<std::string> menuList;
-    getMenuList(menuList);
-    fontFace = CV_FONT_HERSHEY_PLAIN;
-    fontScale = 1;
-    textOrg.x = 10;
-    for (size_t i = 0; i < menuList.size(); i++) {
-        std::string text = menuList[i];
-        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 15 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
+    // Draw vehicle control buttons
+    cvui::beginRow(image, (image.cols - 100), (image.rows - 150), -1, -1, 10);
+    if (cvui::button(40, 40, "&W")) {
+        selected = 'w';
     }
+    cvui::endRow();
     
-    textOrg.y += 20;
-    pt1 = cv::Point(0, textOrg.y);
-    pt2 = cv::Point(200, pt1.y);
-    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
-    
-    pt1.y += 25;
-    pt1.x = 200/2 - 120/2;
-    drawRcCom(image, pt1);
-    
-    textOrg.y += 20;
-    pt1 = cv::Point(0, textOrg.y);
-    pt2 = cv::Point(200, pt1.y);
-    line(image, pt1, pt2, cv::Scalar(180, 180, 180), 1);
-    
-    std::vector<std::string> stateList;
-    getStateList(stateList, vehicle);
-    fontFace = CV_FONT_HERSHEY_PLAIN;
-    fontScale = 1;
-    textOrg.x = 10;
-    for (size_t i = 0; i < stateList.size(); i++) {
-        std::string text = stateList[i];
-        textSize = cv::getTextSize(text, fontFace, fontScale, thickness, &baseline);
-        textOrg.y = textOrg.y + 15 + textSize.height;
-        putText(image, text, textOrg, fontFace, fontScale, cv::Scalar::all(0), thickness);
+    cvui::beginRow(image, (image.cols - 150), (image.rows - 100), -1, -1, 10);
+    if (cvui::button(40, 40, "&A")) {
+        selected = 'a';
     }
-}
-
-void UIRemoteControlMode::drawRcCom (cv::Mat& image, cv::Point position)
-{
-    cv::Rect controls(position, cv::Size(120, 70));
-    // Up arrow
-    cv::Point pt1(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)-35);
-    cv::Point pt2(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)-5);
-    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
-    cv::Point textOrg(pt1.x, pt2.y);
-    putText(image, "w", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
-    // Down arrow
-    pt1 = cv::Point(controls.x + (controls.width/2-1)-15, controls.y + (controls.height/2-1)+5);
-    pt2 = cv::Point(controls.x + (controls.width/2-1)+15, controls.y + (controls.height/2-1)+35);
-    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
-    textOrg = cv::Point(pt1.x, pt2.y);
-    putText(image, "s", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
-    // Left arrow
-    pt1 = cv::Point(controls.x + (controls.width/2-1)-55, controls.y + (controls.height/2-1)-15);
-    pt2 = cv::Point(controls.x + (controls.width/2-1)-25, controls.y + (controls.height/2-1)+15);
-    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
-    textOrg = cv::Point(pt1.x, pt2.y);
-    putText(image, "a", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
-    // Right arrow
-    pt1 = cv::Point(controls.x + (controls.width/2-1)+25, controls.y + (controls.height/2-1)-15);
-    pt2 = cv::Point(controls.x + (controls.width/2-1)+55, controls.y + (controls.height/2-1)+15);
-    rectangle(image, pt1, pt2, cv::Scalar(180, 180, 180), -1);
-    textOrg = cv::Point(pt1.x, pt2.y);
-    putText(image, "d", textOrg, CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar::all(0), 1);
-}
-
-void UIRemoteControlMode::getMenuList (std::vector<std::string>& menuList)
-{
-    menuList.clear();
+    if (cvui::button(40, 40, "&S")) {
+        selected = 's';
+    }
+    if (cvui::button(40, 40, "&D")) {
+        selected = 'd';
+    }
+    cvui::endRow();
     
-    menuList.push_back("(B)ack");
-    menuList.push_back("(A)utonomous");
-    menuList.push_back("(Q)uit");
-}
-
-void UIRemoteControlMode::getStateList (std::vector<std::string>& stateList, VehicleModel& v)
-{
-    stateList.clear();
-    std::ostringstream text;
-    
-    text << "Steering: " << v.getSteering() << " rad";
-    stateList.push_back(text.str());
-    text.str("");
-    text.clear();
-    text << "Acceleration: " << v.getAcceleration() << " %";
-    stateList.push_back(text.str());
-    text.str("");
-    text.clear();
+    cvui::beginRow(image, (image.cols - 150), (image.rows - 50), -1, -1, 10);
+    if (cvui::button(140, 40, "space")) {
+        selected = ' ';
+    }
+    cvui::endRow();
 }

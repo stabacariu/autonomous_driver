@@ -41,3 +41,8 @@ cv::Rect TrafficSignData::getRoi (void)
     std::lock_guard<std::mutex> guard(lock);
     return roi;
 }
+
+cv::Point getSignCenter (cv::Point tl, cv::Point br)
+{
+    return cv::Point(tl.x + (br.x - tl.x)/2, tl.y + (br.y - tl.y)/2);
+}

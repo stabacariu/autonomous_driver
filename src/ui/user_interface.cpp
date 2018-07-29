@@ -21,7 +21,7 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
     camConfig = config.getCameraConfig();
         
     //~ cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
-    cvui::init(uiConfig.mainWindowName);
+    cvui::init(uiConfig.mainWindowName, (1000/uiConfig.fps)*(1.5));
     
     // Frame time measurement
     std::chrono::high_resolution_clock::time_point frameTimerStart, frameTimerEnd;
@@ -53,22 +53,18 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         char selected = (char)(-1);
         uiState.draw(outputImage, selected);
         
-        cvui::update();
-        
-        imshow(uiConfig.mainWindowName, outputImage);
-        
-        //~ cvui::imshow(uiConfig.mainWindowName, outputImage);
-        inputKey = cv::waitKey((1000/uiConfig.fps)*(1.5));
-        
-        if (inputKey == (char)(-1)) {
-            inputKey = selected;
-            if (inputKey == (char)(-1)) {
-                inputKey = getConsoleInput();
-            }
-        }
+        cvui::imshow(uiConfig.mainWindowName, outputImage);
+        // Get key from console
+        //~ if (inputKey == (char)(-1)) {
+            //~ inputKey = getConsoleInput();
+            //~ if (inputKey == (char)(-1)) {
+                //~ inputKey = selected;
+            //~ }
+        //~ }
         
         if (uiState.getKey() == (char)(-1)) {
-            uiState.setKey(inputKey);
+            uiState.setKey(selected);
+            //~ uiState.setKey(inputKey);
         }
         
         frameTimerEnd = std::chrono::high_resolution_clock::now();

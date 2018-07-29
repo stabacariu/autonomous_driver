@@ -27,10 +27,6 @@ public:
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
-    
-private:
-    void getMenuList (std::vector<std::string>& menuList);
-    void getModeList (std::vector<std::string>& menuList);
 };
 
 //! @} user_interface

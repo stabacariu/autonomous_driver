@@ -30,10 +30,6 @@ public:
     void draw (cv::Mat& image, char& selected) override;
     
 private:
-    void drawRcCom (cv::Mat& image, cv::Point position);
-    void getMenuList (std::vector<std::string>& menuList);
-    void getStateList (std::vector<std::string>& stateList, VehicleModel& v);
-    
     VehicleModel& vehicle;
 };
 

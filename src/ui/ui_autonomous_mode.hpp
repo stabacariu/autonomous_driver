@@ -33,10 +33,6 @@ public:
     void draw (cv::Mat& image, char& selected) override;
 
 private:
-    void getMenuList (std::vector<std::string>& menuList);
-    void getStateList (std::vector<std::string>& stateList, VehicleModel& v);
-    void getDetectList (std::vector<std::string>& detectList, LaneData& l, ObstacleData& o, TrafficSignData& t);
-    
     VehicleModel& vehicle;
     LaneData& lane;
     ObstacleData& obstacle;

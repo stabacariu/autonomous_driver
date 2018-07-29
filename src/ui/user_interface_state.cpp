@@ -8,16 +8,11 @@
 
 void UserInterfaceState::setKey (char k)
 {
-    //~ std::lock_guard<std::mutex> guard(lock);
     key = k;
 }
 
 char UserInterfaceState::getKey (void)
 {
-    //~ std::lock_guard<std::mutex> guard(lock);
-    //~ char k = key;
-    //~ key = (char)(-1);
-    //~ return k;
     return key;
 }
 

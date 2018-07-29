@@ -20,7 +20,7 @@ void DevelopmentMode::run (SystemState* s)
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread laneDetectonThread(&LaneDetector::run, &laneDetector, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
     std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(inputImage), std::ref(trafficSignData));
-    std::thread objectDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacle));
+    std::thread obstacleDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacle));
     std::thread remoteControlThread(&RemoteController::run, &remoteController, std::ref(vehicle), std::ref(uiState));
     std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(trajectory), std::ref(vehicle));
     
@@ -34,6 +34,7 @@ void DevelopmentMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     
@@ -41,7 +42,7 @@ void DevelopmentMode::run (SystemState* s)
     imageAcquisitionThread.join();
     laneDetectonThread.join();
     trafficSignDetectionThread.join();
-    objectDetectionThread.join();
+    obstacleDetectionThread.join();
     remoteControlThread.join();
     vehicleControlThread.join();
     

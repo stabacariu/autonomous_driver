@@ -30,10 +30,10 @@ void RemoteControlMode::run (SystemState* s)
         if ((key == 27) ||
             (key == 'q') ||
             (key == 'Q') ||
-            (key == 'B') ||
-            (key == 'A')) {
+            (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     
@@ -47,7 +47,6 @@ void RemoteControlMode::run (SystemState* s)
         case 'q': s->setMode(new ClosingMode()); break;
         case 'Q': s->setMode(new ClosingMode()); break;
         case 'B': s->setMode(new StandbyMode()); break;
-        case 'A': s->setMode(new AutonomousMode()); break;
     }
     delete this;
 }

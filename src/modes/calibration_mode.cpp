@@ -34,6 +34,7 @@ void IntrinsicsCalibrationMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     
@@ -88,6 +89,7 @@ void ExtrinsicsCalibrationMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     
@@ -140,6 +142,7 @@ void ImageAdjustmentMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     

@@ -27,19 +27,6 @@ public:
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
-    
-    /**
-     * @brief Draw about user interface mode text
-     * 
-     * This function draws the about user interface mode text.
-     * 
-     * @param image Image matrix
-     */
-    void drawText (cv::Mat& image);
-    
-private:
-    void getMenuList (std::vector<std::string>& menuList);
-    void getTextList (std::vector<std::string>& textList);
 };
 
 //! @} user_interface

@@ -18,6 +18,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
     while (running) {
         char prevKey = key;
         key = uiState.getKey();
+        uiState.setKey((char)(-1));
         
         double prevAcceleration = vehicle.getAcceleration();
         double prevSteering = vehicle.getSteering();
@@ -26,7 +27,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
             double acceleration = prevAcceleration;
             double steering = prevSteering;
             
-            // Set acceleration from 0 to 100 %
+            // Set acceleration from -100 to 100 %
             if (key == 'w') {
                 acceleration += 0.5;
             }
@@ -34,11 +35,11 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
                 acceleration -= 0.5;
             }
             // Stop vehicle
-            //!< @note Add proper braking function
             else if (key == ' ') {
                 acceleration = 0;
             }
             
+            // Top speed at +- 30%
             if (acceleration < (-30)) {
                 acceleration = -30;
             }
@@ -66,7 +67,6 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
                 vehicle.setAcceleration(acceleration);
             }
             if (prevSteering != steering) {
-                if (prevSteering != steering) 
                 std::cout << "Actual steering angle: " << steering << " rad" << std::endl;
                 vehicle.setSteering(steering);
             }

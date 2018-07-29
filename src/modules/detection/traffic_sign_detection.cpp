@@ -50,7 +50,8 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
         running = false;
     }
     
-    while (running && trafficSignDetConfig.active) {
+    //~ while (running && trafficSignDetConfig.active) {
+    while (running) {
         cv::Mat inputImage, outputImage, homography;
         inputImage = inputImageData.read();
         outputImage = outputImageData.read();
@@ -96,9 +97,4 @@ void TrafficSignDetector::quit ()
 bool TrafficSignDetector::isRunning ()
 {
     return running;
-}
-
-cv::Point getSignCenter (cv::Point tl, cv::Point br)
-{
-    return cv::Point(tl.x + (br.x - tl.x)/2, tl.y + (br.y - tl.y)/2);
 }

@@ -72,17 +72,6 @@ private:
     TrafficSignDetectionConfig trafficSignDetConfig;
 };
 
-/**
- * @brief Get center point of detected traffic sign
- * 
- * This function gets the mid point of a detected traffic sign.
- * 
- * @param tl Top left corner point of traffic sign
- * @param br Bottom right corner point of traffic sign
- * @return Center point of traffic sign
- */
-cv::Point getSignCenter (cv::Point tl, cv::Point br);
-
 //! @} traffic_sign_detection
 
 #endif // TRAFFIC_SIGN_DETECTION_HPP

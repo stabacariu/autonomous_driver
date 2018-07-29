@@ -27,6 +27,8 @@ public:
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
+private:
+    std::string message {"Error found. Closing system safely."};
 };
 
 //! @} user_interface

@@ -49,17 +49,18 @@
 int PCA9685::init(int bus, int address) {
     _i2cbus = bus;
     _i2caddr = address;
-    if (snprintf(busfile, sizeof(busfile), "/dev/i2c-%d", bus) == sizeof(busfile)) {
-        reset();
+    snprintf(busfile, sizeof(busfile), "/dev/i2c-%d", bus);
+    
+    int fd = openfd();
+    if (fd != -1) {
+        return 1;
     }
     else {
-        std::cerr << "Couldn't initialize PCA9685!" << std::endl;
+        return -1;
     }
 }
 
-PCA9685::PCA9685() {
-
-}
+PCA9685::PCA9685() {}
 
 PCA9685::~PCA9685() {
     reset();

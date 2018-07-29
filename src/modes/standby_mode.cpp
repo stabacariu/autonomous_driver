@@ -37,7 +37,9 @@ void StandbyMode::run (SystemState* s)
             (key == 'C') ||
             (key == 'B')) {
             running = false;
+            break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     

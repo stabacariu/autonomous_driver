@@ -21,7 +21,7 @@ void AutonomousMode::run (SystemState* s)
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread laneDetectonThread(&LaneDetector::run, &laneDetector, std::ref(inputImage), std::ref(outputImage), std::ref(lane));
     std::thread trafficSignDetectionThread(&TrafficSignDetector::run, &trafficSignDetector, std::ref(inputImage), std::ref(inputImage), std::ref(trafficSigns));
-    std::thread objectDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacles));
+    std::thread obstacleDetectionThread(&ObstacleDetector::run, &obstacleDetector, std::ref(obstacles));
     std::thread pathPlanningThread(&PathPlanner::run, &pathPlanner, std::ref(inputImage), std::ref(lane), std::ref(obstacles), std::ref(vehicle), std::ref(trajectory));
     std::thread vehicleControlThread(&VehicleController::run, &vehicleController, std::ref(trajectory), std::ref(vehicle));
     
@@ -35,6 +35,7 @@ void AutonomousMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     quit();
     
@@ -42,7 +43,7 @@ void AutonomousMode::run (SystemState* s)
     imageAcquisitionThread.join();
     laneDetectonThread.join();
     trafficSignDetectionThread.join();
-    objectDetectionThread.join();
+    obstacleDetectionThread.join();
     pathPlanningThread.join();
     vehicleControlThread.join();
     

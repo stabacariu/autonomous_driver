@@ -27,9 +27,6 @@ public:
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
-
-private:
-    void getMenuList (std::vector<std::string>& menuList);
 };
 
 class UIExtrinsicsCalibrationMode : public UserInterfaceMode {
@@ -45,9 +42,6 @@ public:
      * @brief image Image matrix
      */
     void draw (cv::Mat& image, char& selected) override;
-
-private:
-    void getMenuList (std::vector<std::string>& menuList);
 };
 
 class UIImageAdjustmentMode : public UserInterfaceMode {
@@ -63,9 +57,6 @@ public:
      * @brief image Image matrix
      */
     void draw (cv::Mat& image, char& selected) override;
-
-private:
-    void getMenuList (std::vector<std::string>& menuList);
 };
 
 //! @} user_interface
