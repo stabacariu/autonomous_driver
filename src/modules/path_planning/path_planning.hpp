@@ -21,6 +21,7 @@
 #include "lane_detection.hpp"
 #include "obstacle_data.hpp"
 #include "obstacle_detection.hpp"
+#include "traffic_sign_data.hpp"
 #include "vehicle_control.hpp"
 #include "vehicle_data.hpp"
 #include "trajectory_data.hpp"
@@ -45,7 +46,7 @@ public:
      * @param vehicle
      * @param trajectory
      */
-    void run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
+    void run (ImageData& inputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
     
     /**
      * @brief Quit path planning

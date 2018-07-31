@@ -87,6 +87,7 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
         double acceleration = vehicle.getAcceleration();
         int accelerationValue = (int) round(ESC_N + acceleration/((double) 100/(ESC_N - ESC_MIN)));
         motor.setAcceleration(accelerationValue);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     motor.reset();

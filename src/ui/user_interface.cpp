@@ -54,17 +54,13 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         uiState.draw(outputImage, selected);
         
         cvui::imshow(uiConfig.mainWindowName, outputImage);
+        inputKey = getConsoleInput();
         // Get key from console
-        //~ if (inputKey == (char)(-1)) {
-            //~ inputKey = getConsoleInput();
-            //~ if (inputKey == (char)(-1)) {
-                //~ inputKey = selected;
-            //~ }
-        //~ }
-        
-        if (uiState.getKey() == (char)(-1)) {
+        if (inputKey != (char)(-1)) {
+            uiState.setKey(inputKey);
+        }
+        else {
             uiState.setKey(selected);
-            //~ uiState.setKey(inputKey);
         }
         
         frameTimerEnd = std::chrono::high_resolution_clock::now();

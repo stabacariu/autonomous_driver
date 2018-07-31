@@ -5,6 +5,7 @@
  */
 
 #include "remote_control.hpp"
+#include <thread>
 
 void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
 {
@@ -18,7 +19,6 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
     while (running) {
         char prevKey = key;
         key = uiState.getKey();
-        uiState.setKey((char)(-1));
         
         double prevAcceleration = vehicle.getAcceleration();
         double prevSteering = vehicle.getSteering();
@@ -71,6 +71,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
                 vehicle.setSteering(steering);
             }
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     
     std::cout << "THREAD: Remote control ended." << std::endl;

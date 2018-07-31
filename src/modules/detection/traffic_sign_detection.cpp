@@ -64,7 +64,7 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
             cv::Mat grayImage;
             cvtColor(inputImage, grayImage, CV_BGR2GRAY);
 
-            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.5, 3, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(15, 15));
+            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.1, 3, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(20, 20), cv::Size(35,35));
 
             //~ if ((stopSigns.size() > 0) && !outputImage.empty() && !homography.empty()) {
             if (stopSigns.size() > 0) {

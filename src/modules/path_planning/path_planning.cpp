@@ -7,7 +7,7 @@
 #include "path_planning.hpp"
 #include "configuration.hpp"
 
-void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory)
+void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
     running = true;
@@ -52,6 +52,7 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, ObstacleData& obst
             vehicle.setSteering(CV_PI/2);
             vehicle.setAcceleration(0);
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
     std::cout << "THREAD: Path planning ended." << std::endl;

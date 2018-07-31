@@ -49,5 +49,5 @@
 <uiMenuWidth>160</uiMenuWidth>
 <uiFPS>30.</uiFPS>
 <!-- obstacle detection config -->
-<obstacleDetectionActive>0</obstacleDetectionActive>
+<obstacleDetectionActive>1</obstacleDetectionActive>
 </opencv_storage>
