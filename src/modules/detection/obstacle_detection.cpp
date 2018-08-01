@@ -56,7 +56,7 @@ void ObstacleDetector::run (ObstacleData& obstacleData)
     while (running) {
         if (obstacleDetConfig.active) {
             double distance = ultrasonic.distance(500);
-            std::cout << "Obstacle detection: Distance is " << distance << " cm." << std::endl;
+            //~ std::cout << "Obstacle detection: Distance is " << distance << " cm." << std::endl;
             obstacleData.setDistance(distance);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(250));

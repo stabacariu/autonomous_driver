@@ -9,12 +9,16 @@
 
 bool MotorDriver::init ()
 {
+    // Initialize wiringPi for enabling the motor driver output
     if (wiringPiSetup() == -1) {
         std::cerr << "ERROR: Couldn't init wiringPi library!" << std::endl;
-        pinMode(outputEnablePin, OUTPUT);
-        digitalWrite(outputEnablePin, LOW);
         return false;
     }
+    else {
+        pinMode(outputEnablePin, OUTPUT);
+        digitalWrite(outputEnablePin, LOW);
+    }
+    
     if (pwmModule.init(1, 0x40)) {
         pwmModule.setPWMFreq(50);
         pwmModule.setPWM(ESC, ESC_N);
@@ -31,6 +35,7 @@ bool MotorDriver::init ()
 void MotorDriver::setSteering (int value)
 {
     if (initFlag) {
+        digitalWrite(outputEnablePin, LOW);
         pwmModule.setPWM(STEERING, value);
     }
 }
@@ -38,6 +43,7 @@ void MotorDriver::setSteering (int value)
 void MotorDriver::setAcceleration (int value)
 {
     if (initFlag) {
+        digitalWrite(outputEnablePin, LOW);
         pwmModule.setPWM(ESC, value);
     }
 }
@@ -51,7 +57,7 @@ void MotorDriver::reset (void)
         
         // Switch motors off and on
         digitalWrite(outputEnablePin, HIGH);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         digitalWrite(outputEnablePin, LOW);
     }
 }

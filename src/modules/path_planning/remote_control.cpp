@@ -37,6 +37,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
             // Stop vehicle
             else if (key == ' ') {
                 acceleration = 0;
+                vehicle.stop();
             }
             
             // Top speed at +- 30%
@@ -72,6 +73,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        vehicle.releaseStop();
     }
     
     std::cout << "THREAD: Remote control ended." << std::endl;

@@ -44,6 +44,14 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& t
             safetyDistance = true; //! @warning Safety distance cannot be measured if ultrasonic sensor is not plugged in!
         }
         
+        if (trafficSigns.getDistance() != (-1)) {
+            cv::Rect stopSign = trafficSigns.getRoi();
+            if ((stopSign.width > 25) || (stopSign.height > 25)) {
+                safetyDistance = false;
+                std::cout << "Stop sign in safety distance! Stop!" << std::endl;
+            }
+        }
+        
         if (safetyDistance && (actualLane.size() > 0)) {
             calcTrajectory(vehicle, actualLane, trajectory, kfT, camConfig.imageSize);
         }

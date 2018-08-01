@@ -131,6 +131,7 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
     
     std::cout << "THREAD: Lane detection ended." << std::endl;
