@@ -16,7 +16,7 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
     vehicle.setAcceleration(0);
     vehicle.setSteering(CV_PI/2);
     
-    while (running) {
+    while (running && !error) {
         char prevKey = key;
         key = uiState.getKey();
         
@@ -77,14 +77,4 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
     }
     
     std::cout << "THREAD: Remote control ended." << std::endl;
-}
-
-void RemoteController::quit ()
-{
-    running = false;
-}
-
-bool RemoteController::isRunning ()
-{
-    return running;
 }

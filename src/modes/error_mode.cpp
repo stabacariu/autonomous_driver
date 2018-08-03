@@ -14,13 +14,13 @@ void ErrorMode::run (SystemState* s)
     std::cout << "MODE: Error Mode started." << std::endl;
     running = true;
     
+    quit();
     s->setMode(new ClosingMode());
     delete this;
 }
 
 void ErrorMode::quit ()
 {
-    //! @todo Implement Error mode
     running = false;
     std::cout << "MODE: Error Mode stopped." << std::endl;
 }

@@ -26,6 +26,7 @@
 
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "image_data.hpp"
 
 //! @addtogroup image_acquisition
@@ -37,7 +38,7 @@
  * 
  * This class defines an image acquistor interface.
  */
-class ImageAcquisitor {
+class ImageAcquisitor : public Module {
 public:
     ~ImageAcquisitor() = default;
     
@@ -68,25 +69,8 @@ public:
      */
     virtual void run (ImageData& image) = 0;
     
-    /**
-     * @brief Quit image acquisition
-     * 
-     * This function quits the image acquisition thread.
-     */
-    virtual void quit (void) { running = false; };
-    
-    /**
-     * @brief Checks if image aquisition is running
-     * 
-     * This function checks if the image aquisition is running.
-     * 
-     * @return True if acquisition is running, else false-.
-     */
-    virtual bool isRunning (void) { return running; };
-    
 protected:
-    ImageData image;
-    std::atomic_bool running;
+    ImageData image; //!< Acquisited image
 };
 
 //! @} image_acquisition

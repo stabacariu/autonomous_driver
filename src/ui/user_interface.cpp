@@ -19,22 +19,20 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
     Configurator& config = Configurator::instance();
     //~ uiConfig = config.getUserInterfaceConfig();
     camConfig = config.getCameraConfig();
-        
-    //~ cv::namedWindow(uiConfig.mainWindowName, CV_WINDOW_AUTOSIZE);
+    
     cvui::init(uiConfig.mainWindowName, (1000/uiConfig.fps)*(1.5));
     
     // Frame time measurement
     std::chrono::high_resolution_clock::time_point frameTimerStart, frameTimerEnd;
     int frameCnt = 0;
     
-    while (running) {
+    while (running && !error) {
         image = imageData.read();
         if (image.empty()) {
             image = cv::Mat(uiConfig.imageSize.height, uiConfig.imageSize.width, CV_8UC3, cv::Scalar(49, 52, 49));
             if (frameCnt == 0) {
                 frameTimerStart = std::chrono::high_resolution_clock::now();
             }
-            //~ drawMessage(image, "No Image!");
         }
         else {
             if (frameCnt == 0) {
@@ -45,8 +43,6 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         
         // Create output image composition from UI menu and output image
         cv::Mat outputImage = cv::Mat(image.rows, image.cols + uiConfig.menuWidth, CV_8UC3, cv::Scalar(49, 52, 49));
-        //~ cv::Rect insert = cv::Rect(menuWith, 0, image.cols, image.rows);
-        //~ image.copyTo(outputImage(insert));
         
         cvui::image(outputImage, uiConfig.menuWidth, 0, image);
         
@@ -54,8 +50,9 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         uiState.draw(outputImage, selected);
         
         cvui::imshow(uiConfig.mainWindowName, outputImage);
-        inputKey = getConsoleInput();
+        
         // Get key from console
+        inputKey = getConsoleInput();
         if (inputKey != (char)(-1)) {
             uiState.setKey(inputKey);
         }
@@ -71,16 +68,6 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
     }
 
     std::cout << "THREAD: User interface ended." << std::endl;
-}
-
-void UserInterface::quit ()
-{
-    running = false;
-}
-
-bool UserInterface::isRunning ()
-{
-    return running;
 }
 
 char getConsoleInput (void)

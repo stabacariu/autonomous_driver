@@ -6,6 +6,7 @@
 
 #include "development_mode.hpp"
 #include "closing_mode.hpp"
+#include "error_mode.hpp"
 #include "standby_mode.hpp"
 #include "ui_development_mode.hpp"
 
@@ -27,6 +28,7 @@ void DevelopmentMode::run (SystemState* s)
     char key = (char)(-1);
     
     while (running) {
+        // Check valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -35,6 +37,18 @@ void DevelopmentMode::run (SystemState* s)
             running = false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError() ||
+            laneDetector.isError() ||
+            trafficSignDetector.isError() ||
+            obstacleDetector.isError() ||
+            remoteController.isError() ||
+            vehicleController.isError()) {
+            running = false;
+            error = true;
+        }
     }
     quit();
     
@@ -46,11 +60,17 @@ void DevelopmentMode::run (SystemState* s)
     remoteControlThread.join();
     vehicleControlThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'B': s->setMode(new StandbyMode()); break;
+    if (error) {
+        s->setMode(new StandbyMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'B': s->setMode(new StandbyMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }

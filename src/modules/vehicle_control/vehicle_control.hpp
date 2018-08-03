@@ -18,6 +18,7 @@
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "trajectory_data.hpp"
 #include "vehicle_data.hpp"
 #include "motor_driver.hpp"
@@ -25,7 +26,7 @@
 //! @addtogroup vehicle_control
 //! @{
 
-class VehicleController {
+class VehicleController : public Module {
 public:
     ~VehicleController() = default;
     
@@ -40,25 +41,6 @@ public:
      * @param vehicle Vehicle to control
      */
     void run (TrajectoryData& trajectory, VehicleModel& vehicle);
-    
-    /**
-     * @brief Quit vehicle control
-     * 
-     * This function quits the vehicle control thread.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if vehicle control is running
-     * 
-     * This function checks if the vehicle control is running…
-     * 
-     * @return True if vehicle control is running, else false.
-     */
-    bool isRunning (void);
-    
-private:
-    std::atomic_bool running {false}; //!< Thread running flag
 };
 
 

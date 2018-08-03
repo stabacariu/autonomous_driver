@@ -19,21 +19,12 @@ void UIConfigurationMode::draw (cv::Mat& image, char& selected)
         selected = 'Q';
     }
     cvui::space(5);
-    
-    if (cvui::button(140, 40, "&Reset")) {
-        selected = 'R';
-    }
-    if (cvui::button(140, 40, "&Save")) {
-        selected = 'S';
-    }
-    cvui::space(5);
-    
+        
     if (cvui::button(140, 40, "&Intrinsics")) {
         selected = 'I';
     }
     if (cvui::button(140, 40, "&Extrinsics")) {
         selected = 'E';
     }
-    cvui::space(5);
     cvui::endColumn();
 }

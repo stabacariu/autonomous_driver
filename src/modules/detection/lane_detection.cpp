@@ -7,7 +7,7 @@
 #include "lane_detection.hpp"
 #include "configuration.hpp"
 
-void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData& actualLane)
+void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData& lane)
 {
     std::cout << "THREAD: Lane detection started." << std::endl;
     running = true;
@@ -36,11 +36,16 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
     std::vector<cv::Vec4i> rightLine;
     //~ std::vector<cv::Point> rightLine;
     
-    while (running) {
+    cv::Mat homography;
+    homography = camCalibConfig.homography;
+    if (homography.empty()) {
+        running = false;
+        error = true;
+    }
+    
+    while (running && !error) {
         cv::Mat image;
-        cv::Mat homography; //!< @todo Inplement Read homography from calibration!
         image = inputImage.read();
-        homography = camCalibConfig.homography;
         
         if (!image.empty()) {
             cv::Mat warpedImage;
@@ -111,22 +116,22 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 // Check lane has any line
                 //~ if (lanePredicted.size() > 0) {
                     //~ //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
-                    //~ actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                    //~ actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+                    //~ lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                    //~ lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     
                     //~ lanePredicted.clear();
                 //~ }
             }
             //~ else {
-                //~ actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                //~ actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+                //~ lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                //~ lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     
                 //~ lanePredicted.clear();
             //~ }
 
-            actualLane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-            actualLane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));        
-            lanePredicted.clear();
+            lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+            lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));        
+            //~ lanePredicted.clear();
             
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);
@@ -135,16 +140,6 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
     }
     
     std::cout << "THREAD: Lane detection ended." << std::endl;
-}
-
-void LaneDetector::quit ()
-{
-    running = false;
-}
-
-bool LaneDetector::isRunning ()
-{
-    return running;
 }
 
 float getEuclidDistance(cv::Point pt1, cv::Point pt2)

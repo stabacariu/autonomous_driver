@@ -22,9 +22,15 @@ void CameraImageAcquisitor::run (ImageData& imageData)
 {
     std::cout << "THREAD: Camera capture started." << std::endl;
     running = true;
+    error = false;
     
     Configurator& config = Configurator::instance();
     camConfig = config.getCameraConfig();
+    camCalibConfig = config.getCameraCalibrationConfig();
+    
+    cv::Mat cameraMatrix, distCoeffs;
+    cameraMatrix = camCalibConfig.cameraMatrix;
+    distCoeffs = camCalibConfig.distCoeffs;
     
     // Initalize camera
     cv::VideoCapture camera(camConfig.id);
@@ -37,6 +43,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     if (!camera.isOpened()) {
         std::cerr << "ERROR: Could not open camera!" << std::endl;
         running = false;
+        error = true;
     }
     
     // FPS measurement
@@ -44,7 +51,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
     long frameCnt = 0;
     
     // Caputre image
-    while (running) {
+    while (running && !error) {
         camera >> capturedImage;
         
         if (frameCnt == 0) {
@@ -55,19 +62,10 @@ void CameraImageAcquisitor::run (ImageData& imageData)
             std::cerr << "ERROR: Couldn't aquire image data!" << std::endl;
         }
         else {
-            //! @note Do not undistort or warp image here!
             // Undistort captured image
-            //~ cv::Mat cameraMatrix, distCoeffs;
-            //~ getIntr(cameraMatrix, distCoeffs);
-            //~ if (!cameraMatrix.empty() && !distCoeffs.empty()) {
-                //~ undistort(image, image, cameraMatrix, distCoeffs);
-            //~ }
-            //~ // Apply perspective transform
-            //~ cv::Mat camCalibConfig.homography;
-            //~ getExtr(camCalibConfig.homography);
-            //~ if (!camCalibConfig.homography.empty()) {
-                //~ inversePerspectiveTransform(image, image, camCalibConfig.homography);
-            //~ }
+            if (!cameraMatrix.empty() && !distCoeffs.empty()) {
+                cv::undistort(capturedImage, capturedImage, cameraMatrix, distCoeffs);
+            }
             
             // FPS measurement
             frameCnt++;

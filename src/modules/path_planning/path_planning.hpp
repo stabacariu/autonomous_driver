@@ -16,6 +16,7 @@
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "lane_data.hpp"
 #include "lane_detection.hpp"
@@ -29,7 +30,7 @@
 //! @addtogroup path_planning Path planning
 //! @{
 
-class PathPlanner {
+class PathPlanner : public Module {
 public:
     ~PathPlanner() = default;
     
@@ -48,24 +49,7 @@ public:
      */
     void run (ImageData& inputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
     
-    /**
-     * @brief Quit path planning
-     * 
-     * This function quits the path planning thread.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if path planning is running
-     * 
-     * This function checks if the path planning is running…
-     * 
-     * @return True if path planning is running, else false.
-     */
-    bool isRunning(void);
-    
 private:
-    std::atomic_bool running{false}; //!< Path planning running flag
     CameraConfig camConfig;
     ObstacleDetectionConfig obstacleDetConfig;
 };

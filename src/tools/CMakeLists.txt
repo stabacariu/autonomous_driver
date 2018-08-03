@@ -22,6 +22,7 @@ target_include_directories(tools PUBLIC
         ${CMAKE_SOURCE_DIR}/lib
         ${CMAKE_SOURCE_DIR}/modes
         ${CMAKE_SOURCE_DIR}/ui
+        ${CMAKE_SOURCE_DIR}/modules
         ${CMAKE_SOURCE_DIR}/modules/detection
         ${CMAKE_SOURCE_DIR}/modules/image_acquisition
         ${CMAKE_SOURCE_DIR}/modules/path_planning

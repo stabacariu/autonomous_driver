@@ -11,12 +11,16 @@
 #include <atomic>
 #include <thread>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "traffic_sign_data.hpp"
 #include "image_data.hpp"
 #include "camera_image_acquisitor.hpp"
 
 //! @addtogroup traffic_sign_detection
 //! @{
+
+#define STOP_SIGN_SIZE cv::Size(30,30)
+#define STOP_SIGN_SAFETY_DISTANCE 20.
 
 class TrafficSignDetectionConfig {
 public:
@@ -33,7 +37,7 @@ public:
 /**
  * @brief A traffic sign detector class
  */
-class TrafficSignDetector {
+class TrafficSignDetector : public Module {
 public:
     ~TrafficSignDetector() = default;
     
@@ -50,24 +54,7 @@ public:
      */
     void run (ImageData& inputImageData, ImageData& outputImageData, TrafficSignData& trafficSignData);
     
-    /**
-     * @brief Quit traffic sign detection
-     * 
-     * This function quits the traffic sign detection thread.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if traffic sign detection is running
-     * 
-     * This function checks if the traffic sign detection is running…
-     * 
-     * @return True if traffic sign detection is running, else false.
-     */
-    bool isRunning(void);
-    
 private:
-    std::atomic_bool running{false};
     CameraCalibrationConfig camCalibConfig;
     TrafficSignDetectionConfig trafficSignDetConfig;
 };

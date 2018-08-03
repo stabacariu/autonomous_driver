@@ -48,17 +48,15 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {
         std::cerr << "ERROR: Couldn't load classifier data!" << std::endl;
         running = false;
+        error = true;
     }
     
-    //~ while (running && trafficSignDetConfig.active) {
-    while (running) {
-        cv::Mat inputImage, outputImage, homography;
+    while (running && !error) {
+        cv::Mat inputImage;
         inputImage = inputImageData.read();
-        outputImage = outputImageData.read();
-        homography = camCalibConfig.homography;
         
         std::vector<cv::Rect> stopSigns;
-        double signDistance = (-1);
+        double distance = (-1);
         
         if (!inputImage.empty()) {
             cv::Mat grayImage;
@@ -66,36 +64,25 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
 
             stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.1, 5, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(15, 15));
 
-            //~ if ((stopSigns.size() > 0) && !outputImage.empty() && !homography.empty()) {
             if (stopSigns.size() > 0) {
                 for (size_t i = 0; i < stopSigns.size(); i++) {
-                    //~ rectangle(outputImage, stopSigns[i], cv::Scalar(0, 255, 0), 1);
                     rectangle(inputImage, stopSigns[i], cv::Scalar(0, 255, 0), 2);
-                    //! @todo Convert sign mid to perspective to get correct distance.
-                    std::vector<cv::Point> signCenter;
-                    signCenter.push_back(getSignCenter(stopSigns[i].tl(), stopSigns[i].br()));
-                    signDistance = signCenter[i].y * camCalibConfig.mmPerPixel; 
-                    std::cout << "Traffic sign detection: Stop sign detected at " << signCenter[0] << " approx " << signDistance << std::endl;
+                    if (stopSigns[i].width >= stopSigns[i].height) {
+                        distance = stopSigns[i].width * STOP_SIGN_SAFETY_DISTANCE / STOP_SIGN_SIZE.width;
+                    }
+                    else {
+                        distance = stopSigns[i].height * STOP_SIGN_SAFETY_DISTANCE / STOP_SIGN_SIZE.height;
+                    }
+                    std::cout << "Traffic sign detection: Stop sign detected at approx " << distance << " cm."<< std::endl;
                     
                     trafficSignData.setRoi(stopSigns[i]);
-                    trafficSignData.setDistance(signDistance);
+                    trafficSignData.setDistance(distance);
                 }
             }
-            //~ outputImageData.write(outputImage);
             outputImageData.write(inputImage);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
     std::cout << "THREAD: Traffic sign detection ended." << std::endl;
-}
-
-void TrafficSignDetector::quit ()
-{
-    running = false;
-}
-
-bool TrafficSignDetector::isRunning ()
-{
-    return running;
 }

@@ -16,6 +16,7 @@
 #include <iostream>
 #include <atomic>
 #include <mutex>
+#include "module.hpp"
 #include "camera_image_acquisitor.hpp"
 #include "image_data.hpp"
 #include "user_interface_state.hpp"
@@ -43,7 +44,7 @@ public:
 /**
  * @brief A user interface class
  */
-class UserInterface {
+class UserInterface : public Module {
 public:
     ~UserInterface() = default;
     
@@ -57,36 +58,7 @@ public:
      */
     void run (ImageData& imageData, UserInterfaceState& uiState);
     
-    /**
-     * @brief Quit user interface thread
-     * 
-     * This function quits the user interface thread. It does that by
-     * by setting a flag.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if user interface thread is running
-     * 
-     * This function checks if the user interface thread is running.
-     * 
-     * @return True if user interface is running, else false
-     */
-    bool isRunning (void);
-    
-    /**
-     * @brief A function to process the user interface input
-     * 
-     * This function processes the user interface input and drawing a
-     * user interface.
-     * 
-     * @param image Image matrix for output image
-     * @param key User input key
-     */
-    void processUiInput (cv::Mat& image, char key);
-        
 private:
-    std::atomic_bool running {false};
     cv::Mat image;
     std::atomic_char inputKey {(char)(-1)};
     UserInterfaceConfig uiConfig;

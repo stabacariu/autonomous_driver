@@ -74,7 +74,7 @@ void UIRemoteControlMode::draw (cv::Mat& image, char& selected)
     cvui::endRow();
     
     cvui::beginRow(image, (image.cols - 150), (image.rows - 50), -1, -1, 10);
-    if (cvui::button(140, 40, "space")) {
+    if (cvui::button(140, 40, "& space")) {
         selected = ' ';
     }
     cvui::endRow();

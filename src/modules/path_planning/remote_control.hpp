@@ -16,13 +16,14 @@
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "user_interface.hpp"
 #include "vehicle_data.hpp"
 
 //! @addtogroup remote_control
 //! @{
 
-class RemoteController {
+class RemoteController : public Module {
 public:
     ~RemoteController() = default;
     
@@ -40,25 +41,6 @@ public:
      * @param vehicle Vehicle data
      */
     void run (VehicleModel& vehicle, UserInterfaceState& uiState);
-    
-    /**
-     * @brief Quit remote control the system
-     * 
-     * This function quits remote control.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if remote controling is running
-     * 
-     * This function checks if the remote controling is running.
-     * 
-     * @return True if remote controling is running, else false.
-     */
-    bool isRunning (void);
-    
-private:
-    std::atomic_bool running {false}; //!< Thread running flag
 };
 
 //! @} remote_control

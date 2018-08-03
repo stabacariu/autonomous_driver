@@ -56,4 +56,29 @@ void UIDevelopmentMode::draw (cv::Mat& image, char& selected)
     cv::Point stopSignCenter = getSignCenter(stopSignRoi.tl(), stopSignRoi.br());
     cvui::printf("Traffic Sign: [%d, %d]", stopSignCenter.x, stopSignCenter.y);
     cvui::endColumn();
+    
+    // Draw vehicle control buttons
+    cvui::beginRow(image, (image.cols - 100), (image.rows - 150), -1, -1, 10);
+    if (cvui::button(40, 40, "&W")) {
+        selected = 'w';
+    }
+    cvui::endRow();
+    
+    cvui::beginRow(image, (image.cols - 150), (image.rows - 100), -1, -1, 10);
+    if (cvui::button(40, 40, "&A")) {
+        selected = 'a';
+    }
+    if (cvui::button(40, 40, "&S")) {
+        selected = 's';
+    }
+    if (cvui::button(40, 40, "&D")) {
+        selected = 'd';
+    }
+    cvui::endRow();
+    
+    cvui::beginRow(image, (image.cols - 150), (image.rows - 50), -1, -1, 10);
+    if (cvui::button(140, 40, "& space")) {
+        selected = ' ';
+    }
+    cvui::endRow();
 }

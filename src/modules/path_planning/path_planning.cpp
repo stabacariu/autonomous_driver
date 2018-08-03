@@ -23,7 +23,7 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& t
     RoadMarking actualLeftLine;
     RoadMarking actualRightLine;
     
-    while (running) {
+    while (running && !error) {
         actualLeftLine = lane.getLeftLine();
         if (actualLeftLine.size() > 0) {
             actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
@@ -64,16 +64,6 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& t
     }
 
     std::cout << "THREAD: Path planning ended." << std::endl;
-}
-
-void PathPlanner::quit ()
-{
-    running = false;
-}
-
-bool PathPlanner::isRunning ()
-{
-    return running;
 }
 
 void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize)

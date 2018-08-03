@@ -11,6 +11,7 @@
 #include <fstream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "image_data.hpp"
 #include "image_filter.hpp"
 #include "lane_data.hpp"
@@ -24,7 +25,7 @@
  * 
  * This class describes a lane detector 
  */
-class LaneDetector {
+class LaneDetector : public Module {
 public:
     ~LaneDetector () = default;
     
@@ -35,28 +36,11 @@ public:
      * 
      * @param inputImage Input image captured by image acquisitor
      * @param outputImage Output image with result for showing on user interface
-     * @param actualLane Actual detected lane
+     * @param lane Actual detected lane
      */
-    void run(ImageData& inputImage, ImageData& outputImage, LaneData& actualLane);
-    
-    /**
-     * @brief Quit lane detection
-     * 
-     * This function guits the lane detection thread.
-     */
-    void quit(void);
-    
-    /**
-     * @brief Check if lane detection is running
-     * 
-     * This function checks if the lane detection is running…
-     * 
-     * @return True if lane detection is running, else false.
-     */
-    bool isRunning(void);
+    void run(ImageData& inputImage, ImageData& outputImage, LaneData& lane);
     
 private:
-    std::atomic_bool running{false}; //!< Thread running flag
     CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration
 };
 

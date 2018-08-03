@@ -6,6 +6,8 @@
 
 #include "calibration_mode.hpp"
 #include "closing_mode.hpp"
+#include "error_mode.hpp"
+#include "standby_mode.hpp"
 #include "autonomous_mode.hpp"
 #include "remote_control_mode.hpp"
 #include "configuration_mode.hpp"
@@ -19,14 +21,13 @@ void IntrinsicsCalibrationMode::run (SystemState* s)
     
     uiState.setMode(new UIIntrinsicsCalibrationMode());
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
-    
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runIntrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
     
     char key = (char)(-1);
     
-    // Process user input
     while (running) {
+        // Check for valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -35,19 +36,31 @@ void IntrinsicsCalibrationMode::run (SystemState* s)
             running = false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError()) {
+            running = false;
+            error = true;
+        }
     }
     quit();
     
     uiShowThread.join();
-    
     imageAcquisitionThread.join();
     calibrationThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'B': s->setMode(new ConfigurationMode()); break;
+    if (error) {
+        s->setMode(new StandbyMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'B': s->setMode(new ConfigurationMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }
@@ -77,11 +90,11 @@ void ExtrinsicsCalibrationMode::run (SystemState* s)
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     std::thread calibrationThread(&CameraImageAcquisitor::runExtrinsicCalibration, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
-        
+    
     char key = (char)(-1);
     
-    // Process user input
     while (running) {
+        // Check for valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -90,6 +103,13 @@ void ExtrinsicsCalibrationMode::run (SystemState* s)
             running = false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError()) {
+            running = false;
+            error = true;
+        }
     }
     quit();
     
@@ -97,11 +117,17 @@ void ExtrinsicsCalibrationMode::run (SystemState* s)
     imageAcquisitionThread.join();
     calibrationThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'B': s->setMode(new ConfigurationMode()); break;
+    if (error) {
+        s->setMode(new StandbyMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'B': s->setMode(new ConfigurationMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }
@@ -120,6 +146,12 @@ void ExtrinsicsCalibrationMode::stopModules ()
     camera.quit();
 }
 
+
+/**
+ * @brief Image adjustment mode
+ * 
+ * @note This function is experimental!
+ */
 void ImageAdjustmentMode::run (SystemState* s)
 {
     std::cout << "---------------------------------" << std::endl;
@@ -129,12 +161,12 @@ void ImageAdjustmentMode::run (SystemState* s)
     uiState.setMode(new UIImageAdjustmentMode());
     std::thread uiShowThread(&UserInterface::run, &ui, std::ref(outputImage), std::ref(uiState));
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
-    //~ std::thread calibrationThread(&CameraImageAcquisitor::runImageAdjustment, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
-      
+    std::thread calibrationThread(&CameraImageAcquisitor::runImageAdjustment, &camera, std::ref(inputImage), std::ref(outputImage), std::ref(uiState));
+    
     char key = (char)(-1);
     
-    // Process user input
     while (running) {
+        // Check for valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -143,18 +175,31 @@ void ImageAdjustmentMode::run (SystemState* s)
             running = false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError()) {
+            running = false;
+            error = true;
+        }
     }
     quit();
     
     uiShowThread.join();
     imageAcquisitionThread.join();
-    //~ calibrationThread.join();
+    calibrationThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'B': s->setMode(new ConfigurationMode()); break;
+    if (error) {
+        s->setMode(new StandbyMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'B': s->setMode(new ConfigurationMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }

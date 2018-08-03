@@ -63,6 +63,7 @@ public:
 
 protected:
     std::atomic_bool running {false}; //!< Running flag
+    std::atomic_bool error {false}; //!< Error flag
 };
 
 //! @} system_modes

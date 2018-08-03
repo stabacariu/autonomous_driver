@@ -6,6 +6,7 @@
 
 #include "standby_mode.hpp"
 #include "closing_mode.hpp"
+#include "error_mode.hpp"
 #include "autonomous_mode.hpp"
 #include "development_mode.hpp"
 #include "remote_control_mode.hpp"
@@ -24,9 +25,9 @@ void StandbyMode::run (SystemState* s)
     std::thread imageAcquisitionThread(&CameraImageAcquisitor::run, &camera, std::ref(inputImage));
     
     char key = (char)(-1);
-    
-    // Process user input
-    while (running) {
+        
+    while (running && !error) {
+        // Check valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -38,22 +39,36 @@ void StandbyMode::run (SystemState* s)
             (key == 'B')) {
             running = false;
         }
+        
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError()) {
+            error = true;
+            running = false;
+        }
     }
     quit();
     
     uiShowThread.join();
     imageAcquisitionThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'A': s->setMode(new AutonomousMode()); break;
-        case 'D': s->setMode(new DevelopmentMode()); break;
-        case 'R': s->setMode(new RemoteControlMode()); break;
-        case 'C': s->setMode(new ConfigurationMode()); break;
-        case 'B': s->setMode(new AboutMode()); break;
+    if (error) {
+        s->setMode(new ErrorMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'A': s->setMode(new AutonomousMode()); break;
+            case 'D': s->setMode(new DevelopmentMode()); break;
+            case 'R': s->setMode(new RemoteControlMode()); break;
+            case 'C': s->setMode(new ConfigurationMode()); break;
+            case 'B': s->setMode(new AboutMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }

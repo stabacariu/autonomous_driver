@@ -48,29 +48,18 @@ void ObstacleDetector::run (ObstacleData& obstacleData)
     if (wiringPiSetup() == -1) {
         std::cerr << "ERROR: Couldn't init wiringPi library!" << std::endl;
         running = false;
+        error = true;
     }
 
     Sonar ultrasonic;
     ultrasonic.init(trigger, echo);
     
-    while (running) {
-        if (obstacleDetConfig.active) {
-            double distance = ultrasonic.distance(500);
-            //~ std::cout << "Obstacle detection: Distance is " << distance << " cm." << std::endl;
-            obstacleData.setDistance(distance);
-        }
+    while (running && !error) {
+        double distance = ultrasonic.distance(500);
+        std::cout << "Obstacle detection: Distance is " << distance << " cm." << std::endl;
+        obstacleData.setDistance(distance);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 
     std::cout << "THREAD: Obstacle detection ended." << std::endl;
-}
-
-void ObstacleDetector::quit ()
-{
-    running = false;
-}
-
-bool ObstacleDetector::isRunning ()
-{
-    return running;
 }

@@ -18,6 +18,7 @@
 #include <thread>
 #include <wiringPi.h>
 #include <opencv2/opencv.hpp>
+#include "module.hpp"
 #include "libSonar.h"
 #include "obstacle_data.hpp"
 
@@ -38,7 +39,7 @@ public:
 /**
  * @brief A obstacle detector class
  */
-class ObstacleDetector {
+class ObstacleDetector : public Module {
 public:
     ~ObstacleDetector() = default;
     
@@ -51,24 +52,7 @@ public:
      */
     void run (ObstacleData& obstacleData);
     
-    /**
-     * @brief Quit obstacle detection
-     * 
-     * This function quits the obstacle detection thread.
-     */
-    void quit (void);
-    
-    /**
-     * @brief Check if obstacle detection is running
-     * 
-     * This function checks if the obstacle detection is running…
-     * 
-     * @return True if obstacle detection is running, else false.
-     */
-    bool isRunning(void);
-    
 private:
-    std::atomic_bool running {false};
     ObstacleDetectionConfig obstacleDetConfig;
 };
 

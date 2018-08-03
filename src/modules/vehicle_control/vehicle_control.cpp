@@ -18,9 +18,12 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
     CameraConfig camConfig = config.getCameraConfig();
     
     MotorDriver motor;
-    bool motorInitFlag = motor.init();
+    if (!motor.init()) {
+        error = true;
+        running = false;
+    }
     
-    while (running && motorInitFlag) {
+    while (running && !error) {
         if (vehicle.checkStop()) {
             motor.reset();
         }
@@ -96,14 +99,4 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
     motor.reset();
 
     std::cout << "THREAD: Vehicle control ended." << std::endl;
-}
-
-void VehicleController::quit ()
-{
-    running = false;
-}
-
-bool VehicleController::isRunning ()
-{
-    return running;
 }

@@ -37,6 +37,7 @@ add_library(ui STATIC ${INC} ${SRC})
 
 target_include_directories(ui PUBLIC
         ${CMAKE_SOURCE_DIR}/lib
+        ${CMAKE_SOURCE_DIR}/modules
         ${CMAKE_SOURCE_DIR}/modules/detection
         ${CMAKE_SOURCE_DIR}/modules/image_acquisition
         ${CMAKE_SOURCE_DIR}/modules/path_planning

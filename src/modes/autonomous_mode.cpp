@@ -6,6 +6,7 @@
 
 #include "autonomous_mode.hpp"
 #include "closing_mode.hpp"
+#include "error_mode.hpp"
 #include "standby_mode.hpp"
 #include "ui_autonomous_mode.hpp"
 
@@ -28,6 +29,7 @@ void AutonomousMode::run (SystemState* s)
     char key = (char)(-1);
     
     while (running) {
+        // Check for valid user input
         key = uiState.getKey();
         if ((key == 27) ||
             (key == 'q') ||
@@ -36,6 +38,18 @@ void AutonomousMode::run (SystemState* s)
             running = false;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        // Check for module error
+        if (ui.isError() ||
+            camera.isError() ||
+            laneDetector.isError() ||
+            trafficSignDetector.isError() ||
+            obstacleDetector.isError() ||
+            pathPlanner.isError() ||
+            vehicleController.isError()) {
+            running = false;
+            error = true;
+        }
     }
     quit();
     
@@ -47,11 +61,17 @@ void AutonomousMode::run (SystemState* s)
     pathPlanningThread.join();
     vehicleControlThread.join();
     
-    switch (key) {
-        case 27: s->setMode(new ClosingMode()); break;
-        case 'q': s->setMode(new ClosingMode()); break;
-        case 'Q': s->setMode(new ClosingMode()); break;
-        case 'B': s->setMode(new StandbyMode()); break;
+    if (error) {
+        s->setMode(new StandbyMode());
+    }
+    else {
+        switch (key) {
+            case 27: s->setMode(new ClosingMode()); break;
+            case 'q': s->setMode(new ClosingMode()); break;
+            case 'Q': s->setMode(new ClosingMode()); break;
+            case 'B': s->setMode(new StandbyMode()); break;
+            default: s->setMode(new ErrorMode()); break;
+        }
     }
     delete this;
 }
