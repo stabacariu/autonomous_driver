@@ -14,7 +14,6 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& t
     
     Configurator& config = Configurator::instance();
     camConfig = config.getCameraConfig();
-    obstacleDetConfig = config.getObstacleDetectionConfig();
     
     cv::KalmanFilter kfT(4, 4, 0);
     initLinePrediction(kfT, 4);
@@ -35,13 +34,8 @@ void PathPlanner::run (ImageData& inputImage, LaneData& lane, TrafficSignData& t
         
         // Obtacle Detection before trajectory calculation
         bool safetyDistance = false;
-        if (obstacleDetConfig.active) {
-            if (obstacle.getDistance() > 25) {
-                safetyDistance = true;
-            }
-        }
-        else {
-            safetyDistance = true; //! @warning Safety distance cannot be measured if ultrasonic sensor is not plugged in!
+        if (obstacle.getDistance() > 25) {
+            safetyDistance = true;
         }
         
         if (trafficSigns.getDistance() != (-1)) {

@@ -28,23 +28,16 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
             motor.reset();
         }
         
-        float theta = 0;
-        bool autoDrive = false;
-        int diffX1 = 0;
-        int diffX2 = 0;
-        
         // Convert Trajectory to steering and acceleration values
         if (trajectory.size() >= 2) {
-            diffX1 = trajectory.at(0).x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
-            diffX2 = trajectory.at(1).x - (camConfig.imageSize.width/2-1);
+            float theta = 0;
+            int diffX1 = 0;
+            int diffX2 = 0;
             
-            theta = getTheta(trajectory.at(0), trajectory.at(1));
-            autoDrive = true;
-        }
-        
-        if (autoDrive) {
             double acVal = 18;
             double brVal = 0;
+        
+            theta = getTheta(trajectory.at(0), trajectory.at(1));
             
             if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.9))) {
                 vehicle.setAcceleration(brVal);
@@ -63,6 +56,9 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
                     vehicle.setDirection(VehicleDirection::VEHICLE_STRAIGHT);
                     vehicle.setSteering(theta);
                 }
+                
+                diffX1 = trajectory.at(0).x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
+                diffX2 = trajectory.at(1).x - (camConfig.imageSize.width/2-1);
                 
                 // Set acceleration percentage
                 // Vehicle is too much to the left
