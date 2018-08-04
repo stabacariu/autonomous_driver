@@ -42,12 +42,13 @@ public:
      * certain acceleration and steering angle.
      * 
      * @param inputImage
+     * @param outputImage
      * @param lane
      * @param obstacle
      * @param vehicle
      * @param trajectory
      */
-    void run (ImageData& inputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
+    void run (ImageData& inputImage, ImageData& outputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
     
 private:
     CameraConfig camConfig;
@@ -78,6 +79,8 @@ private:
  * @param imageSize Size of captured image
  */
 void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize);
+
+void drawTrajectory (cv::Mat& image, TrajectoryData& trajectory);
 
 //! @} path_planning
 

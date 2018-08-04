@@ -23,18 +23,11 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
     initLinePrediction(kfR, 4);
     initLinePrediction(kfM, 4);
     std::vector<cv::Vec4i> leftLinesPredicted;
-    //~ std::vector<cv::Point> leftLinesPredicted;
     std::vector<cv::Vec4i> rightLinesPredicted;
-    //~ std::vector<cv::Point> rightLinesPredicted;
     std::vector<cv::Vec4i> lanePredicted;
-    //~ std::vector<cv::Point> lanePredicted;
-    std::vector<cv::Vec4i> predictedTrajectory;
-    //~ std::vector<cv::Point> predictedTrajectory;
     
     std::vector<cv::Vec4i> leftLine;
-    //~ std::vector<cv::Point> leftLine;
     std::vector<cv::Vec4i> rightLine;
-    //~ std::vector<cv::Point> rightLine;
     
     cv::Mat homography;
     homography = camCalibConfig.homography;
@@ -75,16 +68,16 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 // Filter lines
                 std::vector<cv::Vec4i> leftLines;
                 std::vector<cv::Vec4i> rightLines;
-                std::vector<cv::Vec4i> lane;
-                filterLines(lines, warpedImage.size(), leftLines, rightLines, lane);
+                std::vector<cv::Vec4i> actualLane;
+                filterLines(lines, warpedImage.size(), leftLines, rightLines, actualLane);
 
                 // Predict lane
                 // Predict left line
                 if (leftLines.size() > 0) {
                     std::vector<cv::Vec4i> leftLine;
-                    leftLine.push_back(lane[0]);
+                    leftLine.push_back(actualLane[0]);
                     predictLine(leftLine,  kfL, 4, leftLinesPredicted);
-                    drawArrowedLines(warpedImage, leftLinesPredicted, cv::Scalar(255, 0, 0));
+                    drawLines(warpedImage, leftLinesPredicted, cv::Scalar(255, 0, 0));
                 }
                 // Check if exaktly one line was predicted
                 //~ if (leftLinesPredicted.size() > 0) {
@@ -99,9 +92,9 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 //Predict right line
                 if (rightLines.size() > 0) {
                     std::vector<cv::Vec4i> rightLine;
-                    rightLine.push_back(lane[1]);
+                    rightLine.push_back(actualLane[1]);
                     predictLine(rightLine, kfR, 4, rightLinesPredicted);
-                    drawArrowedLines(warpedImage, rightLinesPredicted, cv::Scalar(0, 0, 255));
+                    drawLines(warpedImage, rightLinesPredicted, cv::Scalar(0, 0, 255));
                 }
                 // Check if exaktly one line was predicted
                 //~ if (rightLinesPredicted.size() > 0) {
@@ -114,24 +107,14 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 }
                 
                 // Check lane has any line
-                //~ if (lanePredicted.size() > 0) {
-                    //~ //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
-                    //~ lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                    //~ lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+                if (lanePredicted.size() > 0) {
+                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
+                    lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                    lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
                     
                     //~ lanePredicted.clear();
-                //~ }
+                }
             }
-            //~ else {
-                //~ lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                //~ lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
-                    
-                //~ lanePredicted.clear();
-            //~ }
-
-            lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-            lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));        
-            //~ lanePredicted.clear();
             
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);

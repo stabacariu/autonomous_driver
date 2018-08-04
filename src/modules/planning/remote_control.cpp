@@ -64,11 +64,11 @@ void RemoteController::run (VehicleModel& vehicle, UserInterfaceState& uiState)
             }
             
             if (prevAcceleration != acceleration) {
-                std::cout << "Actual acceleration: " << acceleration << " %" << std::endl;
+                std::cout << "INFO: Actual acceleration: " << acceleration << " %" << std::endl;
                 vehicle.setAcceleration(acceleration);
             }
             if (prevSteering != steering) {
-                std::cout << "Actual steering angle: " << steering << " rad" << std::endl;
+                std::cout << "INFO: Actual steering: " << steering << " rad" << std::endl;
                 vehicle.setSteering(steering);
             }
         }

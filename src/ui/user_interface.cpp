@@ -62,7 +62,7 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
         
         frameTimerEnd = std::chrono::high_resolution_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(frameTimerEnd - frameTimerStart).count() >= 3) {
-            std::cout << "Processed FPS: " << frameCnt/3 << std::endl;
+            std::cout << "INFO: Processed FPS: " << frameCnt/3 << std::endl;
             frameCnt = 0;
         }
     }

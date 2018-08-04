@@ -41,7 +41,7 @@ target_include_directories(modes PUBLIC
         ${CMAKE_SOURCE_DIR}/modules
         ${CMAKE_SOURCE_DIR}/modules/detection
         ${CMAKE_SOURCE_DIR}/modules/image_acquisition
-        ${CMAKE_SOURCE_DIR}/modules/path_planning
+        ${CMAKE_SOURCE_DIR}/modules/planning
         ${CMAKE_SOURCE_DIR}/modules/vehicle_control
         ${CMAKE_SOURCE_DIR}/tools
 )

@@ -72,7 +72,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
             frameTimerEnd = std::chrono::high_resolution_clock::now();
             
             if (std::chrono::duration_cast<std::chrono::seconds>(frameTimerEnd - frameTimerStart).count() >= 3) {
-                std::cout << "Captured FPS: " << frameCnt/3 << std::endl;
+                std::cout << "INFO: Captured FPS: " << frameCnt/3 << std::endl;
                 frameCnt = 0;
             }
             imageData.write(capturedImage);
@@ -101,11 +101,10 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
         image = inputImage.read();
         
         if (!image.empty() && (sampleCnt <= camCalibConfig.numSamples)) {
-            bool ok = calibrateIntrinsics(image, cameraMatrix, distCoeffs, imagePoints, camCalibConfig.patternSize, camCalibConfig.patternMm);
-            if (ok) {
+            if (calibrateIntrinsics(image, cameraMatrix, distCoeffs, imagePoints, camCalibConfig.patternSize, camCalibConfig.patternMm)) {
                 sampleCnt++;
+                std::cout << "INFO: Calibration sample counter: " << sampleCnt << std::endl;
             }
-            std::cout << "Calibration sample counter: " << sampleCnt << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
         
@@ -121,8 +120,10 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
             outputImage.write(image);
         }
         
-        if (uiState.getKey() == 'S') {
-            saveConfigFlag = true;
+        // Check user input
+        switch(uiState.getKey()) {
+            case 'S': saveConfigFlag = true; break;
+            case 'R': sampleCnt = 0; cameraMatrix.release(); distCoeffs.release(); break; //!< Reset counter, restart calibration
         }
     }
     
@@ -131,7 +132,7 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
         camCalibConfig.distCoeffs = distCoeffs;
         camCalibConfig.timeOfIntrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.intrCalibDone = true;
-
+        
         if (saveConfigFlag) {
             config.setCameraCalibrationConfig(camCalibConfig);
             config.save();
@@ -142,8 +143,6 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
         camCalibConfig.intrCalibDone = false;
         std::cerr << "WARNING: Intrinsic camera calibration not successful!" << std::endl;
     }
-    
-    
     
     std::cout << "THREAD: Intrinsics calibarion ended." << std::endl;
 }
@@ -165,14 +164,10 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
         
         if (!image.empty()) {
             calibrateExtrinsics(image, homography, camCalibConfig.patternSize, camCalibConfig.patternMm);
-            //~ calibrateExtrinsics(image, camCalibConfig.homography, camCalibConfig.patternSize, camCalibConfig.patternMm);
         }
         
         if (!image.empty() && !homography.empty()) {
-        //~ if (!image.empty() && !camCalibConfig.homography.empty()) {
-            //~ inversePerspectiveTransform(image, warpedImage, camCalibConfig.homography);
             warpPerspective(image, warpedImage, homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
-            //~ warpPerspective(image, warpedImage, camCalibConfig.homography, image.size(), CV_WARP_INVERSE_MAP + CV_INTER_LINEAR);
             line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
             line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(warpedImage);
@@ -182,10 +177,10 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
             line(image, cv::Point(0, image.rows/2), cv::Point(image.cols, image.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(image);
         }
-
-        if (uiState.getKey() == 'S') {
-            saveConfigFlag = true;
-            std::cout << "Saving extrinsic camera calibration." << std::endl;
+        
+        switch (uiState.getKey()) {
+            case 'S': saveConfigFlag = true; break;
+            case 'R': homography.release(); break;
         }
     }
 
@@ -194,7 +189,7 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
         camCalibConfig.mmPerPixel = calcPixelPerMm(warpedImage, camCalibConfig.patternSize, camCalibConfig.patternMm);
         camCalibConfig.timeOfExtrCalib = std::chrono::high_resolution_clock::now();
         camCalibConfig.extrCalibDone = true;
-        std::cout << "Avg px per mm: " << camCalibConfig.mmPerPixel << std::endl;
+        std::cout << "INFO: Avg px per mm: " << camCalibConfig.mmPerPixel << std::endl;
         if (saveConfigFlag) {
             config.setCameraCalibrationConfig(camCalibConfig);
             config.save();

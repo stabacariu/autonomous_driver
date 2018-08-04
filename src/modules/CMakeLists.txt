@@ -6,5 +6,5 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(detection)
 add_subdirectory(image_acquisition)
-add_subdirectory(path_planning)
+add_subdirectory(planning)
 add_subdirectory(vehicle_control)

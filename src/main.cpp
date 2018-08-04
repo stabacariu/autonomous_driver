@@ -33,14 +33,6 @@ void signalHandler (int signal)
         case SIGTERM: std::cout << "ERROR: Signal caught: SIGTERM" << std::endl; break;
     }
     
-    //! @todo Change state to error
-    app.quit();
-}
-
-void exceptionHandler (const char* errMsg)
-{
-    std::cerr << "ERROR: Exception caught: " << errMsg << std::endl;
-    //! @todo Change state to error
     app.quit();
 }
 
@@ -60,15 +52,11 @@ int main (int argc, char *argv[])
     std::signal(SIGQUIT, signalHandler);
     std::signal(SIGTERM, signalHandler);
     
-    try {
-        // Start system
-        app.exec();
-    }
-    catch (cv::Exception& e) {
-        exceptionHandler(e.what());
-        app.quit();
-    }
+    // Start system
+    app.exec();
     
+    // Quit system after execution ended
+    app.quit();
     
     return 0;
 }

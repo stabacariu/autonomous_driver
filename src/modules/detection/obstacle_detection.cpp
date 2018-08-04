@@ -42,8 +42,8 @@ void ObstacleDetector::run (ObstacleData& obstacleData)
     Configurator& config = Configurator::instance();
     obstacleDetConfig = config.getObstacleDetectionConfig();
     
-    int trigger = 3; //!< WiringPi lib pin number 
-    int echo = 2; //!< Wirring Pi lib pin number
+    int triggerPin = 3; //!< WiringPi lib pin number 
+    int echoPin = 2; //!< Wirring Pi lib pin number
     
     if (wiringPiSetup() == -1) {
         std::cerr << "ERROR: Couldn't init wiringPi library!" << std::endl;
@@ -52,11 +52,11 @@ void ObstacleDetector::run (ObstacleData& obstacleData)
     }
 
     Sonar ultrasonic;
-    ultrasonic.init(trigger, echo);
+    ultrasonic.init(triggerPin, echoPin);
     
     while (running && !error) {
-        double distance = ultrasonic.distance(500);
-        std::cout << "Obstacle detection: Distance is " << distance << " cm." << std::endl;
+        double distance = ultrasonic.distance(1000);
+        //~ std::cout << "INFO: Obstacle detected at " << distance << " cm." << std::endl;
         obstacleData.setDistance(distance);
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
