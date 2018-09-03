@@ -104,6 +104,8 @@ private:
  */
 cv::Point getSignCenter (cv::Point tl, cv::Point br);
 
+cv::Point getSignCenter (cv::Rect roi);
+
 //! @} traffic_sign_detection
 
 #endif // TRAFFIC_SIGN_DATA_HPP

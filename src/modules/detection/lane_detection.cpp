@@ -107,17 +107,19 @@ void LaneDetector::run (ImageData& inputImage, ImageData& outputImage, LaneData&
                 }
                 
                 // Check lane has any line
-                if (lanePredicted.size() > 0) {
-                    //~ drawArrowedLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
-                    lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
-                    lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
-                    
-                    //~ lanePredicted.clear();
+                if (lanePredicted.size() >= 1) {
+                    //~ drawLine(warpedImage, getLaneMid(lanePredicted), cv::Scalar(200,200,0));
+                    //~ lane.setLeftLine(cvtVec4iToRoadMarking(lanePredicted[0]));
+                    lane.setLeftLine(lanePredicted[0]);
+                    //~ lane.setRightLine(cvtVec4iToRoadMarking(lanePredicted[1]));
+                    lane.setRightLine(lanePredicted[1]);
                 }
+                lanePredicted.clear();
             }
             
             drawCenterLine(warpedImage, cv::Scalar(0, 255, 0));
             outputImage.write(warpedImage);
+            outputImage.setTime(inputImage.getTime());
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }

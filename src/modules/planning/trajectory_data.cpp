@@ -5,16 +5,16 @@
  */
 #include "trajectory_data.hpp"
 
-void TrajectoryData::push_back (cv::Point point)
+void TrajectoryData::set (std::vector<cv::Point> pv)
 {
     std::lock_guard<std::mutex> guard(lock);
-    points.push_back(point);
+    points = pv;
 }
 
-cv::Point TrajectoryData::at (int i)
+std::vector<cv::Point> TrajectoryData::get (void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return points.at(i);
+    return points;
 }
 
 int TrajectoryData::size (void)
@@ -27,4 +27,16 @@ void TrajectoryData::clear (void)
 {
     std::lock_guard<std::mutex> guard(lock);
     points.clear();
+}
+
+void TrajectoryData::setLine (cv::Vec4i l)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    line = l;
+}
+    
+cv::Vec4i TrajectoryData::getLine (void)
+{
+    std::lock_guard<std::mutex> guard(lock);
+    return line;
 }

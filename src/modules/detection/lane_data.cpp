@@ -6,28 +6,52 @@
  
 #include "lane_data.hpp"
 
-void LaneData::setLeftLine(RoadMarking line)
+//~ void LaneData::setLeftLine(RoadMarking line)
+//~ {
+    //~ std::lock_guard<std::mutex> guard(lock);
+    //~ leftLine = line;
+//~ }
+
+void LaneData::setLeftLine(cv::Vec4i line)
 {
     std::lock_guard<std::mutex> guard(lock);
-    leftLine = line;
+    leftLineVec4i = line;
 }
 
-RoadMarking LaneData::getLeftLine(void)
+//~ RoadMarking LaneData::getLeftLine(void)
+//~ {
+    //~ std::lock_guard<std::mutex> guard(lock);
+    //~ return leftLine;
+//~ }
+
+cv::Vec4i LaneData::getLeftLine(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return leftLine;
+    return leftLineVec4i;
 }
 
-void LaneData::setRightLine(RoadMarking line)
+//~ void LaneData::setRightLine(RoadMarking line)
+//~ {
+    //~ std::lock_guard<std::mutex> guard(lock);
+    //~ rightLine = line;
+//~ }
+
+void LaneData::setRightLine(cv::Vec4i line)
 {
     std::lock_guard<std::mutex> guard(lock);
-    rightLine = line;
+    rightLineVec4i = line;
 }
 
-RoadMarking LaneData::getRightLine(void)
+//~ RoadMarking LaneData::getRightLine(void)
+//~ {
+    //~ std::lock_guard<std::mutex> guard(lock);
+    //~ return rightLine;
+//~ }
+
+cv::Vec4i LaneData::getRightLine(void)
 {
     std::lock_guard<std::mutex> guard(lock);
-    return rightLine;
+    return rightLineVec4i;
 }
 
 void LaneData::pushLeftLinePoint(cv::Point point)
@@ -69,10 +93,10 @@ cv::Rect LaneData::getRoiRight (void)
 cv::Vec4i cvtRoadMarkingToVec4i (RoadMarking line)
 {
     cv::Vec4i convertedLine;
-    convertedLine[0] = line.points.front().x;
-    convertedLine[1] = line.points.front().y;
-    convertedLine[2] = line.points.back().x;
-    convertedLine[3] = line.points.back().y;
+    convertedLine[0] = line.points.at(0).x;
+    convertedLine[1] = line.points.at(0).y;
+    convertedLine[2] = line.points.at(1).x;
+    convertedLine[3] = line.points.at(1).y;
     return convertedLine;
 }
 

@@ -7,7 +7,7 @@
 #include "path_planning.hpp"
 #include "configuration.hpp"
 
-void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory)
+void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacles, VehicleModel& vehicle, TrajectoryData& trajectory)
 {
     std::cout << "THREAD: Path planning started." << std::endl;
     running = true;
@@ -17,52 +17,36 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
     
     cv::KalmanFilter kfT(4, 4, 0);
     initLinePrediction(kfT, 4);
-    
-    std::vector<cv::Vec4i> actualLane;
-    RoadMarking actualLeftLine;
-    RoadMarking actualRightLine;
+        
+    cv::Vec4i actualLeftLine;
+    cv::Vec4i actualRightLine;
     
     while (running && !error) {
-        actualLeftLine = lane.getLeftLine();
-        if (actualLeftLine.size() > 0) {
-            actualLane.push_back(cvtRoadMarkingToVec4i(actualLeftLine));
-        }
-        
-        actualRightLine = lane.getRightLine();
-        if (actualRightLine.size() > 0) {
-            actualLane.push_back(cvtRoadMarkingToVec4i(actualRightLine));
-        }
+        std::vector<cv::Vec4i> actualLane;
+        actualLane.push_back(lane.getLeftLine());
+        actualLane.push_back(lane.getRightLine());
         
         // Obtacle Detection before trajectory calculation
-        bool safetyDistance = false;
-        if (obstacle.getDistance() > 25) {
-            safetyDistance = true;
-        }
-        else {
-            std::cout << "INFO: Obstacle in safety distance!" << std::endl;
+        bool safetyDistance = true;
+        if (obstacles.getDistance() > 25) {
+            safetyDistance = false;
         }
         
-        if (trafficSigns.getDistance() != (-1)) {
-            cv::Rect stopSign = trafficSigns.getRoi();
-            if (trafficSigns.getDistance() > 25) {
-            //~ if ((stopSign.width > 25) || (stopSign.height > 25)) {
-                safetyDistance = false;
-                std::cout << "INFO: Stop sign in safety distance!" << std::endl;
-            }
+        cv::Rect stopSign = trafficSigns.getRoi();
+        if (stopSign.width > 30 && stopSign.height > 30) {
+            safetyDistance = false;
+            std::cout << "INFO: Stop sign in safety distance!" << std::endl;
         }
         
-        if (safetyDistance && (actualLane.size() > 0)) {
-            calcTrajectory(vehicle, actualLane, trajectory, kfT, camConfig.imageSize);
-            if (trajectory.size() == 2) {
-                cv::Mat image;
-                image = inputImage.read(),
-                drawTrajectory(image, trajectory);
+        if (safetyDistance && (actualLane.size() > 1)) {
+            calcTrajectory(actualLane, trajectory, kfT, camConfig.imageSize);
+            cv::Mat image;
+            image = inputImage.read();
+            if (trajectory.active) {
+                drawTrajectoryLine(image, trajectory);
                 outputImage.write(image);
-            }
-            else {
-                vehicle.stop();
-                vehicle.setSteering(CV_PI/2);
-                vehicle.setAcceleration(0);
+                outputImage.setTime(inputImage.getTime());
+                trajectory.active = false;
             }
         }
         else {
@@ -76,54 +60,75 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
     std::cout << "THREAD: Path planning ended." << std::endl;
 }
 
-void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize)
+void calcTrajectory (std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize)
 {
     std::vector<cv::Vec4i> trajectoryPredicted;
     bool leftLineFound = false;
     bool rightLineFound = false;
     
-    // Check for left line
-    if (actualLane[0] != cv::Vec4i(0, 0, 0, 0)) {
-        leftLineFound = true;
-    }
-    // Check for right line
-    if (actualLane[1] != cv::Vec4i(imageSize.width-1, 0, imageSize.width-1, 0)) {
-        rightLineFound = true;
-    }
     
-    // @todo Convert from Vec4i to Point vector
-    cv::Vec4i laneMid;
-    cv::Vec4i viewMid(imageSize.width/2-1, 0, imageSize.width/2-1, imageSize.height-1);
-    
-    if (leftLineFound && rightLineFound) {
-        laneMid = getLaneMid(actualLane);
-        std::vector<cv::Vec4i> lM;
-        lM.push_back(laneMid);
-        predictLine(lM, kfT, 4, trajectoryPredicted);
-        laneMid = trajectoryPredicted[0];
+    if (actualLane.size() > 1) {
+        // Check for left line
+        if (actualLane.front() != cv::Vec4i(0, 0, 0, 0)) {
+            leftLineFound = true;
+        }
+        // Check for right line
+        if (actualLane.back() != cv::Vec4i(imageSize.width-1, 0, imageSize.width-1, 0)) {
+            rightLineFound = true;
+        }
+        
+        // @todo Convert from Vec4i to Point vector
+        cv::Vec4i laneMid(imageSize.width/2-1, 0, imageSize.width/2-1, imageSize.height-1);
+        cv::Vec4i viewMid(imageSize.width/2-1, 0, imageSize.width/2-1, imageSize.height-1);
+        
+        if (leftLineFound && rightLineFound) {
+            laneMid = getLaneMid(actualLane);
+            std::vector<cv::Vec4i> lM;
+            lM.push_back(laneMid);
+            predictLine(lM, kfT, 4, trajectoryPredicted);
+            if (trajectoryPredicted.size() > 0) {
+                laneMid = trajectoryPredicted.front();
+            }
+        }
+        
+        if (leftLineFound && !rightLineFound) {
+            laneMid = actualLane.front();
+            std::vector<cv::Vec4i> lM;
+            lM.push_back(laneMid);
+            predictLine(lM, kfT, 4, trajectoryPredicted);
+            if (trajectoryPredicted.size() > 0) {
+                laneMid = trajectoryPredicted.front();
+            }
+        }
+        
+        if (!leftLineFound && rightLineFound) {
+            laneMid = actualLane.back();
+            std::vector<cv::Vec4i> lM;
+            lM.push_back(laneMid);
+            predictLine(lM, kfT, 4, trajectoryPredicted);
+            if (trajectoryPredicted.size() > 0) {
+                laneMid = trajectoryPredicted.front();
+            }
+        }
+        trajectory.setLine(laneMid);
+        trajectory.active = true;
     }
-    else if (leftLineFound && !rightLineFound) {
-        laneMid = actualLane[0];
-        std::vector<cv::Vec4i> lM;
-        lM.push_back(laneMid);
-        predictLine(lM, kfT, 4, trajectoryPredicted);
-        laneMid = trajectoryPredicted[0];
+    else {
+        trajectory.active = false;
     }
-    else if (!leftLineFound && rightLineFound) {
-        laneMid = actualLane[1];
-        std::vector<cv::Vec4i> lM;
-        lM.push_back(laneMid);
-        predictLine(lM, kfT, 4, trajectoryPredicted);
-        laneMid = trajectoryPredicted[0];
-    }
-    
-    trajectory.clear();
-    trajectory.push_back(cv::Point(laneMid[0], laneMid[1]));
-    trajectory.push_back(cv::Point(laneMid[2], laneMid[3]));
 }
 
 void drawTrajectory (cv::Mat& image, TrajectoryData& trajectory) {
-    line(image, trajectory.at(0), trajectory.at(1), cv::Scalar(200,200,0), 2);
+    std::vector<cv::Point>  tPoints = trajectory.get();
+    //~ line(image, tPoints.front(), tPoints.back(), cv::Scalar(200,200,0), 2);
+    const cv::Point *pts = (const cv::Point*) cv::Mat(tPoints).data;
+    int numPts = cv::Mat(tPoints).rows;
+    polylines(image,&pts, &numPts, 2, false, cv::Scalar(200,200,0));
+}
+
+void drawTrajectoryLine (cv::Mat& image, TrajectoryData& trajectory) {
+    cv::Vec4i tLine = trajectory.getLine();
+    line(image, cv::Point(tLine[0], tLine[1]), cv::Point(tLine[2], tLine[3]), cv::Scalar(200,200,0), 2);
 }
 
 

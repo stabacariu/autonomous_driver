@@ -28,33 +28,24 @@ void UIDevelopmentMode::draw (cv::Mat& image, char& selected)
     cvui::text("Detection", 0.5);
     cvui::text("Lane");
     cv::Vec4i leftLine, rightLine;
-    if (lane.getLeftLine().size() > 0) {
-        leftLine = cvtRoadMarkingToVec4i(lane.getLeftLine());
-        cvui::printf("L: [%d, %d], [%d, %d]", leftLine[0], leftLine[1], leftLine[2], leftLine[3]);
-    }
-    else {
-        cvui::text("Left Lane: Not found.");
-    }
-    if (lane.getRightLine().size() > 0) {
-        rightLine = cvtRoadMarkingToVec4i(lane.getRightLine());
-        cvui::printf("R: [%d, %d], [%d, %d]", rightLine[0], rightLine[1], rightLine[2], rightLine[3]);
-    }
-    else {
-        cvui::text("Right Lane: Not found.");
-    }
+    leftLine = lane.getLeftLine();
+    cvui::printf("L: [%d, %d], [%d, %d]", leftLine[0], leftLine[1], leftLine[2], leftLine[3]);
+    rightLine = lane.getRightLine();
+    cvui::printf("R: [%d, %d], [%d, %d]", rightLine[0], rightLine[1], rightLine[2], rightLine[3]);
     cvui::space(3);
     
     if (obstacle.getDistance() > (-1)) {
         cvui::printf("Obstacle: %0.2f cm", obstacle.getDistance());
     }
     else {
-        cvui::text("Obstacle: Not active.");
+        cvui::text("Obstacle: No obstacle.");
     }
     cvui::space(3);
     
-    cv::Rect stopSignRoi = trafficSign.getRoi();
-    cv::Point stopSignCenter = getSignCenter(stopSignRoi.tl(), stopSignRoi.br());
+    cv::Point stopSignCenter = getSignCenter(trafficSign.getRoi());
+    //~ cv::Point stopSignCenter(0, 0);
     cvui::printf("Traffic Sign: [%d, %d]", stopSignCenter.x, stopSignCenter.y);
+    
     cvui::endColumn();
     
     // Draw vehicle control buttons

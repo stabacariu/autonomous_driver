@@ -72,15 +72,33 @@ private:
  * 
  * This function calculates a trajectory to be driven by the autonomous car
  * 
- * @param vehicle Vehicle data
  * @param actualLane Actual lane composed of left and right road marking line
  * @param trajectory Trajectory data
  * @param kfT Kalman filter for the Trajectory
  * @param imageSize Size of captured image
  */
-void calcTrajectory (VehicleModel& vehicle, std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize);
+void calcTrajectory (std::vector<cv::Vec4i> actualLane, TrajectoryData& trajectory, cv::KalmanFilter kfT, cv::Size imageSize);
 
+/**
+ * @brief Draw trajectory data point vector
+ * 
+ * This function draws the trajectory by drawing a line between
+ * the first and the last point from the point vector.
+ * 
+ * @param image
+ * @param trajectory
+ */
 void drawTrajectory (cv::Mat& image, TrajectoryData& trajectory);
+
+/**
+ * @brief Draw trajectory line
+ * 
+ * This function draws the trajectory by drawing the line describ
+ * 
+ * @param image
+ * @param trajectory
+ */
+void drawTrajectoryLine (cv::Mat& image, TrajectoryData& trajectory);
 
 //! @} path_planning
 

@@ -4,7 +4,7 @@
 <cameraID>0</cameraID>
 <cameraImageSize_width>640</cameraImageSize_width>
 <cameraImageSize_height>360</cameraImageSize_height>
-<cameraFPS>15.</cameraFPS>
+<cameraFPS>30.</cameraFPS>
 <!-- camera calibration config -->
 <camCalibImageSize_width>640</camCalibImageSize_width>
 <camCalibImageSize_height>360</camCalibImageSize_height>
@@ -43,11 +43,13 @@
 <pixelPerMm>4.9731561541557312e-01</pixelPerMm>
 <validData>0</validData>
 <!-- user interface data -->
-<uiMainWindowName>Autonomous Driver</uiMainWindowName>
+<uiMainWindowName>AutonomousDriver</uiMainWindowName>
 <uiImageSize_width>640</uiImageSize_width>
 <uiImageSize_height>360</uiImageSize_height>
 <uiMenuWidth>160</uiMenuWidth>
 <uiFPS>30.</uiFPS>
+<!-- traffic sign detection config -->
+<trafficSignDetectionActive>1</trafficSignDetectionActive>
 <!-- obstacle detection config -->
 <obstacleDetectionActive>1</obstacleDetectionActive>
 </opencv_storage>

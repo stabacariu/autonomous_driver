@@ -41,6 +41,15 @@ public:
     cv::Mat read (void);
     
     /**
+     * @brief Set frame aquisition time
+     * 
+     * This function sets the frame aquisition time.
+     * 
+     * @param Aquisition time
+     */
+    void setTime(std::chrono::high_resolution_clock::time_point time);
+    
+    /**
      * @brief Get frame aquisition time
      * 
      * This function gets the frame aquisition time.
@@ -51,7 +60,6 @@ public:
 
 private:
     cv::Mat data; //!< Image data as matrix
-    //~ std::queue<cv::Mat> buffer; //!< Image data as matrix
     std::chrono::high_resolution_clock::time_point timeStamp; //!< Time of capture
     std::mutex lock; //!< Mutex lock for synchronized access
     

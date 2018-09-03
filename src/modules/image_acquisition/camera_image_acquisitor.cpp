@@ -76,6 +76,7 @@ void CameraImageAcquisitor::run (ImageData& imageData)
                 frameCnt = 0;
             }
             imageData.write(capturedImage);
+            imageData.setTime(std::chrono::high_resolution_clock::now());
         }
         
     }
@@ -113,11 +114,13 @@ void CameraImageAcquisitor::runIntrinsicCalibration (ImageData& inputImage, Imag
             line(undistorted, cv::Point(undistorted.cols/2, 0), cv::Point(undistorted.cols/2, undistorted.rows), cv::Scalar(0, 0, 255), 1);
             line(undistorted, cv::Point(0, undistorted.rows/2), cv::Point(undistorted.cols, undistorted.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(undistorted);
+            outputImage.setTime(inputImage.getTime());
         }
         else {
             line(image, cv::Point(image.cols/2, 0), cv::Point(image.cols/2, image.rows), cv::Scalar(0, 0, 255), 1);
             line(image, cv::Point(0, image.rows/2), cv::Point(image.cols, image.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(image);
+            outputImage.setTime(inputImage.getTime());
         }
         
         // Check user input
@@ -171,11 +174,13 @@ void CameraImageAcquisitor::runExtrinsicCalibration (ImageData& inputImage, Imag
             line(warpedImage, cv::Point(warpedImage.cols/2, 0), cv::Point(warpedImage.cols/2, warpedImage.rows), cv::Scalar(0, 0, 255), 1);
             line(warpedImage, cv::Point(0, warpedImage.rows/2), cv::Point(warpedImage.cols, warpedImage.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(warpedImage);
+            outputImage.setTime(inputImage.getTime());
         }
         else {
             line(image, cv::Point(image.cols/2, 0), cv::Point(image.cols/2, image.rows), cv::Scalar(0, 0, 255), 1);
             line(image, cv::Point(0, image.rows/2), cv::Point(image.cols, image.rows/2), cv::Scalar(0, 0, 255), 1);
             outputImage.write(image);
+            outputImage.setTime(inputImage.getTime());
         }
         
         switch (uiState.getKey()) {
@@ -221,6 +226,7 @@ void CameraImageAcquisitor::runImageAdjustment (ImageData& inputImage, ImageData
             char key = uiState.getKey();
             adjustImagePosition(image, adjustedImage, key, camCalibConfig.homography);
             outputImage.write(adjustedImage);
+            outputImage.setTime(inputImage.getTime());
         }
     }
     
@@ -243,6 +249,7 @@ void CameraImageAcquisitor::runChessBoardShow (ImageData& inputImage, ImageData&
         if (!image.empty()) {
             drawChessBoard(image, camCalibConfig.patternSize);
             outputImage.write(image);
+            outputImage.setTime(inputImage.getTime());
         }
     }
 

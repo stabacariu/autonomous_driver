@@ -11,7 +11,7 @@ void AutonomousDriver::exec ()
 {
     // Load config file to configurator instance
     Configurator& config = Configurator::instance("../config/config.xml");
-    //~ Configurator& config = Configurator::instance(); //< Load defautl.xml
+    //~ Configurator& config = Configurator::instance(); //< Load default.xml
     config.load();
     
     state.run();

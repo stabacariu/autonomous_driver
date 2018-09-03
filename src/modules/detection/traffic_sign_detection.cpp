@@ -45,6 +45,9 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     
     cv::CascadeClassifier stopSignCascade;
     
+    if (!trafficSignDetConfig.active) {
+        running = false;
+    }
     if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {
         std::cerr << "ERROR: Couldn't load classifier data!" << std::endl;
         running = false;
@@ -62,24 +65,20 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
             cv::Mat grayImage;
             cvtColor(inputImage, grayImage, CV_BGR2GRAY);
 
-            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.1, 5, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(15, 15));
+            stopSignCascade.detectMultiScale(grayImage, stopSigns, 1.1, 5, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(10, 10));
 
             if (stopSigns.size() > 0) {
                 for (size_t i = 0; i < stopSigns.size(); i++) {
-                    rectangle(inputImage, stopSigns[i], cv::Scalar(0, 255, 0), 2);
-                    if (stopSigns[i].width >= stopSigns[i].height) {
-                        distance = stopSigns[i].width * STOP_SIGN_SAFETY_DISTANCE / STOP_SIGN_SIZE.width;
-                    }
-                    else {
-                        distance = stopSigns[i].height * STOP_SIGN_SAFETY_DISTANCE / STOP_SIGN_SIZE.height;
-                    }
-                    std::cout << "Traffic sign detection: Stop sign detected at approx " << distance << " cm."<< std::endl;
+                    rectangle(inputImage, stopSigns.at(i), cv::Scalar(0, 255, 0), 2);
+                    cv::Point signCenter;
+                    signCenter = getSignCenter(stopSigns.at(i));
+                    std::cout << "Traffic sign detection: Stop sign detected at [" << signCenter.x << ", "<< signCenter.y << "]" <<  std::endl;
                     
-                    trafficSignData.setRoi(stopSigns[i]);
-                    trafficSignData.setDistance(distance);
+                    trafficSignData.setRoi(stopSigns.at(0));
                 }
             }
             outputImageData.write(inputImage);
+            outputImageData.setTime(inputImageData.getTime());
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }

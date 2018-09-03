@@ -46,3 +46,8 @@ cv::Point getSignCenter (cv::Point tl, cv::Point br)
 {
     return cv::Point(tl.x + (br.x - tl.x)/2, tl.y + (br.y - tl.y)/2);
 }
+
+cv::Point getSignCenter (cv::Rect roi)
+{
+    return cv::Point(roi.tl().x + roi.width/2, roi.tl().y + roi.height/2);
+}

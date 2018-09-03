@@ -28,16 +28,19 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
             motor.reset();
         }
         
-        // Convert Trajectory to steering and acceleration values
-        if (trajectory.size() >= 2) {
+        if (trajectory.active) {
+            cv::Vec4i tLine = trajectory.getLine();
+            std::vector<cv::Point> tPoints = trajectory.get();
+            
+            // Convert Trajectory to steering and acceleration values
             float theta = 0;
             int diffX1 = 0;
             int diffX2 = 0;
             
             double acVal = 18;
             double brVal = 0;
-        
-            theta = getTheta(trajectory.at(0), trajectory.at(1));
+            
+            theta = getTheta(cv::Point(tLine[0], tLine[1]), cv::Point(tLine[2], tLine[3]));
             
             if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.9))) {
                 vehicle.setAcceleration(brVal);
@@ -57,8 +60,10 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
                     vehicle.setSteering(theta);
                 }
                 
-                diffX1 = trajectory.at(0).x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
-                diffX2 = trajectory.at(1).x - (camConfig.imageSize.width/2-1);
+                diffX1 = tLine[0] - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
+                diffX2 = tLine[2] - (camConfig.imageSize.width/2-1);
+                //~ diffX1 = tPoints.front().x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
+                //~ diffX2 = tPoints.back().x - (camConfig.imageSize.width/2-1);
                 
                 // Set acceleration percentage
                 // Vehicle is too much to the left
@@ -78,7 +83,6 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
                 }
             }
         }
-        
         
         // Calculate steering value from rad to a value from 0 to 4096
         double steering = vehicle.getSteering();

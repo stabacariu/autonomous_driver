@@ -59,7 +59,9 @@ public:
      * 
      * @param line Road marking line
      */
-    void setLeftLine(RoadMarking line);
+    //~ void setLeftLine(RoadMarking line);
+    
+    void setLeftLine(cv::Vec4i line);
     
     /**
      * @brief Get left road marking line
@@ -68,7 +70,9 @@ public:
      * 
      * @return Road marking line
      */
-    RoadMarking getLeftLine(void);
+    //~ RoadMarking getLeftLine(void);
+    
+    cv::Vec4i getLeftLine(void);
     
     /**
      * @brief Set right road marking line
@@ -77,7 +81,9 @@ public:
      * 
      * @param line Road marking line
      */
-    void setRightLine(RoadMarking line);
+    //~ void setRightLine(RoadMarking line);
+    
+    void setRightLine(cv::Vec4i line);
     
     /**
      * @brief Get right road marking line
@@ -86,7 +92,9 @@ public:
      * 
      * @return Road marking line
      */
-    RoadMarking getRightLine(void);
+    //~ RoadMarking getRightLine(void);
+    
+    cv::Vec4i getRightLine(void);
     
     /**
      * @brief Push a left road marking line point
@@ -163,6 +171,8 @@ public:
 private:
     RoadMarking leftLine; //!< Left lane marking
     RoadMarking rightLine; //!< Right lane marking
+    cv::Vec4i leftLineVec4i; //!< @note Only for compatibility!
+    cv::Vec4i rightLineVec4i;  //!< @note Only for compatibility!
     cv::Rect roiLeft; //!< Region of interest of left lane marking
     cv::Rect roiRight; //!< Region of interest of right lane marking
     std::mutex lock; //!< Mutex lock for synchronised access

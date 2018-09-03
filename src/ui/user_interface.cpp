@@ -17,7 +17,7 @@ void UserInterface::run (ImageData& imageData, UserInterfaceState& uiState)
     running = true;
     
     Configurator& config = Configurator::instance();
-    //~ uiConfig = config.getUserInterfaceConfig();
+    uiConfig = config.getUserInterfaceConfig();
     camConfig = config.getCameraConfig();
     
     cvui::init(uiConfig.mainWindowName, (1000/uiConfig.fps)*(1.5));
