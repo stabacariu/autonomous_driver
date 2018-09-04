@@ -23,7 +23,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=68
+current_page=92
 FILE_NAME_0=527;None;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fautonomous_driver.geany;0;4
 FILE_NAME_1=1242;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmain.cpp;0;4
 FILE_NAME_2=600;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.hpp;0;4
@@ -113,7 +113,7 @@ FILE_NAME_85=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver
 FILE_NAME_86=480;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fmodule.hpp;0;4
 FILE_NAME_87=673;CMake;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2FCMakeLists.txt;0;4
 FILE_NAME_88=404;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fremote_control.cpp;0;4
-FILE_NAME_89=1114;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Ftrajectory_data.cpp;0;4
+FILE_NAME_89=791;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Ftrajectory_data.cpp;0;4
 FILE_NAME_90=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fremote_control.hpp;0;4
 FILE_NAME_91=1806;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fpath_planning.hpp;0;4
 FILE_NAME_92=436;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Ftrajectory_data.hpp;0;4
