@@ -22,32 +22,32 @@ To run this code you need the following software
 * Git
 * qv4l2 (for webcam debugging only)
 
-First clone this project with 'git clone':
-'''
+First clone this project with `git clone`:
+```
 git clone https://github.com/stabacariu/autonomous_driver.git
-'''
-Change directory to 'autonomous_driver':
-'''
+```
+Change directory to `autonomous_driver`:
+```
 cd autonomous_driver
-'''
+```
 Get latest master branch:
-'''
+```
 git pull https://github.com/stabacariu/autonomous_driver.git master
-'''
+```
 Make a build directory and change to it:
-'''
+```
 mkdir build
 cd build
-'''
+```
 Run cmake:
-'''
+```
 cmake ..
-'''
+```
 Run make in multiple threads:
-'''
+```
 make -j4
-'''
-Run 'autonomous_driver':
-'''
+```
+Run `autonomous_driver`:
+```
 ./autonomous_driver
-'''
+```
