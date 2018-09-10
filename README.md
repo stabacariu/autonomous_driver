@@ -1,5 +1,6 @@
 # autonomous_driver
-This is a master thesis project dealing with the investigation of autonomous driving. For that purpose, a modular, mobile and open-source development environment was built and implemented on an auonomous model vehicle. This vehicle is part of the development environment, can be used as a development toll as well as for HIL-tests of software applications for autonomous driving.
+This is a master thesis project dealing with the investigation of autonomous driving. For that purpose, a modular, mobile and open-source development environment was built and implemented on an auonomous model vehicle. This vehicle is part of the development environment, can be used as a development tool as well as for HIL-tests of software applications for autonomous driving.
+
 This repository provides the Autonomous Driver software that implements an autonomous driving software system. It has a graphical user interface, an autonomous driving mode and a remote control mode. In the autonomous driving mode it detects the road lane based on white road markings and stop signs with a camera. With a ultrasonic sensor it detects obstacles.
 ## Hardware ##
 This project was implemented with the following parts
@@ -22,32 +23,28 @@ To run this code you need the following software
 * Git
 * qv4l2 (for webcam debugging only)
 
-First clone this project with `git clone`:
+1. Clone this project with `git clone`:
 ```
 git clone https://github.com/stabacariu/autonomous_driver.git
 ```
-Change directory to `autonomous_driver`:
+2. Change directory to `autonomous_driver`:
 ```
 cd autonomous_driver
 ```
-Get latest master branch:
-```
-git pull https://github.com/stabacariu/autonomous_driver.git master
-```
-Make a build directory and change to it:
+3. Make a build directory and change to it:
 ```
 mkdir build
 cd build
 ```
-Run cmake:
+4. Run `cmake`:
 ```
-cmake ..
+cmake ../src/
 ```
-Run make in multiple threads:
+5. Run `make` in multiple threads:
 ```
 make -j4
 ```
-Run `autonomous_driver`:
+6. Run `autonomous_driver`:
 ```
 ./autonomous_driver
 ```
