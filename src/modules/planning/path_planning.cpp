@@ -54,7 +54,7 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
             vehicle.setSteering(CV_PI/2);
             vehicle.setAcceleration(0);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        //~ std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
     std::cout << "THREAD: Path planning ended." << std::endl;
@@ -90,8 +90,7 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, TrajectoryData& trajecto
                 laneMid = trajectoryPredicted.front();
             }
         }
-        
-        if (leftLineFound && !rightLineFound) {
+        else if (leftLineFound && !rightLineFound) {
             laneMid = actualLane.front();
             std::vector<cv::Vec4i> lM;
             lM.push_back(laneMid);
@@ -100,8 +99,7 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, TrajectoryData& trajecto
                 laneMid = trajectoryPredicted.front();
             }
         }
-        
-        if (!leftLineFound && rightLineFound) {
+        else if (!leftLineFound && rightLineFound) {
             laneMid = actualLane.back();
             std::vector<cv::Vec4i> lM;
             lM.push_back(laneMid);

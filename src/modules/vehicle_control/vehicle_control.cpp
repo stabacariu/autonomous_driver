@@ -28,16 +28,15 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
             motor.reset();
         }
         
+        cv::Vec4i tLine = trajectory.getLine();
+        std::vector<cv::Point> tPoints = trajectory.get();
         if (trajectory.active) {
-            cv::Vec4i tLine = trajectory.getLine();
-            std::vector<cv::Point> tPoints = trajectory.get();
-            
             // Convert Trajectory to steering and acceleration values
             float theta = 0;
             int diffX1 = 0;
             int diffX2 = 0;
             
-            double acVal = 18;
+            double acVal = 19;
             double brVal = 0;
             
             theta = getTheta(cv::Point(tLine[0], tLine[1]), cv::Point(tLine[2], tLine[3]));
@@ -93,7 +92,7 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
         double acceleration = vehicle.getAcceleration();
         int accelerationValue = (int) round(ESC_N + acceleration/((double) 100/(ESC_N - ESC_MIN)));
         motor.setAcceleration(accelerationValue);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        //~ std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     motor.reset();

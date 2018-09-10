@@ -23,7 +23,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=93
+current_page=42
 FILE_NAME_0=527;None;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fautonomous_driver.geany;0;4
 FILE_NAME_1=1242;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmain.cpp;0;4
 FILE_NAME_2=600;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fautonomous_driver.hpp;0;4
@@ -66,11 +66,11 @@ FILE_NAME_38=2731;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_dri
 FILE_NAME_39=2481;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fimage_acquisition%2Fcamera_image_acquisitor.hpp;0;4
 FILE_NAME_40=371;CMake;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2FCMakeLists.txt;0;4
 FILE_NAME_41=11660;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Flane_detection.cpp;0;4
-FILE_NAME_42=841;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Fobstacle_detection.cpp;0;4
+FILE_NAME_42=1230;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Fobstacle_detection.cpp;0;4
 FILE_NAME_43=1585;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodes%2Fremote_control_mode.hpp;0;4
 FILE_NAME_44=87785;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Flib%2Fcvui.h;0;4
 FILE_NAME_45=3389;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fvehicle_control%2Fvehicle_data.cpp;0;4
-FILE_NAME_46=756;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fvehicle_control%2Fvehicle_control.cpp;0;4
+FILE_NAME_46=3806;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fvehicle_control%2Fvehicle_control.cpp;0;4
 FILE_NAME_47=929;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Ftraffic_sign_detection.cpp;0;4
 FILE_NAME_48=1439;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Ftraffic_sign_detection.hpp;0;4
 FILE_NAME_49=2542;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fdetection%2Ftraffic_sign_data.hpp;0;4
@@ -115,9 +115,9 @@ FILE_NAME_87=673;CMake;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_dr
 FILE_NAME_88=404;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fremote_control.cpp;0;4
 FILE_NAME_89=791;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Ftrajectory_data.cpp;0;4
 FILE_NAME_90=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fremote_control.hpp;0;4
-FILE_NAME_91=1806;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fpath_planning.hpp;0;4
+FILE_NAME_91=2425;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fpath_planning.hpp;0;4
 FILE_NAME_92=431;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Ftrajectory_data.hpp;0;4
-FILE_NAME_93=2313;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fpath_planning.cpp;0;4
+FILE_NAME_93=1950;C++;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2Fsrc%2Fmodules%2Fplanning%2Fpath_planning.cpp;0;4
 FILE_NAME_94=19;Markdown;0;EUTF-8;0;1;0;%2Fhome%2Fpi%2FDevelopment%2Fautonomous_driver%2FREADME.md;0;4
 
 [VTE]
