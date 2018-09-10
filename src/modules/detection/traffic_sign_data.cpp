@@ -6,10 +6,10 @@
 
 #include "traffic_sign_data.hpp"
 
-void TrafficSignData::setDistance (double distance)
+void TrafficSignData::setDistance (double d)
 {
     std::lock_guard<std::mutex> guard(lock);
-    distance = distance;
+    distance = d;
 }
 
 double TrafficSignData::getDistance (void)
@@ -18,10 +18,10 @@ double TrafficSignData::getDistance (void)
     return distance;
 }
 
-void TrafficSignData::setVelocity (double velocity)
+void TrafficSignData::setVelocity (double v)
 {
     std::lock_guard<std::mutex> guard(lock);
-    velocity = velocity;
+    velocity = v;
 }
 
 double TrafficSignData::getVelocity (void)
@@ -30,10 +30,10 @@ double TrafficSignData::getVelocity (void)
     return velocity;
 }
 
-void TrafficSignData::setRoi (cv::Rect roi)
+void TrafficSignData::setRoi (cv::Rect r)
 {
     std::lock_guard<std::mutex> guard(lock);
-    roi = roi;
+    roi = r;
 }
 
 cv::Rect TrafficSignData::getRoi (void)

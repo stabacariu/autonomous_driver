@@ -33,7 +33,7 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
         }
         
         cv::Rect stopSign = trafficSigns.getRoi();
-        if (stopSign.width > 30 && stopSign.height > 30) {
+        if (stopSign.width > 30 || stopSign.height > 30) {
             safetyDistance = false;
             std::cout << "INFO: Stop sign in safety distance!" << std::endl;
         }

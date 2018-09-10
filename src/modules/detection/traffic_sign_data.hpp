@@ -31,9 +31,9 @@ public:
      * This function sets the distance between the capturing sensor and
      * a detected obstacle.
      * 
-     * @param distance in mm
+     * @param d Distance in mm
      */
-    void setDistance (double distance);
+    void setDistance (double d);
     
     /**
      * @brief Get distance to obstacle
@@ -51,9 +51,9 @@ public:
      * This function sets the velocity of a detected obstacle relative
      * to the capturing sensor.
      * 
-     * @param velocity in m/s
+     * @param v Velocity in m/s
      */
-    void setVelocity (double velocity);
+    void setVelocity (double v);
     
     /**
      * @brief Get velocity of obstacle
@@ -71,9 +71,9 @@ public:
      * This function sets the region of interest in an image where a
      * detected obstacle is.
      * 
-     * @param roi Rectangle in pixel
+     * @param r Rectangle in pixel
      */
-    void setRoi (cv::Rect roi);
+    void setRoi (cv::Rect r);
     
     /**
      * @brief Get ROI of obstacle

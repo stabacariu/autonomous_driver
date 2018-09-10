@@ -26,9 +26,9 @@ public:
      * This function sets the distance between the capturing sensor and
      * a detected obstacle.
      * 
-     * @param distance in mm
+     * @param d distance in mm
      */
-    void setDistance(double distance);
+    void setDistance(double d);
     
     /**
      * @brief Get distance to obstacle

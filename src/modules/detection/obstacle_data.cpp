@@ -6,10 +6,10 @@
 
 #include "obstacle_data.hpp"
 
-void ObstacleData::setDistance (double distance)
+void ObstacleData::setDistance (double d)
 {
     std::lock_guard<std::mutex> guard(lock);
-    distance = distance;
+    distance = d;
 }
 
 double ObstacleData::getDistance (void)
@@ -18,10 +18,10 @@ double ObstacleData::getDistance (void)
     return distance;
 }
 
-void ObstacleData::setVelocity (double velocity)
+void ObstacleData::setVelocity (double v)
 {
     std::lock_guard<std::mutex> guard(lock);
-    velocity = velocity;
+    velocity = v;
 }
 
 double ObstacleData::getVelocity (void)
@@ -30,10 +30,10 @@ double ObstacleData::getVelocity (void)
     return velocity;
 }
 
-void ObstacleData::setRoi (cv::Rect roi)
+void ObstacleData::setRoi (cv::Rect r)
 {
     std::lock_guard<std::mutex> guard(lock);
-    roi = roi;
+    roi = r;
 }
 
 cv::Rect ObstacleData::getRoi (void)
