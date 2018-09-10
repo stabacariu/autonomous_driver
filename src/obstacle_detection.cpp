@@ -48,7 +48,7 @@ void *obstacleDetection (void *arg)
 {
     std::cout << "THREAD: Obstacle detection started." << std::endl;
     
-    int trigger = 0; //!< WiringPi lib pin number 
+    int trigger = 3; //!< WiringPi lib pin number 
     int echo = 2; //!< Wirring Pi lib pin number
     
     if (wiringPiSetup() == -1) {

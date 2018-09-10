@@ -61,7 +61,7 @@ void calcTrajectory (std::vector<cv::Vec4i> actualLane, cv::KalmanFilter kfT, cv
 
     float theta = getTheta(cv::Point(laneMid[0], laneMid[1]), cv::Point(laneMid[2], laneMid[3]));
     
-    double acVal = 18; // 59% if 100% full forward and 0% full reverse
+    double acVal = 20; // 59% if 100% full forward and 0% full reverse
     double brVal = 0; // 50% if 100% full forward and 0% full reverse
     
     if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.90))) {
