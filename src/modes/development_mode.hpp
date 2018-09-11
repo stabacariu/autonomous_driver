@@ -3,6 +3,12 @@
  * @author Sergiu-Petru Tabacariu
  * @date 5.4.2018
  */
+ 
+/**
+ * @ingroup system_mode
+ * @defgroup development_mode Development Mode
+ * @brief A mode to evaluate the implemented detection functions
+ */
 
 #ifndef DEVELOPMENT_MODE_HPP
 #define DEVELOPMENT_MODE_HPP
@@ -26,7 +32,6 @@
 #include "vehicle_control.hpp"
 
 //! @addtogroup development_mode
-//! @brief A mode for development
 //! @{
 
 class DevelopmentMode : public SystemMode {

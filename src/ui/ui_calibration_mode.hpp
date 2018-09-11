@@ -10,9 +10,14 @@
 #include <opencv2/opencv.hpp>
 #include "user_interface_mode.hpp"
 
-//! @addtogroup user_interface
+//! @addtogroup user_interface_mode
 //! @{
 
+/**
+ * @brief A user interface for the Intrinsics Calibration Mode
+ * 
+ * This user interface shows intrinsics calibration.
+ */
 class UIIntrinsicsCalibrationMode : public UserInterfaceMode {
 public:
     UIIntrinsicsCalibrationMode() {};
@@ -23,12 +28,17 @@ public:
      * 
      * This function draws the intrinsics calibration user interface mode.
      * 
-     * @brief image Image matrix
+     * @param image Image matrix
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
 };
 
+/**
+ * @brief A user interface for the Extrinsics Calibration Mode
+ * 
+ * This user interface shows extrinsics calibration.
+ */
 class UIExtrinsicsCalibrationMode : public UserInterfaceMode {
 public:
     UIExtrinsicsCalibrationMode() {};
@@ -44,6 +54,11 @@ public:
     void draw (cv::Mat& image, char& selected) override;
 };
 
+/**
+ * @brief A user interface for the Image Adjustment Mode
+ * 
+ * This user interface shows image adjustment mode.
+ */
 class UIImageAdjustmentMode : public UserInterfaceMode {
 public:
     UIImageAdjustmentMode() {};
@@ -59,6 +74,6 @@ public:
     void draw (cv::Mat& image, char& selected) override;
 };
 
-//! @} user_interface
+//! @} user_interface_mode
 
 #endif // UI_CALIBRATION_MODE_HPP

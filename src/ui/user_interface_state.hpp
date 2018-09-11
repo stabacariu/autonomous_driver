@@ -4,6 +4,11 @@
  * @date 25.4.2018
  */
 
+/**
+ * @defgroup user_interface_state User Interface State
+ * @brief User Interface State
+ */
+
 #ifndef USER_INTERFACE_STATE_HPP
 #define USER_INTERFACE_STATE_HPP
 
@@ -12,7 +17,7 @@
 #include <mutex>
 #include "user_interface_mode.hpp"
 
-//! @addtogroup user_interface
+//! @addtogroup user_interface_state
 //! @{
 
 class UserInterfaceState {
@@ -63,6 +68,6 @@ private:
     std::mutex lock; //!< Mutex lock for synchronized access
 };
 
-//! @} user_interface
+//! @} user_interface_state
 
 #endif // USER_INTERFACE_STATE_HPP

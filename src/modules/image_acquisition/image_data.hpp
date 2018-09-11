@@ -12,6 +12,9 @@
 #include <opencv2/opencv.hpp>
 #include <mutex>
 
+//! @addtogroup image_acquisition
+//! @{
+
 /**
  * @brief A image data class
  * 
@@ -45,7 +48,7 @@ public:
      * 
      * This function sets the frame aquisition time.
      * 
-     * @param Aquisition time
+     * @param time Aquisition time
      */
     void setTime(std::chrono::high_resolution_clock::time_point time);
     
@@ -64,6 +67,8 @@ private:
     std::mutex lock; //!< Mutex lock for synchronized access
     
 };
+
+//! @} image_acquisition
 
 #endif // IMAGE_DATA_HPP
 

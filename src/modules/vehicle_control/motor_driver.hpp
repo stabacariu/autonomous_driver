@@ -14,7 +14,7 @@
 #include <wiringPi.h>
 #include "PCA9685.h"
 
-//! @addtogroup motor_driver
+//! @addtogroup vehicle_control
 //! @{
 
 /**
@@ -135,6 +135,6 @@ private:
     //~ std::mutex lock; //!< Mutex lock for synchronized access
 };
 
-//! @} motor_driver
+//! @} vehicle_control
 
 #endif // MOTOR_DRIVER_HPP

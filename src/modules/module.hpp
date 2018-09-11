@@ -5,7 +5,7 @@
  */
 
 /**
- * @defgroup Module
+ * @defgroup module Modules
  * @brief Autonomous Driving System modules
  */
  
@@ -15,7 +15,6 @@
 #include <atomic>
 
 //! @addtogroup module
-//! @brief A module interface class
 //! @{
 
 /**
@@ -32,8 +31,6 @@ public:
      * 
      * This function runs a module. Implement this function end start it
      * as thread.
-     * 
-     * @param image Acquisited image
      */
     //~ virtual void run (void) = 0;
     

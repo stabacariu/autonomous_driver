@@ -4,6 +4,12 @@
  * @date 5.4.2018
  */
 
+/**
+ * @ingroup system_mode
+ * @defgroup autonomous_driving_mode Autonomous Driving Mode
+ * @brief A mode for the autonomous driving
+ */
+
 #ifndef AUTONOMOUS_MODE_HPP
 #define AUTONOMOUS_MODE_HPP
 
@@ -26,7 +32,6 @@
 #include "vehicle_control.hpp"
 
 //! @addtogroup autonomous_driving_mode
-//! @brief A mode for autonomous driving
 //! @{
 
 class AutonomousMode : public SystemMode {

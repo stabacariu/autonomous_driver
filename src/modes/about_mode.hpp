@@ -6,6 +6,12 @@
  * @note This should be part of the User Interface.
  */
 
+/**
+ * @ingroup system_mode
+ * @defgroup about_mode About Mode
+ * @brief A mode provides system version information
+ */
+
 #ifndef ABOUT_MODE_HPP
 #define ABOUT_MODE_HPP
 
@@ -17,7 +23,6 @@
 #include "user_interface.hpp"
 
 //! @addtogroup about_mode
-//! @brief A mode for system version information
 //! @{
 
 class AboutMode : public SystemMode {

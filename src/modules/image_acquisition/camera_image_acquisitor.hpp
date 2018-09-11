@@ -1,7 +1,12 @@
 /**
- * @file camera_capture.hpp
+ * @file camera_image_acquisitor.hpp
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
+ */
+/**
+ * @ingroup image_acquisition
+ * @defgroup camera_image_acquisiton Camera Image Acquisitor
+ * @brief A module to caputure a camera image
  */
 
 #ifndef CAMERA_CAPTURE_HPP
@@ -13,8 +18,7 @@
 #include "image_data.hpp"
 #include "user_interface_state.hpp"
 
-//! @addtogroup camera_image_acquisitor
-//! @brief A module to caputure a camera image
+//! @addtogroup camera_image_acquisiton
 //! @{
 
 /**
@@ -128,7 +132,7 @@ public:
      * @param outputImage Output image data
      * @param uiState User interface state
      */
-    void runImageAdjustment (ImageData& inputImage, ImageData& outputData, UserInterfaceState& uiState);
+    void runImageAdjustment (ImageData& inputImage, ImageData& outputImage, UserInterfaceState& uiState);
     
     /**
      * @brief Run chess board show
@@ -220,6 +224,6 @@ void drawChessBoard (cv::Mat& image, cv::Size patternSize);
  */
 void adjustImagePosition (cv::Mat image, cv::Mat& adjustedImage, char key, cv::Mat& homography);
 
-//! @} camera_image_acquisitor
+//! @} camera_image_acquisiton
 
 #endif // CAMERA_CAPTURE_HPP

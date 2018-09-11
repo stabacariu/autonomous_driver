@@ -10,7 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include "user_interface_mode.hpp"
 
-//! @addtogroup user_interface
+//! @addtogroup user_interface_mode
 //! @{
 
 class UIErrorMode : public UserInterfaceMode {
@@ -23,7 +23,7 @@ public:
      * 
      * This function draws the error user interface mode.
      * 
-     * @brief image Image matrix
+     * @param image Image matrix
      * @param selected Selected button
      */
     void draw (cv::Mat& image, char& selected) override;
@@ -31,6 +31,6 @@ private:
     std::string message {"Error found. Closing system safely."};
 };
 
-//! @} user_interface
+//! @} user_interface_mode
 
 #endif // UI_ERROR_MODE_HPP

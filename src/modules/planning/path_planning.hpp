@@ -5,10 +5,17 @@
  */
 
 /**
- * @defgroup path_planning Path planning
- * @{
- * @}
+ * @ingroup module
+ * @defgroup planning Planning
+ * @brief A behavior planning module
  */
+ 
+/**
+ * @ingroup planning
+ * @defgroup path_planning Path planning
+ * @brief A module to plan a path autonomously
+ */
+
 
 #ifndef PATH_PLANNING_HPP
 #define PATH_PLANNING_HPP
@@ -41,12 +48,13 @@ public:
      * a path according to a detected lane makring. It then sets a
      * certain acceleration and steering angle.
      * 
-     * @param inputImage
-     * @param outputImage
-     * @param lane
-     * @param obstacle
-     * @param vehicle
-     * @param trajectory
+     * @param inputImage Input image data
+     * @param outputImage Output image data
+     * @param lane Actual lane data
+     * @param trafficSigns Traffic sign data
+     * @param obstacle Obstacle data
+     * @param vehicle Vehicle data
+     * @param trajectory Trajectory data
      */
     void run (ImageData& inputImage, ImageData& outputImage, LaneData& lane, TrafficSignData& trafficSigns, ObstacleData& obstacle, VehicleModel& vehicle, TrajectoryData& trajectory);
     
@@ -54,18 +62,6 @@ private:
     CameraConfig camConfig;
     ObstacleDetectionConfig obstacleDetConfig;
 };
-
-/**
- * @brief A thread to plan and drive a long a path
- * 
- * @note This thread is for experimental use only!
- * 
- * This thread plans a path according to a detected lane makring. It then
- * sets a certain acceleration and steering angle.
- * 
- * @param arg Input argument
- */
-//~ void *pathPlanning2 (void *arg);
 
 /**
  * @brief Calculate trajectory

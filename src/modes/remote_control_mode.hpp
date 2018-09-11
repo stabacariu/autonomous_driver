@@ -4,6 +4,12 @@
  * @date 5.4.2018
  */
 
+/**
+ * @ingroup system_mode
+ * @defgroup remote_control_mode Remote Control Mode
+ * @brief A mode to manualy remote control the autonomous driving system
+ */
+
 #ifndef REMOTE_CONTROL_MODE_HPP
 #define REMOTE_CONTROL_MODE_HPP
 
@@ -19,7 +25,6 @@
 #include "vehicle_control.hpp"
 
 //! @addtogroup remote_control_mode
-//! @brief A mode to manualy remote control the autonomous driving system
 //! @{
 
 class RemoteControlMode : public SystemMode {

@@ -4,6 +4,12 @@
  * @date 5.4.2018
  */
 
+/**
+ * @ingroup system_mode
+ * @defgroup configuration_mode Configuration Mode
+ * @brief A mode to configure the system
+ */
+
 #ifndef CONFIGURATION_MODE_HPP
 #define CONFIGURATION_MODE_HPP
 
@@ -16,7 +22,6 @@
 #include "camera_image_acquisitor.hpp"
 
 //! @addtogroup configuration_mode
-//! @brief A mode to configure the system
 //! @{
 
 class ConfigurationMode : public SystemMode {

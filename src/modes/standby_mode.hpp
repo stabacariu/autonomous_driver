@@ -4,6 +4,12 @@
  * @date 5.4.2018
  */
 
+/**
+ * @ingroup system_mode
+ * @defgroup standby_mode Standby Mode
+ * @brief A mode for the system standby
+ */
+
 #ifndef STANDBY_MODE_HPP
 #define STANDBY_MODE_HPP
 
@@ -17,7 +23,6 @@
 #include "camera_image_acquisitor.hpp"
 
 //! @addtogroup standby_mode
-//! @brief A mode for system standby
 //! @{
 
 class StandbyMode : public SystemMode {

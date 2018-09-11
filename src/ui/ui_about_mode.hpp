@@ -10,9 +10,15 @@
 #include <opencv2/opencv.hpp>
 #include "user_interface_mode.hpp"
 
-//! @addtogroup user_interface
+//! @addtogroup user_interface_mode
 //! @{
 
+
+/**
+ * @brief A user interface for the About Mode
+ * 
+ * This user interface shows the actual system version informations.
+ */
 class UIAboutMode : public UserInterfaceMode {
 public:
     UIAboutMode () {};
@@ -29,6 +35,6 @@ public:
     void draw (cv::Mat& image, char& selected) override;
 };
 
-//! @} user_interface
+//! @} user_interface_mode
 
 #endif // UI_ABOUT_MODE_HPP

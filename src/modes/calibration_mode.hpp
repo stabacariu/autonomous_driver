@@ -4,6 +4,12 @@
  * @date 25.4.2018
  */
 
+/**
+ * @ingroup configuration_mode
+ * @defgroup calibration_mode Calibration Mode
+ * @brief A mode to calibrate the camera
+ */
+
 #ifndef CALIBRATION_MODE_HPP
 #define CALIBRATION_MODE_HPP
 
@@ -17,7 +23,6 @@
 #include "camera_image_acquisitor.hpp"
 
 //! @addtogroup calibration_mode
-//! @brief A mode for system calibration
 //! @{
 
 class IntrinsicsCalibrationMode : public SystemMode {

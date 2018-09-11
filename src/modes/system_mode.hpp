@@ -5,16 +5,8 @@
  */
 
 /**
- * @defgroup system_modes System Modes
- * @{
- *      @defgroup standby_mode Standby Mode
- *      @defgroup autonomous_driving_mode Autonomous Driving Mode
- *      @defgroup remote_control_mode Remote Control Mode
- *      @defgroup configuration_mode  Configuration Mode
- *      @defgroup about_mode About Mode
- *      @defgroup error_mode Error Mode
- *      @defgroup closing_mode Closing Mode
- * @}
+ * @ingroup system_state
+ * @defgroup system_mode System Modes
  */
 
 #ifndef SYSTEM_MODE_HPP
@@ -23,8 +15,7 @@
 #include <atomic>
 #include "system_state.hpp"
 
-//! @addtogroup system_modes
-//! @brief Modes for the autonomous driving system
+//! @addtogroup system_mode
 //! @{
 
 /**
@@ -66,6 +57,6 @@ protected:
     std::atomic_bool error {false}; //!< Error flag
 };
 
-//! @} system_modes
+//! @} system_mode
 
 #endif // SYSTEM_MODE_HPP

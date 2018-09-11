@@ -5,11 +5,9 @@
  */
 
 /**
+ * @ingroup module
  * @defgroup vehicle_control Vehicle Control
- * @{
- *     @defgroup vehicle_data Vehicle Data
- *     @defgroup motor_driver Motor driver
- * @}
+ * @brief A module to control the vehicle state
  */
 
 #ifndef VEHICLE_CONTROL_HPP

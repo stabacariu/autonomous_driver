@@ -12,7 +12,7 @@
 #include <mutex>
 #include <opencv2/opencv.hpp>
 
-//! @addtogroup path_planning
+//! @addtogroup planning
 //! @{
 
 /**
@@ -96,6 +96,6 @@ private:
     std::mutex lock; //!< Mutex lock
 };
 
-//! @} path_planning
+//! @} planning
 
 #endif // TRAJECTORY_DATA_HPP

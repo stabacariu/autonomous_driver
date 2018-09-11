@@ -5,20 +5,9 @@
  */
 
 /**
+ * @ingroup module
  * @defgroup image_acquisition Image Acquisition
  * @brief A module for image acquisition.
- * @{
- *     @defgroup camera_image_acquisitor Camera Image Acquisitor
- *     @brief A module for camera image acquisition
- *     @{
- *         @defgroup camera_calibration Camera Calibration
- *         @brief A module for camera calibration
- *     @}
- *     @defgroup image_sequence_acquisitor Image Sequence Acquisitor
- *     @brief A module for image sequence acquisiton from a file
- *     @defgroup video_file_image_acquisitor Video File Image Acquisitor
- *     @brief A module for image aquisition from a video file
- * @}
  */
  
 #ifndef IMAGE_ACQUISITOR_HPP
@@ -30,7 +19,6 @@
 #include "image_data.hpp"
 
 //! @addtogroup image_acquisition
-//! @brief A module to acquisit images
 //! @{
 
 /**

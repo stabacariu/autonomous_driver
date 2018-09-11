@@ -5,9 +5,9 @@
  */
 
 /**
+ * @ingroup module
  * @defgroup user_interface User Interface
- * @{
- * @}
+ * @brief A mode for the user interface
  */
 
 #ifndef USER_INTERFACE_HPP

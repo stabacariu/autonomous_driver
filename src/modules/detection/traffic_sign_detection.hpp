@@ -3,6 +3,12 @@
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
  */
+ 
+/**
+ * @ingroup module
+ * @defgroup traffic_sign_detection Traffic Sign Detectiom
+ * @brief A traffic sign detection module
+ */
 
 #ifndef TRAFFIC_SIGN_DETECTION_HPP
 #define TRAFFIC_SIGN_DETECTION_HPP

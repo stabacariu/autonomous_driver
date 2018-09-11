@@ -4,12 +4,6 @@
  * @date 18.09.2017
  */
 
-/**
- * @defgroup configuration Configuration
- * @{
- * @}
- */
-
 #ifndef CONFIGURATION_HPP
 #define CONFIGURATION_HPP
 

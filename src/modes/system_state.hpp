@@ -4,12 +4,20 @@
  * @date 10.4.2018
  */
 
+/**
+ * @defgroup system_state System State
+ * @brief The system state
+ */
+
 #ifndef SYSTEM_STATE_HPP
 #define SYSTEM_STATE_HPP
 
 #include <iostream>
 #include <thread>
 #include <atomic>
+
+//! @addtogroup system_state
+//! @{
 
 class SystemMode; //!< Forward declaration
 
@@ -29,7 +37,7 @@ public:
      * This function sets the system state. First it locks the state
      * information resource.
      * 
-     * @param state Reference to new system state to be set
+     * @param m Reference to new system state to be set
      */
     void setMode (SystemMode* m);
     
@@ -71,5 +79,7 @@ private:
     SystemMode* mode; //!< Actual system mode
     std::atomic_bool running {false}; //!< Running flag
 };
+
+//! @} system_state
 
 #endif // SYSTEM_STATE_HPP

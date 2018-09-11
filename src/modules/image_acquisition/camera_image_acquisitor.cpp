@@ -1,5 +1,5 @@
 /**
- * @file camera_capture.cpp
+ * @file camera_image_acquisitor.cpp
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
  */

@@ -5,9 +5,9 @@
  */
 
 /**
+ * @ingroup planning
  * @defgroup remote_control Remote Control
- * @{
- * @}
+ * @brief A module to remote control the system by an user
  */
 
 #ifndef REMOTE_CONTROL_HPP
@@ -37,8 +37,8 @@ public:
      * The key d is used for steering to the right.
      * The spacebar is used for breaking.
      * 
-     * @param ui User interface
      * @param vehicle Vehicle data
+     * @param uiState User interface
      */
     void run (VehicleModel& vehicle, UserInterfaceState& uiState);
 };

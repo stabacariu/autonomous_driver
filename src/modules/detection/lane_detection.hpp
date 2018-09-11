@@ -3,6 +3,12 @@
  * @author Sergiu-Petru Tabacariu
  * @date 30.6.2017
  */
+ 
+ /**
+ * @ingroup module
+ * @defgroup lane_detection Lane Detectiom
+ * @brief A lane detection module
+ */
 
 #ifndef LANE_DETECTION_HPP
 #define LANE_DETECTION_HPP
@@ -197,7 +203,7 @@ void filterLines (std::vector<cv::Vec4i> lines, cv::Size imageSize, std::vector<
  * 
  * @param line1 First line
  * @param line2 Second line
- * @param Distance between lines
+ * @return Distance between lines
  */
 float distanceBetweenLines (cv::Vec4i line1, cv::Vec4i line2);
 
@@ -267,7 +273,7 @@ void predictLine (std::vector<cv::Vec4i> lines, cv::KalmanFilter& kf, int numVal
  * line detection.
  * 
  * @param image Image matrix
- * @param lines Detected lines
+ * @param prepImage Detected lines
  */
 void prepareImage (cv::Mat image, cv::Mat& prepImage);
 

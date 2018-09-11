@@ -254,7 +254,7 @@ public:
      * @param h Height
      * @param wb Wheelbase
      * @param fO Front overhang
-     * @param bO Rear overhang
+     * @param rO Rear overhang
      */
     void setDimensions (double w, double l, double h, double wb, double fO, double rO);
     

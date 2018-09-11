@@ -5,9 +5,9 @@
  */
 
 /**
+ * @ingroup module
  * @defgroup obstacle_detection Obstacle Detectiom
- * @{
- * @}
+ * @brief A obstacle detection module
  */
 
 #ifndef OBSTACLE_DETECTION_HPP
