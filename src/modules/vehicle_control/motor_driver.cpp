@@ -57,7 +57,7 @@ void MotorDriver::reset (void)
         
         // Switch motors off and on
         digitalWrite(outputEnablePin, HIGH);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
         digitalWrite(outputEnablePin, LOW);
     }
 }
@@ -65,5 +65,7 @@ void MotorDriver::reset (void)
 void MotorDriver::stop (void)
 {
     digitalWrite(outputEnablePin, HIGH);
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    digitalWrite(outputEnablePin, LOW);
 }
 

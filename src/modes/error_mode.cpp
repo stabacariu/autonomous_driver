@@ -9,7 +9,6 @@
 
 void ErrorMode::run (SystemState* s)
 {
-    //! @todo Implement Error mode
     std::cout << "---------------------------------" << std::endl;
     std::cout << "MODE: Error Mode started." << std::endl;
     running = true;

@@ -26,8 +26,11 @@ void UIAboutMode::draw (cv::Mat& image, char& selected)
     cvui::text("Autonomous Driver", 0.6);
     cvui::text("An Autonomous Driving Development Platform");
     cvui::text("by Sergiu-Petru Tabacariu");
-    cvui::text("<sergiu.tabacariu@fh-campuswien.ac.at>");
+    cvui::text("<sergiu-petru.tabacariu@stud.fh-campuswien.ac.at>");
     cvui::text("Date 1.5.2018");
     cvui::text("Version 1.0.0");
+    cvui::space(5);
+    cvui::text("Get latest version at:");
+    cvui::text("https://github.com/stabacariu/autonomous_driver");
     cvui::endColumn();
 }

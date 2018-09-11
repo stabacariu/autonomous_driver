@@ -26,19 +26,23 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
         actualLane.push_back(lane.getLeftLine());
         actualLane.push_back(lane.getRightLine());
         
-        // Obtacle Detection before trajectory calculation
+        // Check safety distance before trajectory calculation
         bool safetyDistance = true;
-        if (obstacles.getDistance() > 25) {
+        if (obstacles.getDistance() < 25.0) {
             safetyDistance = false;
         }
-        
-        cv::Rect stopSign = trafficSigns.getRoi();
-        if (stopSign.width > 30 || stopSign.height > 30) {
-            safetyDistance = false;
-            std::cout << "INFO: Stop sign in safety distance!" << std::endl;
+        // Check traffic sign distance before trajectory calculation
+        if (trafficSigns.getDistance() > (-1)) {
+            cv::Rect stopSign = trafficSigns.getRoi();
+            // Get traffic sign distance by traffic sign size
+            if (stopSign.width > 30 || stopSign.height > 30) {
+                safetyDistance = false;
+                //~ std::cout << "INFO: Stop sign in safety distance!" << std::endl;
+            }
         }
         
         if (safetyDistance && (actualLane.size() > 1)) {
+            vehicle.releaseStop();
             calcTrajectory(actualLane, trajectory, kfT, camConfig.imageSize);
             cv::Mat image;
             image = inputImage.read();
@@ -46,15 +50,16 @@ void PathPlanner::run (ImageData& inputImage, ImageData& outputImage, LaneData& 
                 drawTrajectoryLine(image, trajectory);
                 outputImage.write(image);
                 outputImage.setTime(inputImage.getTime());
-                trajectory.active = false;
+                //~ trajectory.active = false;
             }
         }
         else {
             vehicle.stop();
-            vehicle.setSteering(CV_PI/2);
-            vehicle.setAcceleration(0);
+            //~ vehicle.setSteering(CV_PI/2);
+            //~ vehicle.setAcceleration(0);
         }
-        //~ std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
     std::cout << "THREAD: Path planning ended." << std::endl;

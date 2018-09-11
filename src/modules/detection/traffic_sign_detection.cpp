@@ -75,12 +75,16 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
                     std::cout << "Traffic sign detection: Stop sign detected at [" << signCenter.x << ", "<< signCenter.y << "]" <<  std::endl;
                     
                     trafficSignData.setRoi(stopSigns.at(0));
+                    trafficSignData.setDistance(1);
                 }
+            }
+            else {
+                trafficSignData.setDistance(-1);
             }
             outputImageData.write(inputImage);
             outputImageData.setTime(inputImageData.getTime());
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     std::cout << "THREAD: Traffic sign detection ended." << std::endl;

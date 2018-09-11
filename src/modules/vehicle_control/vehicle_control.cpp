@@ -25,60 +25,64 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
     
     while (running && !error) {
         if (vehicle.checkStop()) {
-            motor.reset();
+            //~ motor.reset();
+            //~ vehicle.setSteering(CV_PI/2);
+            vehicle.setAcceleration(0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
-        
-        cv::Vec4i tLine = trajectory.getLine();
-        std::vector<cv::Point> tPoints = trajectory.get();
-        if (trajectory.active) {
-            // Convert Trajectory to steering and acceleration values
-            float theta = 0;
-            int diffX1 = 0;
-            int diffX2 = 0;
-            
-            double acVal = 19;
-            double brVal = 0;
-            
-            theta = getTheta(cv::Point(tLine[0], tLine[1]), cv::Point(tLine[2], tLine[3]));
-            
-            if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.9))) {
-                vehicle.setAcceleration(brVal);
-            }
-            else {
-                // Set steering angle
-                if ((theta > 0) && (theta < CV_PI/2*0.9)) {
-                    vehicle.setDirection(VehicleDirection::VEHICLE_LEFT);
-                    vehicle.setSteering(theta-CV_PI/8);
-                }
-                else if ((theta < CV_PI) && (theta > CV_PI/2*1.1)) {
-                    vehicle.setDirection(VehicleDirection::VEHICLE_RIGHT);
-                    vehicle.setSteering(theta+CV_PI/8);
+        else {
+            cv::Vec4i tLine = trajectory.getLine();
+            std::vector<cv::Point> tPoints = trajectory.get();
+            if (trajectory.active) {
+                // Convert Trajectory to steering and acceleration values
+                float theta = 0;
+                int diffX1 = 0;
+                int diffX2 = 0;
+                
+                double acVal = 18;
+                double brVal = 0;
+                
+                theta = getTheta(cv::Point(tLine[0], tLine[1]), cv::Point(tLine[2], tLine[3]));
+                
+                if ((theta < (CV_PI*0.1)) || (theta > (CV_PI*0.9))) {
+                    vehicle.setAcceleration(brVal);
                 }
                 else {
-                    vehicle.setDirection(VehicleDirection::VEHICLE_STRAIGHT);
-                    vehicle.setSteering(theta);
-                }
-                
-                diffX1 = tLine[0] - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
-                diffX2 = tLine[2] - (camConfig.imageSize.width/2-1);
-                //~ diffX1 = tPoints.front().x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
-                //~ diffX2 = tPoints.back().x - (camConfig.imageSize.width/2-1);
-                
-                // Set acceleration percentage
-                // Vehicle is too much to the left
-                // Counter steer to the right
-                if ((diffX2 > 10) && (diffX1 > 10)) {
-                    vehicle.setSteering(3*CV_PI/4);
-                    vehicle.setAcceleration(acVal-0.5);
-                }
-                // Vehicle is too much to the right
-                // Counter steer to the left
-                else if ((diffX2 < -10) && (diffX1 < -10)) {
-                    vehicle.setSteering(CV_PI/4);
-                    vehicle.setAcceleration(acVal-0.5);
-                }
-                else {
-                    vehicle.setAcceleration(acVal);
+                    // Set steering angle
+                    if ((theta > 0) && (theta < CV_PI/2*0.9)) {
+                        vehicle.setDirection(VehicleDirection::VEHICLE_LEFT);
+                        vehicle.setSteering(theta-CV_PI/8);
+                    }
+                    else if ((theta < CV_PI) && (theta > CV_PI/2*1.1)) {
+                        vehicle.setDirection(VehicleDirection::VEHICLE_RIGHT);
+                        vehicle.setSteering(theta+CV_PI/8);
+                    }
+                    else {
+                        vehicle.setDirection(VehicleDirection::VEHICLE_STRAIGHT);
+                        vehicle.setSteering(theta);
+                    }
+                    
+                    diffX1 = tLine[0] - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
+                    diffX2 = tLine[2] - (camConfig.imageSize.width/2-1);
+                    //~ diffX1 = tPoints.front().x - (camConfig.imageSize.width/2-1); // If result positive then lane is to much to the right. Car must steer to the right.
+                    //~ diffX2 = tPoints.back().x - (camConfig.imageSize.width/2-1);
+                    
+                    // Set acceleration percentage
+                    // Vehicle is too much to the left
+                    // Counter steer to the right
+                    if ((diffX2 > 10) && (diffX1 > 10)) {
+                        vehicle.setSteering(3*CV_PI/4);
+                        vehicle.setAcceleration(acVal-0.5);
+                    }
+                    // Vehicle is too much to the right
+                    // Counter steer to the left
+                    else if ((diffX2 < -10) && (diffX1 < -10)) {
+                        vehicle.setSteering(CV_PI/4);
+                        vehicle.setAcceleration(acVal-0.5);
+                    }
+                    else {
+                        vehicle.setAcceleration(acVal);
+                    }
                 }
             }
         }
@@ -92,7 +96,8 @@ void VehicleController::run (TrajectoryData& trajectory, VehicleModel& vehicle)
         double acceleration = vehicle.getAcceleration();
         int accelerationValue = (int) round(ESC_N + acceleration/((double) 100/(ESC_N - ESC_MIN)));
         motor.setAcceleration(accelerationValue);
-        //~ std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     motor.reset();

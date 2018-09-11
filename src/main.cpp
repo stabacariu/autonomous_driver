@@ -14,7 +14,7 @@
  * The driving base is an off-the-shelf ready-to-run remote controlled model
  * car with an ESC, a brushed driving motor and a servo steering motor.
  * The radio controller of the R/C car is replaced with the PWM-servo-module.
- * This module is connected to the Raspberry Pi 3 and communicates via I2C
+ * This module is connected to the Raspberry Pi 2/3 and communicates via I2C
  * with it.
  */
 

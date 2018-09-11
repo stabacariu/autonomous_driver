@@ -43,8 +43,13 @@ void UIAutonomousMode::draw (cv::Mat& image, char& selected)
     }
     cvui::space(3);
     
-    cv::Point stopSignCenter(getSignCenter(trafficSign.getRoi()));
-    cvui::printf("Traffic Sign: [%d, %d]", stopSignCenter.x, stopSignCenter.y);
+    if (trafficSign.getDistance() > (-1)) {
+        cv::Point stopSignCenter(getSignCenter(trafficSign.getRoi()));
+        cvui::printf("Traffic Sign: [%d, %d]", stopSignCenter.x, stopSignCenter.y);
+    }
+    else {
+        cvui::text("Traffic Sign: No traffic sign");
+    }
     
     cvui::endColumn();
 }
