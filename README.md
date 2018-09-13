@@ -48,3 +48,17 @@ make -j4
 ```
 ./autonomous_driver
 ```
+7. Optionally you can install this program by running `make install` as admin. _Note_: This will install the `autonomous_driver` executable to `/opt/autonomous_driver` and the necessary config files to `/opt/autonomous_driver/config`. It also installs a shell script 'autonomous_driver' to `/usr/local/bin`.
+```
+sudo make install
+```
+8. After the last step you can run `autonomous_driver` by just using the command:
+```
+autonomous_driver
+```
+### Uninstallation ###
+If you installed `autonomous_driver` as described in Step 7., you can uninstall the program by simply deleting the installed files and folders with:
+```
+sudo rm /usr/bin/local/autonomous_driver
+sudo rm -r /opt/autonomous_driver
+```

@@ -48,7 +48,7 @@ void TrafficSignDetector::run (ImageData& inputImageData, ImageData& outputImage
     if (!trafficSignDetConfig.active) {
         running = false;
     }
-    if (!stopSignCascade.load("../input/stopsign_classifier.xml")) {
+    if (!stopSignCascade.load("config/stopsign_classifier.xml")) {
         std::cerr << "ERROR: Couldn't load classifier data!" << std::endl;
         running = false;
         error = true;

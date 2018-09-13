@@ -1,0 +1,3 @@
+#! /bin/sh
+cd /opt/autonomous_driver
+./autonomous_driver

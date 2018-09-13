@@ -30,3 +30,16 @@ set(LIB
 
 add_executable(autonomous_driver ${SRC} ${INC} ${LIB})
 target_link_libraries(autonomous_driver pthread wiringPi ${OpenCV_LIBS} ${WiringPi_LIBS} modes detection image_acquisition path_planning ui vehicle_control tools)
+
+file(COPY ../config/ 
+     DESTINATION config/)
+
+set(INSTALL_DIR
+    /opt/autonomous_driver)
+
+install(TARGETS autonomous_driver
+        DESTINATION ${INSTALL_DIR})
+install(DIRECTORY ${CMAKE_BINARY_DIR}/config/
+        DESTINATION ${INSTALL_DIR}/config/)
+install(PROGRAMS autonomous_driver
+        DESTINATION /usr/local/bin)

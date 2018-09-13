@@ -26,7 +26,7 @@
  */
 class Configurator {
 public:
-    Configurator (const std::string file = "../config/default.xml") : fileName(file) {};
+    Configurator (const std::string file = "config/default.xml") : fileName(file) {};
     ~Configurator () = default;
     
     /**
@@ -36,7 +36,7 @@ public:
      * 
      * @param file Path to configuration file
      */
-    static Configurator& instance (const std::string file = "../config/default.xml");
+    static Configurator& instance (const std::string file = "config/default.xml");
     
     /**
      * @brief Save configuration
@@ -97,7 +97,7 @@ public:
     ObstacleDetectionConfig getObstacleDetectionConfig (void);
     
 private:
-    std::string fileName {"../config/default.xml"}; //!< Default config file name
+    std::string fileName {"config/default.xml"}; //!< Default config file name
     CameraConfig camConfig; //!< Camera configuration data
     CameraCalibrationConfig camCalibConfig; //!< Camera calibration configuration data
     UserInterfaceConfig uiConfig; //!< User interface configuration data

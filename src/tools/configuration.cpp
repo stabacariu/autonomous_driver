@@ -31,12 +31,12 @@ void Configurator::load (void)
         fs.release();
         
         // Try open default.xml
-        fs.open("../config/default.xml", cv::FileStorage::READ);
+        fs.open("config/default.xml", cv::FileStorage::READ);
         if (!fs.isOpened()) {
-            std::cerr << "Error: No file ../config/default.xml found!" << std::endl;
+            std::cerr << "Error: No file config/default.xml found!" << std::endl;
         }
         else {
-            fileName = "../config/default.xml";
+            fileName = "config/default.xml";
             camConfig.load(fs);
             camCalibConfig.load(fs);
             uiConfig.load(fs);
