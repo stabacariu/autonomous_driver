@@ -3,7 +3,7 @@ This is a master thesis project dealing with the investigation of autonomous dri
 
 This repository provides the Autonomous Driver software that implements an autonomous driving software system. It has a graphical user interface, an autonomous driving mode and a remote control mode. In the autonomous driving mode it detects the road lane based on white road markings and stop signs with a camera. With a ultrasonic sensor it detects obstacles.
 
-A short demo video of the autonomous driving mode can be found on <https://youtu.be/CxPvibFuxQU>.
+Short demo videos of the autonomous driving mode and the object detection can be found at <https://youtu.be/CxPvibFuxQU> and <https://youtu.be/H7W-GFeLjLw>.
 
 ## Hardware ##
 This project was implemented with the following parts
